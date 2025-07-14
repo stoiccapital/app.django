@@ -6,9 +6,9 @@ class TermineManager {
         this.patients = this.loadPatients();
         this.currentTermin = null;
         this.isEditing = false;
-        this.currentView = 'list';
+        this.currentView = 'calendar';
         this.currentDate = new Date();
-        this.currentMonth = new Date();
+        this.currentWeek = new Date();
         
         this.initializeElements();
         this.bindEvents();
@@ -55,10 +55,10 @@ class TermineManager {
         this.datePresets = document.querySelectorAll('[data-preset]');
         
         // Calendar elements
-        this.prevMonthBtn = document.getElementById('prevMonthBtn');
-        this.nextMonthBtn = document.getElementById('nextMonthBtn');
-        this.currentMonthElement = document.getElementById('currentMonth');
-        this.calendarGrid = document.getElementById('calendarGrid');
+        this.prevWeekBtn = document.getElementById('prevWeekBtn');
+        this.nextWeekBtn = document.getElementById('nextWeekBtn');
+        this.currentWeekElement = document.getElementById('currentWeek');
+        this.weeklyCalendar = document.getElementById('weeklyCalendar');
         
         // Table elements
         this.termineTable = document.getElementById('termineTable');
@@ -106,8 +106,8 @@ class TermineManager {
         });
         
         // Calendar controls
-        this.prevMonthBtn.addEventListener('click', () => this.navigateMonth(-1));
-        this.nextMonthBtn.addEventListener('click', () => this.navigateMonth(1));
+        this.prevWeekBtn.addEventListener('click', () => this.navigateWeek(-1));
+        this.nextWeekBtn.addEventListener('click', () => this.navigateWeek(1));
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -140,6 +140,27 @@ class TermineManager {
         // Focus first input
         setTimeout(() => {
             this.terminForm.querySelector('input').focus();
+        }, 100);
+    }
+    
+    openBookingModal(date, time) {
+        this.currentTermin = null;
+        this.isEditing = false;
+        
+        this.clearForm();
+        this.modal.querySelector('.modal-title').textContent = 'Neuen Termin buchen';
+        
+        // Pre-fill date and time
+        const dateString = date.toISOString().split('T')[0];
+        this.terminForm.querySelector('[name="terminDate"]').value = dateString;
+        this.terminForm.querySelector('[name="terminTime"]').value = time;
+        
+        this.modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Focus on patient selection
+        setTimeout(() => {
+            this.patientSelect.focus();
         }, 100);
     }
     
@@ -299,76 +320,164 @@ class TermineManager {
     }
     
     // Calendar Management
-    navigateMonth(direction) {
-        this.currentMonth.setMonth(this.currentMonth.getMonth() + direction);
-        this.renderCalendar();
+    navigateWeek(direction) {
+        this.currentWeek.setDate(this.currentWeek.getDate() + (direction * 7));
+        this.renderWeeklyCalendar();
     }
     
-    renderCalendar() {
-        const year = this.currentMonth.getFullYear();
-        const month = this.currentMonth.getMonth();
+    renderWeeklyCalendar() {
+        const weekStart = this.getWeekStart(this.currentWeek);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
         
-        // Update month display
+        // Update week display
+        const startDay = weekStart.getDate();
+        const endDay = weekEnd.getDate();
         const monthNames = [
             'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
             'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
         ];
-        this.currentMonthElement.textContent = `${monthNames[month]} ${year}`;
         
-        // Generate calendar grid
-        this.generateCalendarGrid(year, month);
+        let weekText = '';
+        if (weekStart.getMonth() === weekEnd.getMonth()) {
+            weekText = `${startDay}. - ${endDay}. ${monthNames[weekStart.getMonth()]} ${weekStart.getFullYear()}`;
+        } else {
+            weekText = `${startDay}. ${monthNames[weekStart.getMonth()]} - ${endDay}. ${monthNames[weekEnd.getMonth()]} ${weekStart.getFullYear()}`;
+        }
+        
+        this.currentWeekElement.textContent = weekText;
+        
+        // Generate weekly calendar
+        this.generateWeeklyCalendar(weekStart);
     }
     
-    generateCalendarGrid(year, month) {
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const startDate = new Date(firstDay);
-        startDate.setDate(startDate.getDate() - firstDay.getDay());
+    getWeekStart(date) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day;
+        return new Date(d.setDate(diff));
+    }
+    
+    generateWeeklyCalendar(weekStart) {
+        this.weeklyCalendar.innerHTML = '';
         
-        this.calendarGrid.innerHTML = '';
+        // Create time slots (7:00 - 19:00)
+        const timeSlots = [];
+        for (let hour = 7; hour <= 19; hour++) {
+            timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+        }
+        
+        // Create header row with day names
+        const headerRow = document.createElement('div');
+        headerRow.className = 'weekly-calendar-header';
+        
+        // Add time column header
+        const timeHeader = document.createElement('div');
+        timeHeader.className = 'time-header';
+        timeHeader.textContent = 'Zeit';
+        headerRow.appendChild(timeHeader);
         
         // Add day headers
-        const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-        dayNames.forEach(day => {
-            const header = document.createElement('div');
-            header.className = 'calendar-day-header';
-            header.textContent = day;
-            this.calendarGrid.appendChild(header);
-        });
-        
-        // Generate calendar days
-        const today = new Date();
-        let currentDate = new Date(startDate);
-        
-        for (let i = 0; i < 42; i++) {
-            const dayElement = document.createElement('div');
-            dayElement.className = 'calendar-day';
+        const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+        for (let i = 0; i < 7; i++) {
+            const dayDate = new Date(weekStart);
+            dayDate.setDate(dayDate.getDate() + i);
             
-            const isToday = currentDate.toDateString() === today.toDateString();
-            const isOtherMonth = currentDate.getMonth() !== month;
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
             
-            if (isToday) dayElement.classList.add('today');
-            if (isOtherMonth) dayElement.classList.add('other-month');
+            const dayName = document.createElement('div');
+            dayName.className = 'day-name';
+            dayName.textContent = dayNames[i];
+            dayHeader.appendChild(dayName);
             
-            const dayNumber = document.createElement('div');
-            dayNumber.className = 'calendar-day-number';
-            dayNumber.textContent = currentDate.getDate();
-            dayElement.appendChild(dayNumber);
+            const dayDateElement = document.createElement('div');
+            dayDateElement.className = 'day-date';
+            dayDateElement.textContent = dayDate.getDate();
+            dayHeader.appendChild(dayDateElement);
             
-            // Add events for this day
-            const dayEvents = this.getTermineForDate(currentDate);
-            dayEvents.forEach(event => {
-                const eventElement = document.createElement('div');
-                eventElement.className = `calendar-event ${event.status}`;
-                eventElement.textContent = `${event.time} - ${event.patientName}`;
-                eventElement.title = `${event.time} - ${event.patientName} (${event.type})`;
-                eventElement.addEventListener('click', () => this.openModal(event));
-                dayElement.appendChild(eventElement);
-            });
+            // Highlight today
+            const today = new Date();
+            if (dayDate.toDateString() === today.toDateString()) {
+                dayHeader.classList.add('today');
+            }
             
-            this.calendarGrid.appendChild(dayElement);
-            currentDate.setDate(currentDate.getDate() + 1);
+            headerRow.appendChild(dayHeader);
         }
+        
+        this.weeklyCalendar.appendChild(headerRow);
+        
+        // Create time slot rows
+        timeSlots.forEach(timeSlot => {
+            const timeRow = document.createElement('div');
+            timeRow.className = 'weekly-calendar-row';
+            
+            // Add time column
+            const timeColumn = document.createElement('div');
+            timeColumn.className = 'time-column';
+            timeColumn.textContent = timeSlot;
+            timeRow.appendChild(timeColumn);
+            
+            // Add day columns
+            for (let i = 0; i < 7; i++) {
+                const dayDate = new Date(weekStart);
+                dayDate.setDate(dayDate.getDate() + i);
+                
+                const dayColumn = document.createElement('div');
+                dayColumn.className = 'day-column';
+                dayColumn.dataset.date = dayDate.toISOString().split('T')[0];
+                dayColumn.dataset.time = timeSlot;
+                
+                // Add events for this time slot
+                const dayEvents = this.getTermineForDate(dayDate);
+                const timeEvents = dayEvents.filter(event => event.time.startsWith(timeSlot.split(':')[0]));
+                
+                if (timeEvents.length > 0) {
+                    // Show existing events
+                    timeEvents.forEach(event => {
+                        const eventElement = document.createElement('div');
+                        eventElement.className = `weekly-event ${event.status}`;
+                        eventElement.innerHTML = `
+                            <div class="event-time">${event.time}</div>
+                            <div class="event-patient">${event.patientName}</div>
+                            <div class="event-type">${this.getTypeLabel(event.type)}</div>
+                        `;
+                        eventElement.title = `${event.time} - ${event.patientName} (${this.getTypeLabel(event.type)})`;
+                        eventElement.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.openModal(event);
+                        });
+                        dayColumn.appendChild(eventElement);
+                    });
+                } else {
+                    // Add clickable empty slot (no text)
+                    const emptySlot = document.createElement('div');
+                    emptySlot.className = 'empty-time-slot';
+                    emptySlot.title = `Termin um ${timeSlot} buchen`;
+                    emptySlot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.openBookingModal(dayDate, timeSlot);
+                    });
+                    dayColumn.appendChild(emptySlot);
+                }
+                
+                // Make the entire column clickable for booking (only if no events)
+                if (timeEvents.length === 0) {
+                    dayColumn.style.cursor = 'pointer';
+                    dayColumn.title = `Termin um ${timeSlot} buchen`;
+                    dayColumn.addEventListener('click', (e) => {
+                        // Only trigger if clicking on the column itself, not on the empty slot
+                        if (e.target === dayColumn) {
+                            this.openBookingModal(dayDate, timeSlot);
+                        }
+                    });
+                }
+                
+                timeRow.appendChild(dayColumn);
+            }
+            
+            this.weeklyCalendar.appendChild(timeRow);
+        });
     }
     
     // Form Validation and Submission
@@ -566,9 +675,13 @@ class TermineManager {
     
     // Rendering
     renderTermine() {
-        const filteredTermine = this.filterTermine();
-        this.renderTermineTable(filteredTermine);
-        this.updateEmptyState(filteredTermine.length === 0);
+        if (this.currentView === 'calendar') {
+            this.renderWeeklyCalendar();
+        } else {
+            const filteredTermine = this.filterTermine();
+            this.renderTermineTable(filteredTermine);
+            this.updateEmptyState(filteredTermine.length === 0);
+        }
     }
     
     renderTermineTable(termine) {

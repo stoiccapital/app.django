@@ -113,7 +113,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1010;
+  z-index: 2100; /* Highest, above sidebar/navbar */
   backdrop-filter: blur(4px);
 }
 
@@ -122,19 +122,29 @@
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s ease-out;
+  z-index: 2100;
 }
 
 .modal-content {
   background: var(--card-bg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
-  max-width: 1000px;
-  width: 90%;
-  max-height: 90vh;
+  max-width: 420px;
+  width: 95%;
+  max-height: 420px;
+  min-height: 200px;
   overflow-y: auto;
   position: relative;
-  z-index: 1011;
+  z-index: 2101;
   animation: slideInUp 0.3s ease-out;
+  margin: 0;
+  padding: var(--space-6);
+}
+
+@media (min-width: 769px) {
+  .modal-content {
+    margin-left: 280px; /* Always offset by sidebar width */
+  }
 }
 
 .modal-header {
@@ -246,9 +256,9 @@
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 8px;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
 }
 
@@ -257,12 +267,17 @@
 }
 
 .checkmark {
-  width: 18px;
-  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
   border: 2px solid var(--border-primary);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   position: relative;
   transition: var(--transition-normal);
+  background: white;
+  flex-shrink: 0;
 }
 
 .checkbox-label input[type="checkbox"]:checked + .checkmark {
@@ -277,7 +292,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
 }
 
@@ -395,6 +410,200 @@
 
 .calendar-event.completed {
   background: var(--success-green);
+}
+
+/* Weekly Calendar Styles */
+.weekly-calendar {
+  background: var(--card-bg);
+  border: var(--border-1) solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.weekly-calendar-header {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  background: var(--bg-secondary);
+  border-bottom: var(--border-1) solid var(--card-border);
+}
+
+.time-header {
+  padding: var(--space-3);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-align: center;
+  border-right: var(--border-1) solid var(--card-border);
+  background: var(--bg-primary);
+}
+
+.day-header {
+  padding: var(--space-3);
+  text-align: center;
+  border-right: var(--border-1) solid var(--card-border);
+  background: var(--bg-primary);
+}
+
+.day-header:last-child {
+  border-right: none;
+}
+
+.day-header.today {
+  background: var(--primary-blue-light);
+  color: var(--primary-blue);
+}
+
+.day-name {
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.day-date {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.weekly-calendar-row {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  border-bottom: var(--border-1) solid var(--card-border);
+}
+
+.weekly-calendar-row:last-child {
+  border-bottom: none;
+}
+
+.time-column {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  border-right: var(--border-1) solid var(--card-border);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-medium);
+}
+
+.day-column {
+  padding: var(--space-2);
+  border-right: var(--border-1) solid var(--card-border);
+  background: var(--bg-primary);
+  min-height: 60px;
+  position: relative;
+}
+
+.day-column:last-child {
+  border-right: none;
+}
+
+.day-column:hover {
+  background: var(--bg-secondary);
+}
+
+.weekly-event {
+  margin: var(--space-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border: var(--border-1) solid transparent;
+}
+
+.weekly-event:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.weekly-event.geplant {
+  background: var(--info-light);
+  color: var(--info);
+  border-color: var(--info);
+}
+
+.weekly-event.bestätigt {
+  background: var(--success-light);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.weekly-event.in_bearbeitung {
+  background: var(--warning-light);
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.weekly-event.abgeschlossen {
+  background: var(--success-light);
+  color: var(--success);
+  border-color: var(--success);
+  opacity: 0.7;
+}
+
+.weekly-event.abgesagt {
+  background: var(--error-light);
+  color: var(--error);
+  border-color: var(--error);
+  text-decoration: line-through;
+}
+
+.weekly-event.verschoben {
+  background: var(--warning-light);
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.event-time {
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-1);
+}
+
+.event-patient {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-1);
+}
+
+.event-type {
+  font-size: 0.625rem;
+  opacity: 0.8;
+}
+
+/* Empty Time Slot Styles */
+.empty-time-slot {
+  margin: var(--space-1);
+  padding: var(--space-2);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  background: var(--bg-secondary);
+  opacity: 0.6;
+  text-align: center;
+}
+
+.empty-time-slot:hover {
+  background: var(--primary-blue-light);
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.slot-time {
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.slot-hint {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 /* List View */
