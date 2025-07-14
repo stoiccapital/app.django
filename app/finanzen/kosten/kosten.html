@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kosten - Vetmates</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../../styles/reset.css">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/theme.css">
+    <link rel="stylesheet" href="../../styles/typography.css">
+    <link rel="stylesheet" href="../../styles/utilities.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components/navbar.css">
+    <link rel="stylesheet" href="../../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../../styles/components/cards.css">
+    <link rel="stylesheet" href="../../styles/components/buttons.css">
+    <link rel="stylesheet" href="../../styles/components/tables.css">
+    <link rel="stylesheet" href="../../styles/pages/kosten.css">
+</head>
+<body>
+    <!-- Include Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Include Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="kosten-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <a href="../finanzen.html" class="back-button">
+                            <span class="back-arrow">←</span>
+                            Zurück zu Finanzen
+                        </a>
+                        <h1 class="page-title">Kosten</h1>
+                        <p class="page-description">Überwachen Sie Ihre Praxisausgaben und Betriebskosten</p>
+                    </div>
+                    <div class="header-right">
+                        <button class="btn btn-primary btn-new-expense" id="newExpenseBtn">
+                            <span class="btn-icon-wrapper">
+                                <svg class="btn-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                            <span class="btn-text">Neue Kosten</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-icon expenses-icon">
+                            <span class="icon">💸</span>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">€6,850</div>
+                            <div class="stat-label">Gesamtkosten</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-icon fuel-icon">
+                            <span class="icon">💊</span>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">€2,400</div>
+                            <div class="stat-label">Medikamente</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-icon maintenance-icon">
+                            <span class="icon">🔬</span>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">€1,200</div>
+                            <div class="stat-label">Labor</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Recent Expenses -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Letzte Ausgaben</h2>
+                        <button class="btn btn-secondary">Alle anzeigen</button>
+                    </div>
+                    
+                    <div class="expenses-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Datum</th>
+                                    <th>Kategorie</th>
+                                    <th>Beschreibung</th>
+                                    <th>Betrag</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15.12.2024</td>
+                                    <td>Medikamente</td>
+                                    <td>Antibiotika & Impfstoffe</td>
+                                    <td class="amount negative">€450.00</td>
+                                    <td><span class="status-badge success">Bezahlt</span></td>
+                                </tr>
+                                <tr>
+                                    <td>12.12.2024</td>
+                                    <td>Labor</td>
+                                    <td>Blutuntersuchungen</td>
+                                    <td class="amount negative">€280.00</td>
+                                    <td><span class="status-badge success">Bezahlt</span></td>
+                                </tr>
+                                <tr>
+                                    <td>10.12.2024</td>
+                                    <td>Equipment</td>
+                                    <td>Röntgengerät Wartung</td>
+                                    <td class="amount negative">€320.00</td>
+                                    <td><span class="status-badge pending">Ausstehend</span></td>
+                                </tr>
+                                <tr>
+                                    <td>08.12.2024</td>
+                                    <td>Verbrauchsmaterial</td>
+                                    <td>Spritzen & Kanülen</td>
+                                    <td class="amount negative">€180.00</td>
+                                    <td><span class="status-badge success">Bezahlt</span></td>
+                                </tr>
+                                <tr>
+                                    <td>05.12.2024</td>
+                                    <td>Miete</td>
+                                    <td>Praxisräume Dezember</td>
+                                    <td class="amount negative">€1,200.00</td>
+                                    <td><span class="status-badge success">Bezahlt</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Cost Breakdown -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Kostenaufteilung</h2>
+                        <div class="chart-controls">
+                            <button class="btn btn-sm btn-secondary active">Monat</button>
+                            <button class="btn btn-sm btn-secondary">Quartal</button>
+                            <button class="btn btn-sm btn-secondary">Jahr</button>
+                        </div>
+                    </div>
+                    
+                    <div class="cost-breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span class="breakdown-color fuel-color"></span>
+                                <span>Medikamente</span>
+                            </div>
+                            <div class="breakdown-value">€2,400</div>
+                            <div class="breakdown-percentage">35.0%</div>
+                        </div>
+                        
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span class="breakdown-color maintenance-color"></span>
+                                <span>Labor</span>
+                            </div>
+                            <div class="breakdown-value">€1,200</div>
+                            <div class="breakdown-percentage">17.5%</div>
+                        </div>
+                        
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span class="breakdown-color insurance-color"></span>
+                                <span>Miete</span>
+                            </div>
+                            <div class="breakdown-value">€1,200</div>
+                            <div class="breakdown-percentage">17.5%</div>
+                        </div>
+                        
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span class="breakdown-color other-color"></span>
+                                <span>Equipment & Material</span>
+                            </div>
+                            <div class="breakdown-value">€2,050</div>
+                            <div class="breakdown-percentage">30.0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- JavaScript Files -->
+    <script src="../../components/navbar/navbar.js"></script>
+    <script src="../../components/sidebar/sidebar.js"></script>
+    <script src="../../index.js"></script>
+    <script src="kosten.js"></script>
+</body>
+</html>

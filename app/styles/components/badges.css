@@ -1,0 +1,465 @@
+/* Badge Components - Status indicators, notifications, fleet management specific */
+
+/* Base Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--badge-padding);
+  height: var(--badge-height);
+  font-size: var(--badge-font-size);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  transition: var(--transition-normal);
+  user-select: none;
+}
+
+/* Badge Sizes */
+.badge-xs {
+  height: 16px;
+  padding: var(--space-1);
+  font-size: 0.625rem;
+}
+
+.badge-sm {
+  height: 18px;
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.75rem;
+}
+
+.badge-md {
+  height: var(--badge-height);
+  padding: var(--badge-padding);
+  font-size: var(--badge-font-size);
+}
+
+.badge-lg {
+  height: 28px;
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+}
+
+.badge-xl {
+  height: 32px;
+  padding: var(--space-2) var(--space-4);
+  font-size: 1rem;
+}
+
+/* Badge Types */
+.badge-primary {
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue-dark);
+}
+
+.badge-secondary {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.badge-success {
+  background-color: var(--secondary-green-light);
+  color: var(--success);
+}
+
+.badge-warning {
+  background-color: var(--secondary-orange-light);
+  color: var(--warning);
+}
+
+.badge-error {
+  background-color: var(--secondary-red-light);
+  color: var(--error);
+}
+
+.badge-info {
+  background-color: var(--primary-blue-light);
+  color: var(--info);
+}
+
+/* Outline Badges */
+.badge-outline {
+  background-color: transparent;
+  border: var(--border-1) solid currentColor;
+}
+
+.badge-outline.badge-primary {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.badge-outline.badge-success {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.badge-outline.badge-warning {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.badge-outline.badge-error {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.badge-outline.badge-info {
+  color: var(--info);
+  border-color: var(--info);
+}
+
+/* Fleet Management Specific Badges */
+
+/* Driver Status Badges */
+.badge-driver-active {
+  background-color: var(--secondary-green-light);
+  color: var(--success);
+}
+
+.badge-driver-inactive {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.badge-driver-busy {
+  background-color: var(--secondary-orange-light);
+  color: var(--warning);
+}
+
+.badge-driver-offline {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+/* Vehicle Status Badges */
+.badge-vehicle-available {
+  background-color: var(--secondary-green-light);
+  color: var(--success);
+}
+
+.badge-vehicle-in-use {
+  background-color: var(--secondary-orange-light);
+  color: var(--warning);
+}
+
+.badge-vehicle-maintenance {
+  background-color: var(--secondary-red-light);
+  color: var(--error);
+}
+
+.badge-vehicle-offline {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.badge-vehicle-fuel-low {
+  background-color: var(--secondary-orange-light);
+  color: var(--warning);
+}
+
+.badge-vehicle-fuel-critical {
+  background-color: var(--secondary-red-light);
+  color: var(--error);
+}
+
+/* Trip Status Badges */
+.badge-trip-completed {
+  background-color: var(--secondary-green-light);
+  color: var(--success);
+}
+
+.badge-trip-in-progress {
+  background-color: var(--primary-blue-light);
+  color: var(--info);
+}
+
+.badge-trip-cancelled {
+  background-color: var(--secondary-red-light);
+  color: var(--error);
+}
+
+.badge-trip-scheduled {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.badge-trip-delayed {
+  background-color: var(--secondary-orange-light);
+  color: var(--warning);
+}
+
+.badge-trip-urgent {
+  background-color: var(--secondary-red-light);
+  color: var(--error);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Notification Badges */
+.badge-notification {
+  position: relative;
+}
+
+.badge-notification::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--space-1);
+  background-color: var(--error);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.badge-notification.badge-sm::after {
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.5rem;
+  top: -6px;
+  right: -6px;
+}
+
+.badge-notification.badge-lg::after {
+  min-width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  top: -10px;
+  right: -10px;
+}
+
+/* Badge with Icon */
+.badge-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.badge-icon .icon {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-icon.badge-sm .icon {
+  width: 10px;
+  height: 10px;
+}
+
+.badge-icon.badge-lg .icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+/* Badge with Dot */
+.badge-dot {
+  position: relative;
+}
+
+.badge-dot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--space-1);
+  transform: translateY(-50%);
+  width: var(--status-dot-size);
+  height: var(--status-dot-size);
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
+.badge-dot {
+  padding-left: calc(var(--space-1) + var(--status-dot-size) + var(--space-1));
+}
+
+/* Badge Group */
+.badge-group {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.badge-group .badge {
+  margin: 0;
+}
+
+/* Badge with Progress */
+.badge-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: width 0.3s ease;
+}
+
+.badge-progress[data-progress="25"]::after { width: 25%; }
+.badge-progress[data-progress="50"]::after { width: 50%; }
+.badge-progress[data-progress="75"]::after { width: 75%; }
+.badge-progress[data-progress="100"]::after { width: 100%; }
+
+/* Badge with Countdown */
+.badge-countdown {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-countdown::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  animation: countdown 10s linear infinite;
+}
+
+@keyframes countdown {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+/* Badge with Link */
+.badge-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.badge-link:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+/* Badge with Close */
+.badge-dismissible {
+  padding-right: calc(var(--space-2) + 16px);
+  position: relative;
+}
+
+.badge-dismiss {
+  position: absolute;
+  right: var(--space-1);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-dismiss:hover {
+  opacity: 1;
+}
+
+.badge-dismiss::before {
+  content: '×';
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+/* Badge Utilities */
+.badge-rounded {
+  border-radius: var(--radius-full);
+}
+
+.badge-square {
+  border-radius: var(--radius-sm);
+}
+
+.badge-border {
+  border: var(--border-1) solid currentColor;
+}
+
+.badge-shadow {
+  box-shadow: var(--shadow-sm);
+}
+
+.badge-uppercase {
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.badge-lowercase {
+  text-transform: lowercase;
+}
+
+.badge-capitalize {
+  text-transform: capitalize;
+}
+
+/* Responsive Badges */
+@media (max-width: 768px) {
+  .badge {
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
+  }
+  
+  .badge-group {
+    flex-wrap: wrap;
+  }
+}
+
+/* Badge with Custom Colors */
+.badge-custom {
+  background-color: var(--custom-badge-bg, var(--bg-tertiary));
+  color: var(--custom-badge-color, var(--text-secondary));
+}
+
+/* Badge with Gradient */
+.badge-gradient {
+  background: linear-gradient(135deg, var(--primary-blue), var(--info));
+  color: var(--text-inverse);
+}
+
+.badge-gradient-success {
+  background: linear-gradient(135deg, var(--success), var(--secondary-green));
+  color: var(--text-inverse);
+}
+
+.badge-gradient-warning {
+  background: linear-gradient(135deg, var(--warning), var(--secondary-orange));
+  color: var(--text-inverse);
+}
+
+.badge-gradient-error {
+  background: linear-gradient(135deg, var(--error), var(--secondary-red));
+  color: var(--text-inverse);
+} 

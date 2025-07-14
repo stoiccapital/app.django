@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzen - Fahrly</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/variables.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="stylesheet" href="../styles/typography.css">
+    <link rel="stylesheet" href="../styles/utilities.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/components/navbar.css">
+    <link rel="stylesheet" href="../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../styles/components/cards.css">
+    <link rel="stylesheet" href="../styles/components/buttons.css">
+    <link rel="stylesheet" href="../styles/pages/finanzen.css">
+</head>
+<body>
+    <!-- Include Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Include Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="finanzen-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Finanzen</h1>
+                <p class="page-description">Verwalten Sie Ihre Umsätze und Kosten</p>
+            </div>
+            
+            <!-- Finance Cards Grid -->
+            <div class="finance-cards-grid">
+                <!-- Umsatz Card -->
+                <div class="finance-card card card-interactive" onclick="window.location.href='umsatz/umsatz.html'">
+                    <div class="card-body">
+                        <div class="finance-card-content">
+                            <div class="finance-card-icon umsatz-icon">
+                                <span class="icon">💰</span>
+                            </div>
+                            <div class="finance-card-info">
+                                <h3 class="finance-card-title">Umsatz</h3>
+                                <p class="finance-card-description">Verwalten Sie Ihre Einnahmen und Umsätze</p>
+                            </div>
+                            <div class="finance-card-arrow">
+                                <span class="arrow">→</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Kosten Card -->
+                <div class="finance-card card card-interactive" onclick="window.location.href='kosten/kosten.html'">
+                    <div class="card-body">
+                        <div class="finance-card-content">
+                            <div class="finance-card-icon kosten-icon">
+                                <span class="icon">💸</span>
+                            </div>
+                            <div class="finance-card-info">
+                                <h3 class="finance-card-title">Kosten</h3>
+                                <p class="finance-card-description">Überwachen Sie Ihre Ausgaben und Kosten</p>
+                            </div>
+                            <div class="finance-card-arrow">
+                                <span class="arrow">→</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Load Navbar HTML -->
+    <script>
+        // Load navbar HTML
+        fetch('../components/navbar/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the Vetmates link for the current page location
+                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../index.html" class="brand-link"');
+                
+                document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after HTML is loaded
+                if (window.Navbar) {
+                    window.navbar = new window.Navbar();
+                } else {
+                    // If Navbar class is not available yet, wait for it
+                    const checkNavbar = setInterval(() => {
+                        if (window.Navbar) {
+                            window.navbar = new window.Navbar();
+                            clearInterval(checkNavbar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
+    
+    <!-- Load Navbar JS -->
+    <script src="../components/navbar/navbar.js"></script>
+    
+    <!-- Load Sidebar HTML -->
+    <script>
+        // Load sidebar HTML
+        fetch('../components/sidebar/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the paths for the current page location
+                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
+                    if (href === 'index.html') {
+                        return 'href="../../index.html"';
+                    } else if (href.startsWith('app/')) {
+                        return `href="../../${href}"`;
+                    }
+                    return match;
+                });
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Set active state for current page
+                const finanzenLink = document.querySelector('[data-page="finanzen"]');
+                if (finanzenLink) {
+                    finanzenLink.classList.add('active');
+                }
+                
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
+            });
+    </script>
+    
+    <!-- Load Sidebar JS -->
+    <script src="../components/sidebar/sidebar.js"></script>
+    
+    <!-- Load index.js for sidebar-open body class logic -->
+    <script src="../index.js"></script>
+</body>
+</html>

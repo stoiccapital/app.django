@@ -1,0 +1,110 @@
+/* Page Layout - Sidebar + Header + Main Content */
+
+/* Standardized Page Container */
+.page-container {
+    padding: var(--space-8); /* 2rem = 32px - standardized spacing */
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive adjustments for page container */
+@media (max-width: 1024px) {
+    .page-container {
+        padding: var(--space-6); /* 1.5rem = 24px */
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: var(--space-4); /* 1rem = 16px */
+    }
+}
+
+@media (max-width: 480px) {
+    .page-container {
+        padding: var(--space-3); /* 0.75rem = 12px */
+    }
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: 0;
+    margin-top: 70px; /* Account for navbar height */
+    min-height: calc(100vh - 70px);
+    padding: 0;
+    transition: margin-left 0.3s ease-in-out;
+    background: var(--background-color);
+    position: relative;
+    z-index: 1000; /* Ensure main content is above sidebar overlay, below sidebar */
+}
+
+/* When sidebar is open on desktop, push main content */
+@media (min-width: 769px) {
+    .main-content.sidebar-open {
+        margin-left: 280px;
+        transition: margin-left 0.3s ease-in-out;
+        /* Ensure content is always visible */
+        z-index: 1;
+    }
+}
+
+/* Mobile layout adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        margin-top: 60px; /* Smaller navbar on mobile */
+        min-height: calc(100vh - 60px);
+    }
+    
+    .hamburger-menu {
+        top: 1rem;
+        left: 1rem;
+    }
+    
+    /* On mobile, sidebar should overlay content */
+    .main-content.sidebar-open {
+        margin-left: 0; /* Don't push content on mobile */
+        z-index: 1; /* Ensure content stays visible */
+    }
+}
+
+/* Ensure content doesn't overlap with fixed elements */
+.fahrtenarchiv-container {
+    padding-top: 1rem;
+}
+
+/* Z-index hierarchy for proper layering */
+.navbar {
+    z-index: 1002; /* Highest - always on top */
+}
+
+.sidebar {
+    z-index: 1001; /* Below navbar, above main content */
+}
+
+.hamburger-menu {
+    z-index: 1005; /* Above everything */
+}
+
+.main-content {
+    z-index: 1000; /* Above sidebar overlay, below sidebar */
+}
+
+/* Smooth transitions for all layout changes */
+* {
+    transition: margin-left 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Ensure proper stacking context */
+body {
+    position: relative;
+    z-index: 0;
+}
+
+/* Fix for sidebar overlay on mobile */
+@media (max-width: 768px) {
+    .sidebar-overlay {
+        z-index: 999; /* Below main content, above background */
+    }
+} 

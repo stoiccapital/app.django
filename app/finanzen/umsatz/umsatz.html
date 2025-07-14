@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umsatz - Vetmates</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../../styles/reset.css">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/theme.css">
+    <link rel="stylesheet" href="../../styles/typography.css">
+    <link rel="stylesheet" href="../../styles/utilities.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components/navbar.css">
+    <link rel="stylesheet" href="../../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../../styles/components/cards.css">
+    <link rel="stylesheet" href="../../styles/components/buttons.css">
+    <link rel="stylesheet" href="../../styles/components/tables.css">
+    <link rel="stylesheet" href="../../styles/pages/umsatz.css">
+</head>
+<body>
+    <!-- Include Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Include Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="umsatz-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <a href="../finanzen.html" class="back-button">
+                            <span class="back-arrow">←</span>
+                            Zurück zu Finanzen
+                        </a>
+                        <h1 class="page-title">Umsatz</h1>
+                        <p class="page-description">Verwalten Sie Ihre Einnahmen aus Behandlungen und Dienstleistungen</p>
+                    </div>
+                    <div class="header-right">
+                        <button class="btn btn-primary btn-new-revenue" id="newRevenueBtn">
+                            <span class="btn-icon-wrapper">
+                                <svg class="btn-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                            <span class="btn-text">Neuer Umsatz</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-icon revenue-icon">
+                            <span class="icon">💰</span>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">€18,750</div>
+                            <div class="stat-label">Gesamtumsatz</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-icon growth-icon">
+                            <span class="icon">📈</span>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">+8.3%</div>
+                            <div class="stat-label">Wachstum</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-icon transactions-icon">
+                            <span class="icon">🔄</span>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">89</div>
+                            <div class="stat-label">Behandlungen</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Recent Transactions -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Letzte Behandlungen</h2>
+                        <button class="btn btn-secondary">Alle anzeigen</button>
+                    </div>
+                    
+                    <div class="transactions-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Datum</th>
+                                    <th>Patient & Behandlung</th>
+                                    <th>Betrag</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15.12.2024</td>
+                                    <td>Max (Hund) - Impfung & Untersuchung</td>
+                                    <td class="amount positive">€85.00</td>
+                                    <td><span class="status-badge success">Abgeschlossen</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14.12.2024</td>
+                                    <td>Luna (Katze) - Kastration</td>
+                                    <td class="amount positive">€320.00</td>
+                                    <td><span class="status-badge success">Abgeschlossen</span></td>
+                                </tr>
+                                <tr>
+                                    <td>13.12.2024</td>
+                                    <td>Rocky (Hund) - Zahnreinigung</td>
+                                    <td class="amount positive">€180.00</td>
+                                    <td><span class="status-badge pending">In Bearbeitung</span></td>
+                                </tr>
+                                <tr>
+                                    <td>12.12.2024</td>
+                                    <td>Bella (Katze) - Notfall OP</td>
+                                    <td class="amount positive">€450.00</td>
+                                    <td><span class="status-badge success">Abgeschlossen</span></td>
+                                </tr>
+                                <tr>
+                                    <td>11.12.2024</td>
+                                    <td>Charlie (Hund) - Routineuntersuchung</td>
+                                    <td class="amount positive">€65.00</td>
+                                    <td><span class="status-badge success">Abgeschlossen</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Revenue Chart -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Umsatzentwicklung</h2>
+                        <div class="chart-controls">
+                            <button class="btn btn-sm btn-secondary active">7 Tage</button>
+                            <button class="btn btn-sm btn-secondary">30 Tage</button>
+                            <button class="btn btn-sm btn-secondary">90 Tage</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <div class="chart-icon">📊</div>
+                            <p>Umsatzentwicklung Chart</p>
+                            <small>Chart wird hier angezeigt</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- JavaScript Files -->
+    <script src="../../components/navbar/navbar.js"></script>
+    <script src="../../components/sidebar/sidebar.js"></script>
+    <script src="../../index.js"></script>
+    <script src="umsatz.js"></script>
+</body>
+</html>

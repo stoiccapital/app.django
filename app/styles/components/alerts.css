@@ -1,0 +1,444 @@
+/* Alert Components - Different types, dismissible, fleet management specific */
+
+/* Base Alert */
+.alert {
+  position: relative;
+  padding: var(--alert-padding);
+  margin: var(--alert-margin);
+  border: var(--alert-border-width) solid transparent;
+  border-radius: var(--alert-border-radius);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.alert:last-child {
+  margin-bottom: 0;
+}
+
+/* Alert Types */
+.alert-info {
+  background-color: var(--primary-blue-light);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue-dark);
+}
+
+.alert-success {
+  background-color: var(--secondary-green-light);
+  border-color: var(--success);
+  color: var(--secondary-green-hover);
+}
+
+.alert-warning {
+  background-color: var(--secondary-orange-light);
+  border-color: var(--warning);
+  color: var(--secondary-orange-hover);
+}
+
+.alert-error {
+  background-color: var(--secondary-red-light);
+  border-color: var(--error);
+  color: var(--secondary-red-hover);
+}
+
+/* Alert Sizes */
+.alert-sm {
+  padding: var(--space-3);
+  font-size: 0.75rem;
+}
+
+.alert-lg {
+  padding: var(--space-6);
+  font-size: 1rem;
+}
+
+/* Alert with Icon */
+.alert-icon {
+  flex-shrink: 0;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+}
+
+.alert-info .alert-icon {
+  background-color: var(--primary-blue);
+  color: var(--text-inverse);
+}
+
+.alert-success .alert-icon {
+  background-color: var(--success);
+  color: var(--text-inverse);
+}
+
+.alert-warning .alert-icon {
+  background-color: var(--warning);
+  color: var(--text-inverse);
+}
+
+.alert-error .alert-icon {
+  background-color: var(--error);
+  color: var(--text-inverse);
+}
+
+/* Alert Content */
+.alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-title {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-1);
+}
+
+.alert-message {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.alert-message:only-child {
+  margin: 0;
+}
+
+/* Dismissible Alert */
+.alert-dismissible {
+  padding-right: var(--space-12);
+}
+
+.alert-dismiss {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-normal);
+  opacity: 0.7;
+}
+
+.alert-dismiss:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.alert-dismiss::before {
+  content: '×';
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+/* Alert Actions */
+.alert-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.alert-actions .btn {
+  font-size: 0.75rem;
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Fleet Management Specific Alerts */
+
+/* Driver Alert */
+.alert-driver-assigned {
+  background-color: var(--secondary-green-light);
+  border-color: var(--success);
+  color: var(--secondary-green-hover);
+}
+
+.alert-driver-unassigned {
+  background-color: var(--secondary-red-light);
+  border-color: var(--error);
+  color: var(--secondary-red-hover);
+}
+
+.alert-driver-busy {
+  background-color: var(--secondary-orange-light);
+  border-color: var(--warning);
+  color: var(--secondary-orange-hover);
+}
+
+/* Vehicle Alert */
+.alert-vehicle-maintenance {
+  background-color: var(--secondary-orange-light);
+  border-color: var(--warning);
+  color: var(--secondary-orange-hover);
+}
+
+.alert-vehicle-offline {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-secondary);
+  color: var(--text-tertiary);
+}
+
+.alert-vehicle-available {
+  background-color: var(--secondary-green-light);
+  border-color: var(--success);
+  color: var(--secondary-green-hover);
+}
+
+/* Trip Alert */
+.alert-trip-completed {
+  background-color: var(--secondary-green-light);
+  border-color: var(--success);
+  color: var(--secondary-green-hover);
+}
+
+.alert-trip-cancelled {
+  background-color: var(--secondary-red-light);
+  border-color: var(--error);
+  color: var(--secondary-red-hover);
+}
+
+.alert-trip-delayed {
+  background-color: var(--secondary-orange-light);
+  border-color: var(--warning);
+  color: var(--secondary-orange-hover);
+}
+
+/* System Alert */
+.alert-system-maintenance {
+  background-color: var(--primary-blue-light);
+  border-color: var(--info);
+  color: var(--primary-blue-dark);
+}
+
+.alert-system-error {
+  background-color: var(--secondary-red-light);
+  border-color: var(--error);
+  color: var(--secondary-red-hover);
+}
+
+/* Alert Banner */
+.alert-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-toast);
+  border-radius: 0;
+  margin: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.alert-banner.alert-dismissible {
+  padding-right: var(--space-12);
+}
+
+/* Alert Toast */
+.alert-toast {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: var(--z-toast);
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  margin: 0;
+}
+
+/* Alert Inline */
+.alert-inline {
+  margin: var(--space-2) 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+/* Alert with Progress */
+.alert-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.alert-progress::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background-color: currentColor;
+  opacity: 0.3;
+  animation: progress 2s linear infinite;
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* Alert Group */
+.alert-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.alert-group .alert {
+  margin: 0;
+}
+
+/* Alert with Links */
+.alert a {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: var(--font-weight-medium);
+}
+
+.alert a:hover {
+  opacity: 0.8;
+}
+
+/* Alert with Code */
+.alert code {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: 0.875em;
+}
+
+/* Alert with Lists */
+.alert ul,
+.alert ol {
+  margin: var(--space-2) 0 0 0;
+  padding-left: var(--space-4);
+}
+
+.alert li {
+  margin-bottom: var(--space-1);
+}
+
+.alert li:last-child {
+  margin-bottom: 0;
+}
+
+/* Alert with Tables */
+.alert table {
+  width: 100%;
+  margin-top: var(--space-3);
+  font-size: 0.75rem;
+}
+
+.alert table th,
+.alert table td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.alert table th {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Alert Animations */
+.alert-enter {
+  animation: alertSlideIn 0.3s ease-out;
+}
+
+.alert-exit {
+  animation: alertSlideOut 0.3s ease-in;
+}
+
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes alertSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Alerts */
+@media (max-width: 768px) {
+  .alert {
+    padding: var(--space-4);
+    margin: var(--space-3) 0;
+  }
+  
+  .alert-toast {
+    top: var(--space-2);
+    right: var(--space-2);
+    left: var(--space-2);
+    max-width: none;
+  }
+  
+  .alert-actions {
+    flex-direction: column;
+  }
+  
+  .alert-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Alert Utilities */
+.alert-borderless {
+  border: none;
+}
+
+.alert-rounded {
+  border-radius: var(--radius-full);
+}
+
+.alert-shadow {
+  box-shadow: var(--shadow-md);
+}
+
+.alert-no-margin {
+  margin: 0;
+}
+
+.alert-full-width {
+  width: 100%;
+}
+
+/* Alert with Custom Icons */
+.alert-icon-custom {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+  font-size: 1.25rem;
+}
+
+/* Alert with Badge */
+.alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  margin-left: var(--space-2);
+} 

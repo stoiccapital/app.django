@@ -1,0 +1,247 @@
+/* Light/Dark Themes and Branding for Fahrly Fleet Management */
+
+:root {
+  /* Primary Brand Colors */
+  --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
+  --primary-blue-light: #dbeafe;
+  --primary-blue-dark: #1e40af;
+  
+  /* Secondary Colors */
+  --secondary-green: #10b981;
+  --secondary-green-hover: #059669;
+  --secondary-green-light: #d1fae5;
+  
+  --secondary-orange: #f59e0b;
+  --secondary-orange-hover: #d97706;
+  --secondary-orange-light: #fef3c7;
+  
+  --secondary-red: #ef4444;
+  --secondary-red-hover: #dc2626;
+  --secondary-red-light: #fee2e2;
+  
+  /* Neutral Colors */
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Light Theme (Default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-inverse: #ffffff;
+  
+  --border-primary: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --border-focus: #2563eb;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Component Specific Colors */
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-shadow: var(--shadow-sm);
+  
+  --button-primary-bg: var(--primary-blue);
+  --button-primary-text: #ffffff;
+  --button-primary-hover: var(--primary-blue-hover);
+  
+  --button-secondary-bg: var(--neutral-100);
+  --button-secondary-text: var(--text-primary);
+  --button-secondary-hover: var(--neutral-200);
+  
+  --input-bg: #ffffff;
+  --input-border: var(--border-primary);
+  --input-focus-border: var(--border-focus);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-tertiary);
+  
+  --sidebar-bg: #ffffff;
+  --sidebar-border: var(--border-primary);
+  --sidebar-text: var(--text-primary);
+  --sidebar-hover: var(--neutral-50);
+  
+  --navbar-bg: #ffffff;
+  --navbar-border: var(--border-primary);
+  --navbar-text: var(--text-primary);
+  
+  /* Fleet Management Specific Colors */
+  --driver-status-active: var(--success);
+  --driver-status-inactive: var(--neutral-400);
+  --driver-status-busy: var(--warning);
+  
+  --vehicle-status-available: var(--success);
+  --vehicle-status-in-use: var(--warning);
+  --vehicle-status-maintenance: var(--error);
+  --vehicle-status-offline: var(--neutral-400);
+  
+  --trip-status-completed: var(--success);
+  --trip-status-in-progress: var(--info);
+  --trip-status-cancelled: var(--error);
+  --trip-status-scheduled: var(--neutral-500);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --bg-elevated: #1f2937;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-inverse: #111827;
+  
+  --border-primary: #374151;
+  --border-secondary: #4b5563;
+  --border-focus: #3b82f6;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  
+  /* Component Specific Colors - Dark */
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --card-shadow: var(--shadow-sm);
+  
+  --button-secondary-bg: var(--neutral-800);
+  --button-secondary-text: var(--text-primary);
+  --button-secondary-hover: var(--neutral-700);
+  
+  --input-bg: #1f2937;
+  --input-border: var(--border-primary);
+  --input-focus-border: var(--border-focus);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-tertiary);
+  
+  --sidebar-bg: #1f2937;
+  --sidebar-border: var(--border-primary);
+  --sidebar-text: var(--text-primary);
+  --sidebar-hover: var(--neutral-800);
+  
+  --navbar-bg: #1f2937;
+  --navbar-border: var(--border-primary);
+  --navbar-text: var(--text-primary);
+}
+
+/* High Contrast Theme for Accessibility */
+[data-theme="high-contrast"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2d2d2d;
+  --bg-elevated: #000000;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-tertiary: #b0b0b0;
+  
+  --border-primary: #ffffff;
+  --border-secondary: #cccccc;
+  --border-focus: #ffff00;
+  
+  --primary-blue: #0066cc;
+  --primary-blue-hover: #0052a3;
+  --success: #00cc00;
+  --warning: #ffcc00;
+  --error: #ff0000;
+  --info: #0066ff;
+}
+
+/* System Theme Detection */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --bg-elevated: #1f2937;
+    
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    
+    --border-primary: #374151;
+    --border-secondary: #4b5563;
+    
+    --card-bg: #1f2937;
+    --card-border: #374151;
+    
+    --input-bg: #1f2937;
+    --input-border: #374151;
+    --input-text: #f9fafb;
+    
+    --sidebar-bg: #1f2937;
+    --sidebar-border: #374151;
+    --sidebar-text: #f9fafb;
+    --sidebar-hover: #374151;
+    
+    --navbar-bg: #1f2937;
+    --navbar-border: #374151;
+    --navbar-text: #f9fafb;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus Styles for Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Selection Styles */
+::selection {
+  background-color: var(--primary-blue-light);
+  color: var(--text-primary);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-500);
+} 

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vetmates - Veterinary Practice Management</title>
+    <link rel="stylesheet" href="app/styles/reset.css">
+    <link rel="stylesheet" href="app/styles/variables.css">
+    <link rel="stylesheet" href="app/styles/theme.css">
+    <link rel="stylesheet" href="app/styles/typography.css">
+    <link rel="stylesheet" href="app/styles/layout.css">
+    <link rel="stylesheet" href="app/styles/utilities.css">
+    <link rel="stylesheet" href="app/styles/pages/dashboard.css">
+    <link rel="stylesheet" href="app/styles/components/navbar.css">
+    <link rel="stylesheet" href="app/styles/components/sidebar.css">
+    <link rel="stylesheet" href="app/styles/components/buttons.css">
+    <link rel="stylesheet" href="app/styles/components/forms.css">
+    <link rel="stylesheet" href="app/styles/components/cards.css">
+    <link rel="stylesheet" href="app/styles/components/tables.css">
+    <link rel="stylesheet" href="app/styles/components/alerts.css">
+    <link rel="stylesheet" href="app/styles/components/badges.css">
+</head>
+<body>
+    <!-- Include Navbar Component -->
+    <div id="navbar-container"></div>
+    
+    <!-- Include Sidebar Component (dynamically loaded) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-container">
+            <!-- Demo Info -->
+            <div class="demo-info">
+                <h3>🚀 Vetmates Dashboard Demo</h3>
+                <p>This is a comprehensive veterinary practice management system. Try resizing the browser window to see the responsive behavior, or click the hamburger menu on mobile devices.</p>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-description">Welcome to your veterinary practice management system. Track your patients, appointments, and medical records all in one place.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Active Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Today's Appointments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Completed Treatments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Available Staff</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Main Content Area -->
+                <div class="dashboard-main">
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <a href="app/fahrer/fahrer.html" class="action-button">
+                                <div class="icon">👤</div>
+                                <span>Add New Patient</span>
+                            </a>
+                            <a href="app/fahrzeuge/fahrzeuge.html" class="action-button">
+                                <div class="icon">🐕</div>
+                                <span>Schedule Appointment</span>
+                            </a>
+                            <a href="app/fahrtenarchiv/fahrtenarchiv.html" class="action-button">
+                                <div class="icon">📋</div>
+                                <span>Create Treatment</span>
+                            </a>
+                            <a href="app/werkzeuge/werkzeuge.html" class="action-button">
+                                <div class="icon">💊</div>
+                                <span>Manage Inventory</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon driver">👤</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New patient registered: Max the Golden Retriever</div>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon vehicle">🐕</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Appointment completed: Bella the Cat - Vaccination</div>
+                                    <div class="activity-time">4 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon trip">📋</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Treatment completed: Surgery on Rocky the Bulldog</div>
+                                    <div class="activity-time">6 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon driver">👤</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Patient status updated: Luna the Husky</div>
+                                    <div class="activity-time">8 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon vehicle">🐕</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New appointment scheduled: Charlie the Poodle</div>
+                                    <div class="activity-time">1 day ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Content -->
+                <div class="dashboard-sidebar">
+                    <!-- System Status -->
+                    <div class="system-status">
+                        <h3>System Status</h3>
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <div class="status-indicator online"></div>
+                                <div class="status-text">GPS Tracking</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator online"></div>
+                                <div class="status-text">Database</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator warning"></div>
+                                <div class="status-text">Maintenance</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator online"></div>
+                                <div class="status-text">Notifications</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Practice Overview -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Practice Overview</h4>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: var(--space-4);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Total Patients</span>
+                                    <span style="font-weight: var(--font-weight-semibold);">24</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">In Treatment</span>
+                                    <span style="font-weight: var(--font-weight-semibold); color: var(--success);">18</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Scheduled</span>
+                                    <span style="font-weight: var(--font-weight-semibold); color: var(--warning);">4</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Recovery</span>
+                                    <span style="font-weight: var(--font-weight-semibold); color: var(--error);">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">This Month</h4>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: var(--space-4);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Total Appointments</span>
+                                    <span style="font-weight: var(--font-weight-semibold);">156</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Treatments</span>
+                                    <span style="font-weight: var(--font-weight-semibold);">89</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-2);">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Surgeries</span>
+                                    <span style="font-weight: var(--font-weight-semibold);">12</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">Success Rate</span>
+                                    <span style="font-weight: var(--font-weight-semibold); color: var(--success);">94%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Load Navbar HTML -->
+    <script>
+        // Load navbar HTML
+        fetch('app/components/navbar/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the Vetmates link for the current page location
+                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="index.html" class="brand-link"');
+                
+                document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after HTML is loaded
+                if (window.Navbar) {
+                    window.navbar = new window.Navbar();
+                } else {
+                    // If Navbar class is not available yet, wait for it
+                    const checkNavbar = setInterval(() => {
+                        if (window.Navbar) {
+                            window.navbar = new window.Navbar();
+                            clearInterval(checkNavbar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
+    
+    <!-- Load Navbar JS -->
+    <script src="app/components/navbar/navbar.js"></script>
+    
+    <!-- Load Sidebar HTML -->
+    <script>
+        // Load sidebar HTML
+        fetch('app/components/sidebar/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the paths for the current page location
+                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
+                    if (href === 'index.html') {
+                        return 'href="index.html"';
+                    } else if (href.startsWith('app/')) {
+                        return `href="${href}"`;
+                    }
+                    return match;
+                });
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Set active state for current page
+                const dashboardLink = document.querySelector('[data-page="dashboard"]');
+                if (dashboardLink) {
+                    dashboardLink.classList.add('active');
+                }
+                
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
+            });
+    </script>
+    <!-- Load Sidebar JS -->
+    <script src="app/components/sidebar/sidebar.js"></script>
+    
+    <!-- Load index.js for sidebar-open body class logic -->
+    <script src="app/index.js"></script>
+</body>
+</html> 

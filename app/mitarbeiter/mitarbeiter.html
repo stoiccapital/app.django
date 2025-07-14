@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitarbeiter Management - Fahrly</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/variables.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="stylesheet" href="../styles/typography.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/utilities.css">
+    <link rel="stylesheet" href="../styles/components/navbar.css">
+    <link rel="stylesheet" href="../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../styles/components/buttons.css">
+    <link rel="stylesheet" href="../styles/components/forms.css">
+    <link rel="stylesheet" href="../styles/components/tables.css">
+    <link rel="stylesheet" href="../styles/components/cards.css">
+    <link rel="stylesheet" href="../styles/components/alerts.css">
+    <link rel="stylesheet" href="../styles/pages/mitarbeiter.css">
+   
+</head>
+<body>
+    <!-- Include Navbar Component -->
+    <div id="navbar-container"></div>
+    
+    <!-- Sidebar Component (dynamically loaded) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Mitarbeiter Management</h1>
+                <p class="page-subtitle">Verwalten Sie Ihre Mitarbeiter und deren Daten</p>
+            </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">24</div>
+                <div class="stat-label">Aktive Mitarbeiter</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Im Urlaub</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Krank</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Neue Bewerbungen</div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="search-box">
+                <input type="text" id="searchMitarbeiter" placeholder="Mitarbeiter suchen...">
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="filterBtn">Filter</button>
+                <button class="btn btn-primary" id="addMitarbeiterBtn">Neuen Mitarbeiter hinzufügen</button>
+            </div>
+        </div>
+
+        <!-- Drivers Table -->
+        <div class="drivers-table">
+            <div class="table-header">
+                <h3 class="table-title">Mitarbeiter Übersicht</h3>
+            </div>
+            <div class="table-container">
+                <table id="driversTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Personalnummer</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                            <th>Eintrittsdatum</th>
+                            <th>Telefon</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="driversTableBody">
+                        <!-- Driver rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Driver Modal -->
+    <div class="modal" id="driverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Neuen Mitarbeiter hinzufügen</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <form id="driverForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Vorname</label>
+                        <input type="text" class="form-input" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nachname</label>
+                        <input type="text" class="form-input" id="lastName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Personalnummer</label>
+                        <input type="text" class="form-input" id="employeeId" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Position</label>
+                        <select class="form-input" id="position" required>
+                            <option value="">Position wählen</option>
+                            <option value="Mitarbeiter">Mitarbeiter</option>
+                            <option value="Senior Mitarbeiter">Senior Mitarbeiter</option>
+                            <option value="Teamleiter">Teamleiter</option>
+                            <option value="Ausbilder">Ausbilder</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Eintrittsdatum</label>
+                        <input type="date" class="form-input" id="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="status" required>
+                            <option value="">Status wählen</option>
+                            <option value="Aktiv">Aktiv</option>
+                            <option value="Inaktiv">Inaktiv</option>
+                            <option value="Urlaub">Urlaub</option>
+                            <option value="Krank">Krank</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Telefon</label>
+                        <input type="tel" class="form-input" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">E-Mail</label>
+                        <input type="email" class="form-input" id="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Adresse</label>
+                    <textarea class="form-input" id="address" rows="3"></textarea>
+                </div>
+                <div class="action-buttons" style="justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Abbrechen</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load Navbar HTML -->
+    <script>
+        // Load navbar HTML
+        fetch('../components/navbar/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the Vetmates link for the current page location
+                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../index.html" class="brand-link"');
+                
+                document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after HTML is loaded
+                if (window.Navbar) {
+                    window.navbar = new window.Navbar();
+                } else {
+                    // If Navbar class is not available yet, wait for it
+                    const checkNavbar = setInterval(() => {
+                        if (window.Navbar) {
+                            window.navbar = new window.Navbar();
+                            clearInterval(checkNavbar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
+    
+    <!-- Load Navbar JS -->
+    <script src="../components/navbar/navbar.js"></script>
+    
+    <!-- Load Sidebar HTML -->
+    <script>
+        // Load sidebar HTML
+        fetch('../components/sidebar/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the paths for the current page location
+                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
+                    if (href === 'index.html') {
+                        return 'href="../../index.html"';
+                    } else if (href.startsWith('app/')) {
+                        return `href="../../${href}"`;
+                    }
+                    return match;
+                });
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Set active state for current page
+                const mitarbeiterLink = document.querySelector('[data-page="mitarbeiter"]');
+                if (mitarbeiterLink) {
+                    mitarbeiterLink.classList.add('active');
+                }
+                
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
+            });
+    </script>
+    
+    <!-- Load Sidebar JS -->
+    <script src="../components/sidebar/sidebar.js"></script>
+    
+    <!-- Load index.js for sidebar-open body class logic -->
+    <script src="../index.js"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <script src="mitarbeiter.js"></script>
+</body>
+</html> 

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patienten - Vetmates</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/variables.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="stylesheet" href="../styles/typography.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/utilities.css">
+    
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="../styles/components/navbar.css">
+    <link rel="stylesheet" href="../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../styles/components/forms.css">
+    <link rel="stylesheet" href="../styles/components/buttons.css">
+    <link rel="stylesheet" href="../styles/components/cards.css">
+    <link rel="stylesheet" href="../styles/components/tables.css">
+    <link rel="stylesheet" href="../styles/components/alerts.css">
+    
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="../styles/pages/patienten.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="patienten-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Patienten</h1>
+                <p class="page-description">Verwalten Sie Ihre Patienten und deren Informationen</p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-bar">
+                <button class="btn btn-primary btn-cta" id="addPatientBtn">
+                    <span class="btn-icon">+</span>
+                    Neuer Patient
+                </button>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="patientSearch" placeholder="Patienten suchen...">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+            
+            <!-- Patient Form Modal -->
+            <div class="modal" id="patientModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Neuen Patienten hinzufügen</h2>
+                        <button class="btn btn-ghost btn-icon btn-sm" id="closeModal" aria-label="Schließen">&times;</button>
+                    </div>
+                    
+                    <form class="patient-form" id="patientForm">
+                        <div class="form-grid">
+                            <!-- Patient Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Patienteninformationen</h3>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="patientName">Name *</label>
+                                        <input type="text" id="patientName" name="patientName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="patientSpecies">Tierart *</label>
+                                        <select id="patientSpecies" name="patientSpecies" required>
+                                            <option value="">Tierart auswählen</option>
+                                            <option value="hund">Hund</option>
+                                            <option value="katze">Katze</option>
+                                            <option value="pferd">Pferd</option>
+                                            <option value="kleintier">Kleintier</option>
+                                            <option value="vogel">Vogel</option>
+                                            <option value="exot">Exot</option>
+                                            <option value="sonstiges">Sonstiges</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="patientBreed">Rasse</label>
+                                        <input type="text" id="patientBreed" name="patientBreed">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="patientGender">Geschlecht</label>
+                                        <select id="patientGender" name="patientGender">
+                                            <option value="">Geschlecht auswählen</option>
+                                            <option value="männlich">Männlich</option>
+                                            <option value="weiblich">Weiblich</option>
+                                            <option value="kastriert">Kastriert</option>
+                                            <option value="sterilisiert">Sterilisiert</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="patientBirthDate">Geburtsdatum</label>
+                                        <input type="date" id="patientBirthDate" name="patientBirthDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="patientWeight">Gewicht (kg)</label>
+                                        <input type="number" id="patientWeight" name="patientWeight" step="0.1" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="patientColor">Farbe</label>
+                                    <input type="text" id="patientColor" name="patientColor">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="patientMicrochip">Chip-Nummer</label>
+                                    <input type="text" id="patientMicrochip" name="patientMicrochip">
+                                </div>
+                            </div>
+                            
+                            <!-- Owner Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Besitzerinformationen</h3>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ownerName">Name *</label>
+                                        <input type="text" id="ownerName" name="ownerName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ownerPhone">Telefon *</label>
+                                        <input type="tel" id="ownerPhone" name="ownerPhone" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ownerEmail">E-Mail</label>
+                                    <input type="email" id="ownerEmail" name="ownerEmail">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ownerAddress">Adresse</label>
+                                    <textarea id="ownerAddress" name="ownerAddress" rows="3"></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Medical Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Medizinische Informationen</h3>
+                                
+                                <div class="form-group">
+                                    <label for="patientAllergies">Allergien</label>
+                                    <textarea id="patientAllergies" name="patientAllergies" rows="2" placeholder="Bekannte Allergien..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="patientMedications">Aktuelle Medikamente</label>
+                                    <textarea id="patientMedications" name="patientMedications" rows="2" placeholder="Aktuelle Medikamente..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="patientNotes">Notizen</label>
+                                    <textarea id="patientNotes" name="patientNotes" rows="3" placeholder="Weitere Notizen..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary btn-cta">Patient speichern</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Patients List -->
+            <div class="patients-section">
+                <div class="section-header">
+                    <h2 class="section-title">Patientenliste</h2>
+                    <div class="list-controls">
+                        <select class="filter-select" id="speciesFilter">
+                            <option value="">Alle Tierarten</option>
+                            <option value="hund">Hund</option>
+                            <option value="katze">Katze</option>
+                            <option value="pferd">Pferd</option>
+                            <option value="kleintier">Kleintier</option>
+                            <option value="vogel">Vogel</option>
+                            <option value="exot">Exot</option>
+                            <option value="sonstiges">Sonstiges</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="patients-table-container">
+                    <table class="patients-table" id="patientsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Tierart</th>
+                                <th>Rasse</th>
+                                <th>Besitzer</th>
+                                <th>Telefon</th>
+                                <th>Letzter Besuch</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                            <!-- Sample data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="no-patients" id="noPatients" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-icon">🐾</div>
+                        <h3>Keine Patienten gefunden</h3>
+                        <p>Fügen Sie Ihren ersten Patienten hinzu, um zu beginnen.</p>
+                        <button class="btn btn-primary btn-cta" id="addFirstPatientBtn">Ersten Patienten hinzufügen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Alert Container -->
+    <div id="alertContainer" class="alert-container"></div>
+    
+    <!-- Load Navbar HTML -->
+    <script>
+        // Load navbar HTML
+        fetch('../components/navbar/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the Vetmates link for the current page location
+                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../index.html" class="brand-link"');
+                
+                document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after HTML is loaded
+                if (window.Navbar) {
+                    window.navbar = new window.Navbar();
+                } else {
+                    // If Navbar class is not available yet, wait for it
+                    const checkNavbar = setInterval(() => {
+                        if (window.Navbar) {
+                            window.navbar = new window.Navbar();
+                            clearInterval(checkNavbar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
+    
+    <!-- Load Navbar JS -->
+    <script src="../components/navbar/navbar.js"></script>
+    
+    <!-- Load Sidebar HTML -->
+    <script>
+        // Load sidebar HTML
+        fetch('../components/sidebar/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the paths for the current page location
+                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
+                    if (href === 'index.html') {
+                        return 'href="../../index.html"';
+                    } else if (href.startsWith('app/')) {
+                        return `href="../../${href}"`;
+                    }
+                    return match;
+                });
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Set active state for current page
+                const patientenLink = document.querySelector('[data-page="patienten"]');
+                if (patientenLink) {
+                    patientenLink.classList.add('active');
+                }
+                
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
+            });
+    </script>
+    
+    <!-- Load Sidebar JS -->
+    <script src="../components/sidebar/sidebar.js"></script>
+    
+    <!-- Load index.js for sidebar-open body class logic -->
+    <script src="../index.js"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <script src="patienten.js"></script>
+</body>
+</html>

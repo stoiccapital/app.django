@@ -1,0 +1,300 @@
+/* CSS Custom Properties - Colors, spacing, fonts */
+
+:root {
+  /* Spacing Scale */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;     /* 8px */
+  --space-3: 0.75rem;    /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-5: 1.25rem;    /* 20px */
+  --space-6: 1.5rem;     /* 24px */
+  --space-8: 2rem;       /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+  --space-32: 8rem;      /* 128px */
+  --space-40: 10rem;     /* 160px */
+  --space-48: 12rem;     /* 192px */
+  --space-56: 14rem;     /* 224px */
+  --space-64: 16rem;     /* 256px */
+
+  /* Container Max Widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;   /* 2px */
+  --radius-md: 0.25rem;    /* 4px */
+  --radius-lg: 0.5rem;     /* 8px */
+  --radius-xl: 0.75rem;    /* 12px */
+  --radius-2xl: 1rem;      /* 16px */
+  --radius-3xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;
+
+  /* Border Widths */
+  --border-0: 0;
+  --border-1: 1px;
+  --border-2: 2px;
+  --border-4: 4px;
+  --border-8: 8px;
+
+  /* Z-Index Scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  --transition-slower: 500ms ease-in-out;
+
+  /* Animation Durations */
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+  --duration-1000: 1000ms;
+
+  /* Animation Easing */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Grid System */
+  --grid-columns: 12;
+  --grid-gutter: var(--space-4);
+  --grid-gutter-sm: var(--space-2);
+  --grid-gutter-lg: var(--space-6);
+
+  /* Layout Dimensions */
+  --header-height: 64px;
+  --sidebar-width: 280px;
+  --sidebar-width-collapsed: 80px;
+  --footer-height: 60px;
+  --content-max-width: 1200px;
+
+  /* Component Specific Spacing */
+  --card-padding: var(--space-6);
+  --card-padding-sm: var(--space-4);
+  --card-padding-lg: var(--space-8);
+  
+  --button-padding-x: var(--space-4);
+  --button-padding-y: var(--space-2);
+  --button-padding-sm-x: var(--space-3);
+  --button-padding-sm-y: var(--space-1);
+  --button-padding-lg-x: var(--space-6);
+  --button-padding-lg-y: var(--space-3);
+  
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --input-height: 40px;
+  --input-height-sm: 32px;
+  --input-height-lg: 48px;
+
+  /* Fleet Management Specific Variables */
+  --driver-card-width: 320px;
+  --vehicle-card-width: 280px;
+  --trip-card-width: 400px;
+  --stats-card-height: 120px;
+  --map-container-height: 400px;
+  --table-row-height: 56px;
+  --table-row-height-sm: 48px;
+
+  /* Status Indicator Sizes */
+  --status-dot-size: 8px;
+  --status-dot-size-lg: 12px;
+  --status-badge-height: 24px;
+  --status-badge-padding: var(--space-1) var(--space-2);
+
+  /* Icon Sizes */
+  --icon-size-xs: 12px;
+  --icon-size-sm: 16px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 32px;
+  --icon-size-2xl: 48px;
+
+  /* Avatar Sizes */
+  --avatar-size-xs: 24px;
+  --avatar-size-sm: 32px;
+  --avatar-size-md: 40px;
+  --avatar-size-lg: 48px;
+  --avatar-size-xl: 64px;
+  --avatar-size-2xl: 96px;
+
+  /* Badge Sizes */
+  --badge-height: 20px;
+  --badge-padding: var(--space-1) var(--space-2);
+  --badge-font-size: 0.75rem;
+
+  /* Tooltip */
+  --tooltip-max-width: 200px;
+  --tooltip-padding: var(--space-2) var(--space-3);
+  --tooltip-font-size: 0.875rem;
+
+  /* Modal */
+  --modal-max-width: 500px;
+  --modal-max-width-lg: 800px;
+  --modal-padding: var(--space-6);
+  --modal-backdrop-opacity: 0.5;
+
+  /* Dropdown */
+  --dropdown-min-width: 200px;
+  --dropdown-max-width: 400px;
+  --dropdown-padding: var(--space-1);
+
+  /* Loading States */
+  --skeleton-height: 20px;
+  --skeleton-border-radius: var(--radius-md);
+  --skeleton-animation-duration: 1.5s;
+
+  /* Focus Ring */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--primary-blue);
+
+  /* Scrollbar */
+  --scrollbar-width: 8px;
+  --scrollbar-track-color: var(--bg-secondary);
+  --scrollbar-thumb-color: var(--neutral-400);
+  --scrollbar-thumb-hover-color: var(--neutral-500);
+
+  /* Print */
+  --print-margin: 1in;
+  --print-font-size: 12pt;
+  --print-line-height: 1.4;
+
+  /* Performance */
+  --will-change-transform: will-change: transform;
+  --will-change-opacity: will-change: opacity;
+  --will-change-scroll: will-change: scroll-position;
+
+  /* Utility Classes Support */
+  --aspect-ratio-square: 1;
+  --aspect-ratio-video: 16 / 9;
+  --aspect-ratio-photo: 4 / 3;
+  --aspect-ratio-wide: 21 / 9;
+
+  /* Filter Effects */
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(16px);
+  --blur-xl: blur(24px);
+
+  --brightness-0: brightness(0);
+  --brightness-50: brightness(0.5);
+  --brightness-75: brightness(0.75);
+  --brightness-90: brightness(0.9);
+  --brightness-95: brightness(0.95);
+  --brightness-100: brightness(1);
+  --brightness-105: brightness(1.05);
+  --brightness-110: brightness(1.1);
+  --brightness-125: brightness(1.25);
+  --brightness-150: brightness(1.5);
+  --brightness-200: brightness(2);
+
+  /* Backdrop Filters */
+  --backdrop-blur-sm: blur(4px);
+  --backdrop-blur-md: blur(8px);
+  --backdrop-blur-lg: blur(16px);
+  --backdrop-blur-xl: blur(24px);
+
+  /* Transform Origins */
+  --transform-origin-center: center;
+  --transform-origin-top: top;
+  --transform-origin-top-right: top right;
+  --transform-origin-right: right;
+  --transform-origin-bottom-right: bottom right;
+  --transform-origin-bottom: bottom;
+  --transform-origin-bottom-left: bottom left;
+  --transform-origin-left: left;
+  --transform-origin-top-left: top left;
+
+  /* Fleet Management Layout */
+  --dashboard-grid-gap: var(--space-6);
+  --dashboard-card-min-height: 200px;
+  --dashboard-stats-grid-cols: 4;
+  --dashboard-stats-grid-cols-md: 2;
+  --dashboard-stats-grid-cols-sm: 1;
+
+  /* Responsive Breakpoints for Fleet Management */
+  --mobile-first: 320px;
+  --tablet-portrait: 768px;
+  --tablet-landscape: 1024px;
+  --desktop: 1280px;
+  --desktop-large: 1536px;
+
+  /* Navigation */
+  --nav-item-height: 48px;
+  --nav-item-padding: var(--space-3) var(--space-4);
+  --nav-item-border-radius: var(--radius-md);
+  --nav-item-margin: var(--space-1);
+
+  /* Sidebar */
+  --sidebar-item-height: 44px;
+  --sidebar-item-padding: var(--space-3) var(--space-4);
+  --sidebar-item-border-radius: var(--radius-md);
+  --sidebar-item-margin: var(--space-1);
+  --sidebar-section-padding: var(--space-4);
+  --sidebar-section-margin: var(--space-2) 0;
+
+  /* Data Tables */
+  --table-cell-padding: var(--space-3) var(--space-4);
+  --table-cell-padding-sm: var(--space-2) var(--space-3);
+  --table-border-width: var(--border-1);
+  --table-stripe-color: var(--bg-secondary);
+
+  /* Forms */
+  --form-group-margin: var(--space-4);
+  --form-label-margin: var(--space-1) 0;
+  --form-error-margin: var(--space-1) 0;
+  --form-help-margin: var(--space-1) 0;
+  --form-checkbox-size: 16px;
+  --form-radio-size: 16px;
+
+  /* Alerts */
+  --alert-padding: var(--space-4);
+  --alert-margin: var(--space-4) 0;
+  --alert-border-width: var(--border-1);
+  --alert-border-radius: var(--radius-lg);
+
+  /* Progress */
+  --progress-height: 8px;
+  --progress-height-sm: 4px;
+  --progress-height-lg: 12px;
+  --progress-border-radius: var(--radius-full);
+
+  /* Breadcrumbs */
+  --breadcrumb-padding: var(--space-2) 0;
+  --breadcrumb-item-padding: var(--space-1) var(--space-2);
+  --breadcrumb-separator-margin: var(--space-2);
+
+  /* Pagination */
+  --pagination-item-size: 40px;
+  --pagination-item-margin: var(--space-1);
+  --pagination-border-radius: var(--radius-md);
+} 
