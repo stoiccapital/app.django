@@ -85,7 +85,7 @@ class Sidebar {
     }
 
     bindEvents() {
-        // Hamburger menu event
+        // Hamburger menu event (mobile only)
         if (this.hamburgerMenu) {
             console.log('Hamburger menu found, adding click listener');
             this.hamburgerMenu.addEventListener('click', (e) => {
@@ -110,7 +110,7 @@ class Sidebar {
             link.addEventListener('click', (e) => this.handleNavClick(e));
         });
 
-        // Overlay click to close sidebar
+        // Overlay click to close sidebar (mobile only)
         if (this.overlay) {
             this.overlay.addEventListener('click', () => this.closeSidebar());
         }
@@ -118,16 +118,17 @@ class Sidebar {
         // Handle window resize
         window.addEventListener('resize', () => this.handleResize());
 
-        // Handle escape key
+        // Handle escape key (mobile only)
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && window.innerWidth <= 768) {
                 this.closeSidebar();
             }
         });
 
-        // Close sidebar when clicking outside
+        // Close sidebar when clicking outside (mobile only)
         document.addEventListener('click', (e) => {
-            if (this.sidebar && this.sidebar.classList.contains('active') && 
+            if (window.innerWidth <= 768 && 
+                this.sidebar && this.sidebar.classList.contains('active') && 
                 !this.sidebar.contains(e.target) && 
                 !this.hamburgerMenu.contains(e.target)) {
                 this.closeSidebar();
@@ -136,16 +137,19 @@ class Sidebar {
     }
 
     toggleSidebar() {
-        console.log('Toggle sidebar called');
-        const isOpen = this.sidebar.classList.contains('active');
-        console.log('Sidebar is open:', isOpen);
-        console.log('Sidebar element:', this.sidebar);
-        console.log('Hamburger menu element:', this.hamburgerMenu);
-        
-        if (isOpen) {
-            this.closeSidebar();
-        } else {
-            this.openSidebar();
+        // Only toggle on mobile devices
+        if (window.innerWidth <= 768) {
+            console.log('Toggle sidebar called');
+            const isOpen = this.sidebar.classList.contains('active');
+            console.log('Sidebar is open:', isOpen);
+            console.log('Sidebar element:', this.sidebar);
+            console.log('Hamburger menu element:', this.hamburgerMenu);
+            
+            if (isOpen) {
+                this.closeSidebar();
+            } else {
+                this.openSidebar();
+            }
         }
         
         // Prevent any default behavior
@@ -153,19 +157,23 @@ class Sidebar {
     }
 
     openSidebar() {
-        this.sidebar.classList.add('active');
-        this.hamburgerMenu.classList.add('active');
-        this.overlay.classList.add('active');
-        document.querySelector('.main-content').classList.add('sidebar-open');
-        document.body.style.overflow = 'hidden';
+        // Only open on mobile devices
+        if (window.innerWidth <= 768) {
+            this.sidebar.classList.add('active');
+            this.hamburgerMenu.classList.add('active');
+            this.overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     closeSidebar() {
-        this.sidebar.classList.remove('active');
-        this.hamburgerMenu.classList.remove('active');
-        this.overlay.classList.remove('active');
-        document.querySelector('.main-content').classList.remove('sidebar-open');
-        document.body.style.overflow = '';
+        // Only close on mobile devices
+        if (window.innerWidth <= 768) {
+            this.sidebar.classList.remove('active');
+            this.hamburgerMenu.classList.remove('active');
+            this.overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     }
 
     handleNavClick(e) {
@@ -175,8 +183,10 @@ class Sidebar {
         // Update active state before navigation
         this.setActiveLink(targetLink);
         
-        // Close sidebar
-        setTimeout(() => this.closeSidebar(), 300);
+        // Close sidebar only on mobile
+        if (window.innerWidth <= 768) {
+            setTimeout(() => this.closeSidebar(), 300);
+        }
         
         // Emit custom event for page change
         this.emitPageChange(targetPage);
@@ -219,8 +229,17 @@ class Sidebar {
     }
 
     handleResize() {
-        // Keep sidebar behavior consistent across all screen sizes
-        // No auto-close on resize
+        // Handle transition between desktop and mobile
+        if (window.innerWidth > 768) {
+            // On desktop, ensure sidebar is always visible
+            this.sidebar.classList.remove('active');
+            this.hamburgerMenu.classList.remove('active');
+            this.overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            // On mobile, close sidebar if it was open
+            this.closeSidebar();
+        }
     }
 
     emitPageChange(page) {

@@ -7,7 +7,7 @@
     box-sizing: border-box;
 }
 
-/* Hamburger Menu Button */
+/* Hamburger Menu Button - Mobile Only */
 .hamburger-menu {
     position: fixed;
     top: 1.2rem;
@@ -27,6 +27,13 @@
     pointer-events: auto;
     visibility: visible;
     opacity: 1;
+}
+
+/* Hide hamburger menu on desktop */
+@media (min-width: 769px) {
+    .hamburger-menu {
+        display: none;
+    }
 }
 
 .hamburger-menu:hover {
@@ -65,13 +72,24 @@
     display: flex;
     flex-direction: column;
     z-index: 1001; /* Below navbar, above main content */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar.active {
-    transform: translateX(0);
+/* Desktop: Always visible sidebar */
+@media (min-width: 769px) {
+    .sidebar {
+        transform: translateX(0);
+        transition: none;
+    }
+}
+
+/* Mobile: Slide in/out behavior */
+@media (max-width: 768px) {
+    .sidebar.active {
+        transform: translateX(0);
+    }
 }
 
 /* Logo Section */
