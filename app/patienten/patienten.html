@@ -48,7 +48,7 @@
                     Neuer Patient
                 </button>
                 <div class="search-container">
-                    <input type="text" class="search-input" id="patientSearch" placeholder="Patienten suchen...">
+                    <input type="text" class="search-input" id="patientSearch" placeholder="Suche nach Name, Besitzer, Telefonnummer oder Rasse">
                     <span class="search-icon">🔍</span>
                 </div>
             </div>
@@ -178,6 +178,41 @@
                             <button type="submit" class="btn btn-primary btn-cta">Patient speichern</button>
                         </div>
                     </form>
+                </div>
+            </div>
+            
+            <!-- Patient Detail Modal -->
+            <div class="modal" id="patientDetailModal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Patientendetails</h2>
+                        <button class="btn btn-ghost btn-icon btn-sm" id="closeDetailModal" aria-label="Schließen">&times;</button>
+                    </div>
+                    
+                    <div class="patient-detail-content" id="patientDetailContent">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" id="viewPatientBtn">
+                                <span class="btn-icon">👁️</span>
+                                Daten anzeigen
+                            </button>
+                            <button class="btn btn-primary" id="editPatientBtn">
+                                <span class="btn-icon">✏️</span>
+                                Bearbeiten
+                            </button>
+                            <button class="btn btn-success" id="bookAppointmentBtn">
+                                <span class="btn-icon">📅</span>
+                                Termin buchen
+                            </button>
+                            <button class="btn btn-warning" id="sendReminderBtn">
+                                <span class="btn-icon">📧</span>
+                                Erinnerung senden
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             

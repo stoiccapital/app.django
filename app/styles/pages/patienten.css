@@ -101,6 +101,101 @@
   animation: slideInUp 0.3s ease-out;
 }
 
+.modal-large {
+  max-width: 1000px;
+}
+
+/* Patient Detail Modal Styles */
+.patient-detail-content {
+  padding: var(--space-6);
+}
+
+.patient-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.detail-section {
+  background: var(--bg-secondary);
+  border: var(--border-1) solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.detail-section h3 {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4) 0;
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-1) solid var(--border-primary);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-1) solid var(--border-subtle);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  text-align: right;
+  flex: 1;
+  word-break: break-word;
+}
+
+.modal-actions {
+  padding: var(--space-6);
+  border-top: var(--border-1) solid var(--card-border);
+  background: var(--bg-secondary);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 140px;
+  justify-content: center;
+}
+
+/* Patient Row Hover Effect */
+.patient-row {
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.patient-row:hover {
+  background: var(--bg-secondary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;

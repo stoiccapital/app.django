@@ -89,16 +89,8 @@ class Navbar {
                 </div>
                 <div class="notification-content">
                     <div class="notification-item">
-                        <p>Neue Fahrzeugregistrierung verfügbar</p>
-                        <span class="notification-time">vor 5 Minuten</span>
-                    </div>
-                    <div class="notification-item">
-                        <p>Fahrer John Doe hat seinen Status aktualisiert</p>
-                        <span class="notification-time">vor 15 Minuten</span>
-                    </div>
-                    <div class="notification-item">
-                        <p>Neue Wartung für Fahrzeug #1234 geplant</p>
-                        <span class="notification-time">vor 1 Stunde</span>
+                        <p>Keine neuen Benachrichtigungen</p>
+                        <span class="notification-time">Alle auf dem neuesten Stand</span>
                     </div>
                 </div>
             `;

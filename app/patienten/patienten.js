@@ -19,6 +19,17 @@ class PatientenManager {
         this.closeModalBtn = document.getElementById('closeModal');
         this.cancelBtn = document.getElementById('cancelBtn');
         
+        // Patient detail modal elements
+        this.detailModal = document.getElementById('patientDetailModal');
+        this.closeDetailModalBtn = document.getElementById('closeDetailModal');
+        this.patientDetailContent = document.getElementById('patientDetailContent');
+        
+        // Detail modal action buttons
+        this.viewPatientBtn = document.getElementById('viewPatientBtn');
+        this.editPatientBtn = document.getElementById('editPatientBtn');
+        this.bookAppointmentBtn = document.getElementById('bookAppointmentBtn');
+        this.sendReminderBtn = document.getElementById('sendReminderBtn');
+        
         // Form elements
         this.patientForm = document.getElementById('patientForm');
         this.formInputs = this.patientForm.querySelectorAll('input, select, textarea');
@@ -54,6 +65,20 @@ class PatientenManager {
             }
         });
         
+        // Patient detail modal events
+        this.closeDetailModalBtn.addEventListener('click', () => this.closeDetailModal());
+        this.detailModal.addEventListener('click', (e) => {
+            if (e.target === this.detailModal) {
+                this.closeDetailModal();
+            }
+        });
+        
+        // Detail modal action buttons
+        this.viewPatientBtn.addEventListener('click', () => this.viewPatientData());
+        this.editPatientBtn.addEventListener('click', () => this.editFromDetail());
+        this.bookAppointmentBtn.addEventListener('click', () => this.bookAppointment());
+        this.sendReminderBtn.addEventListener('click', () => this.sendReminder());
+        
         // Form submission
         this.patientForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
         
@@ -65,6 +90,9 @@ class PatientenManager {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.modal.classList.contains('active')) {
                 this.closeModal();
+            }
+            if (e.key === 'Escape' && this.detailModal.classList.contains('active')) {
+                this.closeDetailModal();
             }
         });
     }
@@ -357,7 +385,7 @@ class PatientenManager {
         }
         
         this.patientsTableBody.innerHTML = patients.map(patient => `
-            <tr>
+            <tr class="patient-row" data-patient-id="${patient.id}" onclick="patientenManager.openPatientDetail('${patient.id}')">
                 <td>
                     <span class="patient-name">${this.escapeHtml(patient.name)}</span>
                 </td>
@@ -369,7 +397,7 @@ class PatientenManager {
                 <td>${this.escapeHtml(patient.owner.phone)}</td>
                 <td>${patient.lastVisit ? this.formatDate(patient.lastVisit) : '-'}</td>
                 <td>
-                    <div class="patient-actions">
+                    <div class="patient-actions" onclick="event.stopPropagation()">
                         <button class="btn btn-ghost btn-sm" onclick="patientenManager.editPatient('${patient.id}')" title="Bearbeiten">
                             ✏️
                         </button>
@@ -387,6 +415,130 @@ class PatientenManager {
         if (patient) {
             this.openModal(patient);
         }
+    }
+    
+    // Patient Detail Modal Methods
+    openPatientDetail(patientId) {
+        const patient = this.patients.find(p => p.id === patientId);
+        if (patient) {
+            this.currentPatient = patient;
+            this.renderPatientDetail(patient);
+            this.detailModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    closeDetailModal() {
+        this.detailModal.classList.remove('active');
+        document.body.style.overflow = '';
+        this.currentPatient = null;
+    }
+    
+    renderPatientDetail(patient) {
+        const content = `
+            <div class="patient-detail-grid">
+                <div class="detail-section">
+                    <h3>Patienteninformationen</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Name:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.name)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tierart:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.species)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rasse:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.breed || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Geschlecht:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.gender || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Geburtsdatum:</span>
+                        <span class="detail-value">${patient.birthDate ? this.formatDate(patient.birthDate) : '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Gewicht:</span>
+                        <span class="detail-value">${patient.weight ? `${patient.weight} kg` : '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Farbe:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.color || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Chip-Nummer:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.microchip || '-')}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>Besitzerinformationen</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Name:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.owner.name)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Telefon:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.owner.phone)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">E-Mail:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.owner.email || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Adresse:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.owner.address || '-')}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>Medizinische Informationen</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Allergien:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.allergies || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Aktuelle Medikamente:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.medications || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Notizen:</span>
+                        <span class="detail-value">${this.escapeHtml(patient.notes || '-')}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Letzter Besuch:</span>
+                        <span class="detail-value">${patient.lastVisit ? this.formatDate(patient.lastVisit) : '-'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        this.patientDetailContent.innerHTML = content;
+    }
+    
+    viewPatientData() {
+        // This method can be used to show more detailed patient information
+        // For now, we'll just show an alert
+        this.showAlert('Patientendaten werden angezeigt', 'info');
+    }
+    
+    editFromDetail() {
+        this.closeDetailModal();
+        this.openModal(this.currentPatient);
+    }
+    
+    bookAppointment() {
+        // This would typically redirect to the appointments page
+        this.showAlert('Terminbuchung wird geöffnet...', 'info');
+        // In a real application, you might redirect to the appointments page
+        // window.location.href = '../termine/termine.html?patient=' + this.currentPatient.id;
+    }
+    
+    sendReminder() {
+        // This would typically send a reminder to the patient's owner
+        this.showAlert('Erinnerung wird an ' + this.currentPatient.owner.name + ' gesendet', 'success');
     }
     
     updateEmptyState() {
