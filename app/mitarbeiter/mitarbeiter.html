@@ -38,25 +38,7 @@
                 <p class="page-subtitle">Verwalten Sie Ihre Mitarbeiter und deren Daten</p>
             </div>
 
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">24</div>
-                <div class="stat-label">Aktive Mitarbeiter</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">3</div>
-                <div class="stat-label">Im Urlaub</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">2</div>
-                <div class="stat-label">Krank</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">5</div>
-                <div class="stat-label">Neue Bewerbungen</div>
-            </div>
-        </div>
+
 
         <!-- Action Bar -->
         <div class="action-bar">
@@ -83,6 +65,7 @@
                             <th>Position</th>
                             <th>Status</th>
                             <th>Eintrittsdatum</th>
+                            <th>Urlaubstage</th>
                             <th>Telefon</th>
                             <th>Aktionen</th>
                         </tr>
@@ -148,6 +131,16 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label class="form-label">Jährliche Urlaubstage</label>
+                        <input type="number" class="form-input" id="annualVacationDays" min="0" max="365" value="25">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Verbleibende Urlaubstage</label>
+                        <input type="number" class="form-input" id="remainingVacationDays" min="0" max="365" value="25">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label class="form-label">Telefon</label>
                         <input type="tel" class="form-input" id="phone">
                     </div>
@@ -163,6 +156,72 @@
                 <div class="action-buttons" style="justify-content: flex-end; margin-top: 2rem;">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Abbrechen</button>
                     <button type="submit" class="btn btn-primary" id="saveBtn">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vacation Days Management Modal -->
+    <div class="modal" id="vacationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="vacationModalTitle">Urlaubstage verwalten</h2>
+                <button class="close-modal" id="closeVacationModal">&times;</button>
+            </div>
+            <form id="vacationForm">
+                <div class="form-group">
+                    <label class="form-label">Mitarbeiter</label>
+                    <input type="text" class="form-input" id="vacationEmployeeName" readonly>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Jährliche Urlaubstage</label>
+                        <input type="number" class="form-input" id="vacationAnnualDays" min="0" max="365" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Verbleibende Urlaubstage</label>
+                        <input type="number" class="form-input" id="vacationRemainingDays" min="0" max="365" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Urlaubsanträge</label>
+                    <div class="vacation-requests">
+                        <div class="vacation-request-item">
+                            <div class="request-dates">
+                                <span class="request-date">01.01.2024 - 05.01.2024</span>
+                                <span class="request-days">5 Tage</span>
+                            </div>
+                            <div class="request-status approved">Genehmigt</div>
+                        </div>
+                        <div class="vacation-request-item">
+                            <div class="request-dates">
+                                <span class="request-date">15.07.2024 - 26.07.2024</span>
+                                <span class="request-days">10 Tage</span>
+                            </div>
+                            <div class="request-status pending">Ausstehend</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Neuer Urlaubsantrag</label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Von</label>
+                            <input type="date" class="form-input" id="vacationStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bis</label>
+                            <input type="date" class="form-input" id="vacationEndDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Grund</label>
+                        <textarea class="form-input" id="vacationReason" rows="2" placeholder="Grund für den Urlaub..."></textarea>
+                    </div>
+                </div>
+                <div class="action-buttons" style="justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" id="cancelVacationBtn">Abbrechen</button>
+                    <button type="submit" class="btn btn-primary" id="saveVacationBtn">Urlaubsantrag speichern</button>
                 </div>
             </form>
         </div>
@@ -246,6 +305,31 @@
     
     <!-- Load index.js for sidebar-open body class logic -->
     <script src="../index.js"></script>
+    
+    <!-- Load Authentication System -->
+    <script src="../../login/config.js"></script>
+    <script type="module" src="../../login/auth.js"></script>
+    
+    <!-- Initialize Authentication for Main App -->
+    <script type="module">
+        // Wait for auth manager to be available
+        document.addEventListener('DOMContentLoaded', async () => {
+            while (!window.authManager) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+
+            // Check if user is authenticated
+            const isAuthenticated = await window.authManager.requireAuth()
+            
+            if (!isAuthenticated) {
+                // User will be redirected to login by requireAuth()
+                return
+            }
+
+            // User is authenticated, continue with app initialization
+            console.log('User authenticated, mitarbeiter page ready');
+        });
+    </script>
     
     <!-- Page-specific JavaScript -->
     <script src="mitarbeiter.js"></script>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Finmetic</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <!-- Logo placeholder -->
+            <div class="logo">
+                <div class="logo-placeholder">F</div>
+            </div>
+            
+            <h1 class="headline">Welcome back to Finmetic</h1>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Email address"
+                        required
+                    >
+                </div>
+                
+                <div class="input-group">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Password"
+                        required
+                    >
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                
+                <button type="submit" class="login-button">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="forgot-password">
+                <a href="#" id="forgotPassword">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load config.js first -->
+    <script src="config.js"></script>
+    <!-- Load auth.js as ES module -->
+    <script type="module" src="auth.js"></script>
+    <!-- Load login.js as ES module -->
+    <script type="module" src="login.js"></script>
+</body>
+</html> 

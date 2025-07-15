@@ -375,7 +375,6 @@ class PatientenManager {
                 <tr>
                     <td colspan="7" class="no-data">
                         <div class="empty-state">
-                            <div class="empty-icon">🔍</div>
                             <p>Keine Patienten gefunden</p>
                         </div>
                     </td>
@@ -399,10 +398,10 @@ class PatientenManager {
                 <td>
                     <div class="patient-actions" onclick="event.stopPropagation()">
                         <button class="btn btn-ghost btn-sm" onclick="patientenManager.editPatient('${patient.id}')" title="Bearbeiten">
-                            ✏️
+                            Bearbeiten
                         </button>
                         <button class="btn btn-error btn-sm" onclick="patientenManager.deletePatient('${patient.id}')" title="Löschen">
-                            🗑️
+                            Löschen
                         </button>
                     </div>
                 </td>

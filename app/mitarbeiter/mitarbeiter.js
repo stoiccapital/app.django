@@ -89,7 +89,27 @@ class MitarbeiterManagement {
                 startDate: '2020-03-15',
                 phone: '+49 30 12345678',
                 email: 'hans.mueller@fahrly.de',
-                address: 'Musterstraße 1, 10115 Berlin'
+                address: 'Musterstraße 1, 10115 Berlin',
+                annualVacationDays: 25,
+                remainingVacationDays: 18,
+                vacationRequests: [
+                    {
+                        id: 1,
+                        startDate: '2024-01-01',
+                        endDate: '2024-01-05',
+                        days: 5,
+                        reason: 'Neujahrsurlaub',
+                        status: 'approved'
+                    },
+                    {
+                        id: 2,
+                        startDate: '2024-07-15',
+                        endDate: '2024-07-26',
+                        days: 10,
+                        reason: 'Sommerurlaub',
+                        status: 'pending'
+                    }
+                ]
             },
             {
                 id: 2,
@@ -101,7 +121,19 @@ class MitarbeiterManagement {
                 startDate: '2021-06-20',
                 phone: '+49 40 87654321',
                 email: 'anna.schmidt@fahrly.de',
-                address: 'Beispielweg 5, 20095 Hamburg'
+                address: 'Beispielweg 5, 20095 Hamburg',
+                annualVacationDays: 25,
+                remainingVacationDays: 12,
+                vacationRequests: [
+                    {
+                        id: 1,
+                        startDate: '2024-06-10',
+                        endDate: '2024-06-21',
+                        days: 10,
+                        reason: 'Sommerurlaub',
+                        status: 'approved'
+                    }
+                ]
             },
             {
                 id: 3,
@@ -113,7 +145,10 @@ class MitarbeiterManagement {
                 startDate: '2019-11-10',
                 phone: '+49 89 11223344',
                 email: 'michael.weber@fahrly.de',
-                address: 'Teststraße 12, 80331 München'
+                address: 'Teststraße 12, 80331 München',
+                annualVacationDays: 30,
+                remainingVacationDays: 25,
+                vacationRequests: []
             },
             {
                 id: 4,
@@ -125,7 +160,10 @@ class MitarbeiterManagement {
                 startDate: '2022-01-08',
                 phone: '+49 221 55667788',
                 email: 'sarah.fischer@fahrly.de',
-                address: 'Datenweg 8, 50667 Köln'
+                address: 'Datenweg 8, 50667 Köln',
+                annualVacationDays: 25,
+                remainingVacationDays: 20,
+                vacationRequests: []
             },
             {
                 id: 5,
@@ -137,7 +175,10 @@ class MitarbeiterManagement {
                 startDate: '2018-09-22',
                 phone: '+49 69 99887766',
                 email: 'thomas.wagner@fahrly.de',
-                address: 'Infoallee 15, 60311 Frankfurt'
+                address: 'Infoallee 15, 60311 Frankfurt',
+                annualVacationDays: 30,
+                remainingVacationDays: 15,
+                vacationRequests: []
             }
         ];
     }
@@ -159,6 +200,16 @@ class MitarbeiterManagement {
                 <td>${driver.position}</td>
                 <td><span class="status-badge status-${this.getStatusClass(driver.status)}">${driver.status}</span></td>
                 <td>${this.formatDate(driver.startDate)}</td>
+                <td>
+                    <div class="vacation-days-info">
+                        <span class="vacation-remaining">${driver.remainingVacationDays || 0}</span>
+                        <span class="vacation-separator">/</span>
+                        <span class="vacation-total">${driver.annualVacationDays || 25}</span>
+                        <button class="btn btn-small btn-vacation" onclick="mitarbeiterManagement.openVacationModal(${driver.id})" title="Urlaubstage verwalten">
+                            📅
+                        </button>
+                    </div>
+                </td>
                 <td>${driver.phone || '-'}</td>
                 <td>
                     <div class="action-buttons">
@@ -519,6 +570,219 @@ class MitarbeiterManagement {
                 body.classList.remove('sidebar-open');
             }
         });
+    }
+
+    // Vacation Days Management
+    openVacationModal(driverId) {
+        const driver = this.drivers.find(d => d.id === driverId);
+        if (!driver) return;
+
+        this.currentDriver = driver;
+        this.populateVacationForm(driver);
+        this.showVacationModal();
+    }
+
+    populateVacationForm(driver) {
+        document.getElementById('vacationEmployeeName').value = `${driver.firstName} ${driver.lastName}`;
+        document.getElementById('vacationAnnualDays').value = driver.annualVacationDays || 25;
+        document.getElementById('vacationRemainingDays').value = driver.remainingVacationDays || 25;
+        
+        // Populate vacation requests
+        this.renderVacationRequests(driver.vacationRequests || []);
+    }
+
+    renderVacationRequests(requests) {
+        const container = document.querySelector('.vacation-requests');
+        if (!container) return;
+
+        if (requests.length === 0) {
+            container.innerHTML = '<div class="no-requests">Keine Urlaubsanträge vorhanden</div>';
+            return;
+        }
+
+        container.innerHTML = requests.map(request => `
+            <div class="vacation-request-item">
+                <div class="request-dates">
+                    <span class="request-date">${this.formatDate(request.startDate)} - ${this.formatDate(request.endDate)}</span>
+                    <span class="request-days">${request.days} Tage</span>
+                </div>
+                <div class="request-status ${request.status}">${this.getRequestStatusLabel(request.status)}</div>
+            </div>
+        `).join('');
+    }
+
+    getRequestStatusLabel(status) {
+        const labels = {
+            'approved': 'Genehmigt',
+            'pending': 'Ausstehend',
+            'rejected': 'Abgelehnt'
+        };
+        return labels[status] || status;
+    }
+
+    showVacationModal() {
+        const modal = document.getElementById('vacationModal');
+        if (modal) {
+            modal.classList.add('active');
+        }
+
+        // Bind vacation modal events
+        this.bindVacationModalEvents();
+    }
+
+    closeVacationModal() {
+        const modal = document.getElementById('vacationModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+        this.currentDriver = null;
+    }
+
+    bindVacationModalEvents() {
+        const closeBtn = document.getElementById('closeVacationModal');
+        const cancelBtn = document.getElementById('cancelVacationBtn');
+        const vacationForm = document.getElementById('vacationForm');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeVacationModal());
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => this.closeVacationModal());
+        }
+
+        if (vacationForm) {
+            vacationForm.addEventListener('submit', (e) => this.handleVacationFormSubmit(e));
+        }
+
+        // Close modal when clicking outside
+        const modal = document.getElementById('vacationModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeVacationModal();
+                }
+            });
+        }
+    }
+
+    handleVacationFormSubmit(e) {
+        e.preventDefault();
+        
+        const startDate = document.getElementById('vacationStartDate').value;
+        const endDate = document.getElementById('vacationEndDate').value;
+        const reason = document.getElementById('vacationReason').value;
+
+        if (!startDate || !endDate || !reason) {
+            this.showNotification('Bitte füllen Sie alle Felder aus.');
+            return;
+        }
+
+        // Calculate days
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+        if (days <= 0) {
+            this.showNotification('Enddatum muss nach Startdatum liegen.');
+            return;
+        }
+
+        // Check if enough vacation days available
+        if (days > this.currentDriver.remainingVacationDays) {
+            this.showNotification('Nicht genügend Urlaubstage verfügbar.');
+            return;
+        }
+
+        // Add vacation request
+        const newRequest = {
+            id: Date.now(),
+            startDate,
+            endDate,
+            days,
+            reason,
+            status: 'pending'
+        };
+
+        if (!this.currentDriver.vacationRequests) {
+            this.currentDriver.vacationRequests = [];
+        }
+
+        this.currentDriver.vacationRequests.push(newRequest);
+        this.currentDriver.remainingVacationDays -= days;
+
+        // Update driver in the main array
+        const driverIndex = this.drivers.findIndex(d => d.id === this.currentDriver.id);
+        if (driverIndex !== -1) {
+            this.drivers[driverIndex] = this.currentDriver;
+        }
+
+        this.saveDrivers();
+        this.renderDrivers();
+        this.closeVacationModal();
+        this.showNotification('Urlaubsantrag erfolgreich hinzugefügt!');
+    }
+
+    // Update populateForm to include vacation days
+    populateForm(driver) {
+        document.getElementById('firstName').value = driver.firstName || '';
+        document.getElementById('lastName').value = driver.lastName || '';
+        document.getElementById('employeeId').value = driver.employeeId || '';
+        document.getElementById('position').value = driver.position || '';
+        document.getElementById('startDate').value = driver.startDate || '';
+        document.getElementById('status').value = driver.status || '';
+        document.getElementById('phone').value = driver.phone || '';
+        document.getElementById('email').value = driver.email || '';
+        document.getElementById('address').value = driver.address || '';
+        document.getElementById('annualVacationDays').value = driver.annualVacationDays || 25;
+        document.getElementById('remainingVacationDays').value = driver.remainingVacationDays || 25;
+    }
+
+    // Update resetForm to include vacation days
+    resetForm() {
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('employeeId').value = '';
+        document.getElementById('position').value = '';
+        document.getElementById('startDate').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('annualVacationDays').value = '25';
+        document.getElementById('remainingVacationDays').value = '25';
+    }
+
+    // Update handleFormSubmit to include vacation days
+    handleFormSubmit(e) {
+        e.preventDefault();
+        
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            employeeId: document.getElementById('employeeId').value,
+            position: document.getElementById('position').value,
+            startDate: document.getElementById('startDate').value,
+            status: document.getElementById('status').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            address: document.getElementById('address').value,
+            annualVacationDays: parseInt(document.getElementById('annualVacationDays').value) || 25,
+            remainingVacationDays: parseInt(document.getElementById('remainingVacationDays').value) || 25,
+            vacationRequests: []
+        };
+
+        if (this.isEditing && this.currentDriver) {
+            // Preserve existing vacation requests when editing
+            formData.vacationRequests = this.currentDriver.vacationRequests || [];
+            this.updateDriver(this.currentDriver.id, formData);
+            this.showNotification('Mitarbeiter erfolgreich aktualisiert!');
+        } else {
+            this.addDriver(formData);
+            this.showNotification('Mitarbeiter erfolgreich hinzugefügt!');
+        }
+
+        this.closeModal();
     }
 
 

@@ -175,6 +175,32 @@
     <script src="../../components/navbar/navbar.js"></script>
     <script src="../../components/sidebar/sidebar.js"></script>
     <script src="../../index.js"></script>
+    
+    <!-- Load Authentication System -->
+    <script src="../../../login/config.js"></script>
+    <script type="module" src="../../../login/auth.js"></script>
+    
+    <!-- Initialize Authentication for Main App -->
+    <script type="module">
+        // Wait for auth manager to be available
+        document.addEventListener('DOMContentLoaded', async () => {
+            while (!window.authManager) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+
+            // Check if user is authenticated
+            const isAuthenticated = await window.authManager.requireAuth()
+            
+            if (!isAuthenticated) {
+                // User will be redirected to login by requireAuth()
+                return
+            }
+
+            // User is authenticated, continue with app initialization
+            console.log('User authenticated, umsatz page ready');
+        });
+    </script>
+    
     <script src="umsatz.js"></script>
 </body>
 </html>

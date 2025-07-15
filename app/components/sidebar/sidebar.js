@@ -38,8 +38,8 @@ class Sidebar {
         let currentSubdirectory = '';
         if (currentPath.includes('/patienten/')) {
             currentSubdirectory = 'patienten';
-        } else if (currentPath.includes('/termine/')) {
-            currentSubdirectory = 'termine';
+        } else if (currentPath.includes('/kalender/')) {
+            currentSubdirectory = 'kalender';
         } else if (currentPath.includes('/mitarbeiter/')) {
             currentSubdirectory = 'mitarbeiter';
         } else if (currentPath.includes('/finanzen/')) {
@@ -54,9 +54,9 @@ class Sidebar {
             patienten: isInSubdirectory ? 
                 (currentSubdirectory === 'patienten' ? 'patienten.html' : '../patienten/patienten.html') : 
                 'app/patienten/patienten.html',
-            termine: isInSubdirectory ? 
-                (currentSubdirectory === 'termine' ? 'termine.html' : '../termine/termine.html') : 
-                'app/termine/termine.html',
+            kalender: isInSubdirectory ? 
+                (currentSubdirectory === 'kalender' ? 'kalender.html' : '../kalender/kalender.html') : 
+                'app/kalender/kalender.html',
             mitarbeiter: isInSubdirectory ? 
                 (currentSubdirectory === 'mitarbeiter' ? 'mitarbeiter.html' : '../mitarbeiter/mitarbeiter.html') : 
                 'app/mitarbeiter/mitarbeiter.html',
@@ -110,7 +110,7 @@ class Sidebar {
             link.addEventListener('click', (e) => this.handleNavClick(e));
         });
 
-        // Overlay click to close sidebar (mobile only)
+        // Overlay click to close sidebar (optional - since overlay is now transparent)
         if (this.overlay) {
             this.overlay.addEventListener('click', () => this.closeSidebar());
         }
@@ -139,11 +139,9 @@ class Sidebar {
     toggleSidebar() {
         // Only toggle on mobile devices
         if (window.innerWidth <= 768) {
-            console.log('Toggle sidebar called');
+            console.log('Toggle sidebar called on mobile');
             const isOpen = this.sidebar.classList.contains('active');
             console.log('Sidebar is open:', isOpen);
-            console.log('Sidebar element:', this.sidebar);
-            console.log('Hamburger menu element:', this.hamburgerMenu);
             
             if (isOpen) {
                 this.closeSidebar();
@@ -162,7 +160,6 @@ class Sidebar {
             this.sidebar.classList.add('active');
             this.hamburgerMenu.classList.add('active');
             this.overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
         }
     }
 
@@ -172,7 +169,6 @@ class Sidebar {
             this.sidebar.classList.remove('active');
             this.hamburgerMenu.classList.remove('active');
             this.overlay.classList.remove('active');
-            document.body.style.overflow = '';
         }
     }
 
@@ -211,8 +207,8 @@ class Sidebar {
         
         if (currentPath.includes('/patienten/')) {
             currentPage = 'patienten';
-        } else if (currentPath.includes('/termine/')) {
-            currentPage = 'termine';
+        } else if (currentPath.includes('/kalender/')) {
+            currentPage = 'kalender';
         } else if (currentPath.includes('/mitarbeiter/')) {
             currentPage = 'mitarbeiter';
         } else if (currentPath.includes('/finanzen/')) {
@@ -231,7 +227,7 @@ class Sidebar {
     handleResize() {
         // Handle transition between desktop and mobile
         if (window.innerWidth > 768) {
-            // On desktop, ensure sidebar is always visible
+            // On desktop, ensure sidebar is always visible and hamburger is hidden
             this.sidebar.classList.remove('active');
             this.hamburgerMenu.classList.remove('active');
             this.overlay.classList.remove('active');

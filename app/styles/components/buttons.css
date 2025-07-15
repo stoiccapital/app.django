@@ -1,19 +1,19 @@
-/* Button Components - Primary, Secondary, Outline, Status variants */
+/* Button Components - Unified Black Design */
 
 /* Base Button Styles */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--button-padding-y) var(--button-padding-x);
+  gap: var(--space-1);
+  padding: 8px 16px;
   font-family: var(--font-family-primary);
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: var(--font-weight-medium);
-  line-height: 1.5;
+  line-height: 1.4;
   text-decoration: none;
   border: var(--border-1) solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
@@ -21,6 +21,8 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  min-height: 36px;
+  min-width: 80px;
 }
 
 .btn:focus-visible {
@@ -34,45 +36,59 @@
   pointer-events: none;
 }
 
-/* Button Sizes */
-.btn-sm {
-  padding: var(--button-padding-sm-y) var(--button-padding-sm-x);
-  font-size: 0.875rem;
-  border-radius: var(--radius-sm);
-}
-
-.btn-lg {
-  padding: var(--button-padding-lg-y) var(--button-padding-lg-x);
-  font-size: 1.125rem;
-  border-radius: var(--radius-lg);
-}
-
-/* Primary Button */
-.btn-primary {
-  background: linear-gradient(135deg, var(--button-primary-bg) 0%, var(--primary-blue-hover) 100%);
-  color: var(--button-primary-text);
-  border-color: var(--button-primary-bg);
+/* Unified White Button Design with Black Border */
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-ghost,
+.btn-success,
+.btn-warning,
+.btn-error,
+.btn-assign,
+.btn-unassign,
+.btn-schedule {
+  background: #ffffff;
+  color: #000000;
+  border-color: #000000;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--button-primary-hover) 0%, var(--primary-blue) 100%);
-  border-color: var(--button-primary-hover);
+.btn-primary:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled),
+.btn-outline:hover:not(:disabled),
+.btn-ghost:hover:not(:disabled),
+.btn-success:hover:not(:disabled),
+.btn-warning:hover:not(:disabled),
+.btn-error:hover:not(:disabled),
+.btn-assign:hover:not(:disabled),
+.btn-unassign:hover:not(:disabled),
+.btn-schedule:hover:not(:disabled) {
+  background: #f8f8f8;
+  border-color: #000000;
   transform: translateY(-2px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.btn-primary:active {
+.btn-primary:active,
+.btn-secondary:active,
+.btn-outline:active,
+.btn-ghost:active,
+.btn-success:active,
+.btn-warning:active,
+.btn-error:active,
+.btn-assign:active,
+.btn-unassign:active,
+.btn-schedule:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Enhanced Primary Button for CTA actions like "Neuer Patient" */
+/* Enhanced CTA Button */
 .btn-primary.btn-cta {
   font-weight: var(--font-weight-semibold);
-  padding: var(--space-4) var(--space-6);
-  font-size: 1.125rem;
-  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 25px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
@@ -85,128 +101,26 @@
   transform: translateY(-1px);
 }
 
-/* Secondary Button */
-.btn-secondary {
-  background-color: var(--button-secondary-bg);
-  color: var(--button-secondary-text);
-  border-color: var(--border-primary);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: var(--button-secondary-hover);
-  border-color: var(--border-secondary);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-secondary:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Outline Button */
-.btn-outline {
-  background-color: transparent;
-  color: var(--primary-blue);
-  border-color: var(--primary-blue);
-}
-
-.btn-outline:hover:not(:disabled) {
-  background-color: var(--primary-blue);
-  color: var(--text-inverse);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-outline:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Ghost Button */
-.btn-ghost {
-  background-color: transparent;
-  color: var(--text-primary);
-  border-color: transparent;
-}
-
-.btn-ghost:hover:not(:disabled) {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-/* Status Buttons */
-.btn-success {
-  background-color: var(--success);
-  color: var(--text-inverse);
-  border-color: var(--success);
-}
-
-.btn-success:hover:not(:disabled) {
-  background-color: var(--secondary-green-hover);
-  border-color: var(--secondary-green-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-warning {
-  background-color: var(--warning);
-  color: var(--text-inverse);
-  border-color: var(--warning);
-}
-
-.btn-warning:hover:not(:disabled) {
-  background-color: var(--secondary-orange-hover);
-  border-color: var(--secondary-orange-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-error {
-  background-color: var(--error);
-  color: var(--text-inverse);
-  border-color: var(--error);
-}
-
-.btn-error:hover:not(:disabled) {
-  background-color: var(--secondary-red-hover);
-  border-color: var(--secondary-red-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
 /* Icon Button */
 .btn-icon {
-  padding: var(--space-2);
-  min-width: var(--icon-size-lg);
-  height: var(--icon-size-lg);
-  border-radius: var(--radius-md);
+  padding: 6px;
+  min-width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-.btn-icon.btn-sm {
-  min-width: var(--icon-size-md);
-  height: var(--icon-size-md);
-  padding: var(--space-1);
-}
-
-.btn-icon.btn-lg {
-  min-width: var(--icon-size-xl);
-  height: var(--icon-size-xl);
-  padding: var(--space-3);
-}
-
-/* Enhanced Icon Button for better visual hierarchy */
+/* Enhanced Icon Button */
 .btn-icon.btn-enhanced {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .btn-icon.btn-enhanced:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 1);
   transform: scale(1.05);
 }
 
@@ -221,9 +135,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 16px;
-  height: 16px;
-  margin: -8px 0 0 -8px;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
   border: 2px solid transparent;
   border-top-color: currentColor;
   border-radius: 50%;
@@ -239,7 +153,7 @@
 /* Button Group */
 .btn-group {
   display: inline-flex;
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   overflow: hidden;
 }
 
@@ -249,73 +163,36 @@
 }
 
 .btn-group .btn:first-child {
-  border-top-left-radius: var(--radius-md);
-  border-bottom-left-radius: var(--radius-md);
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
 }
 
 .btn-group .btn:last-child {
-  border-top-right-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
   border-right-width: var(--border-1);
-}
-
-/* Fleet Management Specific Buttons */
-.btn-assign {
-  background-color: var(--success);
-  color: var(--text-inverse);
-  border-color: var(--success);
-}
-
-.btn-assign:hover:not(:disabled) {
-  background-color: var(--secondary-green-hover);
-  border-color: var(--secondary-green-hover);
-}
-
-.btn-unassign {
-  background-color: var(--error);
-  color: var(--text-inverse);
-  border-color: var(--error);
-}
-
-.btn-unassign:hover:not(:disabled) {
-  background-color: var(--secondary-red-hover);
-  border-color: var(--secondary-red-hover);
-}
-
-.btn-schedule {
-  background-color: var(--info);
-  color: var(--text-inverse);
-  border-color: var(--info);
-}
-
-.btn-schedule:hover:not(:disabled) {
-  background-color: var(--primary-blue-hover);
-  border-color: var(--primary-blue-hover);
 }
 
 /* Responsive Buttons */
 @media (max-width: 768px) {
   .btn {
-    padding: var(--button-padding-sm-y) var(--button-padding-sm-x);
-    font-size: 0.875rem;
-  }
-  
-  .btn-lg {
-    padding: var(--button-padding-y) var(--button-padding-x);
-    font-size: 1rem;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-height: 32px;
+    min-width: 70px;
   }
   
   .btn-primary.btn-cta {
-    padding: var(--space-3) var(--space-4);
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
 }
 
 /* Focus and Accessibility Improvements */
 .btn:focus-visible {
-  outline: 2px solid var(--primary-blue);
+  outline: 2px solid #000000;
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Button with Icon Enhancements */
@@ -330,10 +207,10 @@
 /* Pulse animation for important buttons */
 @keyframes pulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
   }
 }
 
