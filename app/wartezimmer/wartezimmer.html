@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wartezimmer - Vetmates</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/variables.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="stylesheet" href="../styles/typography.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/utilities.css">
+    
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="../styles/components/navbar.css">
+    <link rel="stylesheet" href="../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../styles/components/forms.css">
+    <link rel="stylesheet" href="../styles/components/buttons.css">
+    <link rel="stylesheet" href="../styles/components/cards.css">
+    <link rel="stylesheet" href="../styles/components/tables.css">
+    <link rel="stylesheet" href="../styles/components/badges.css">
+    <link rel="stylesheet" href="../styles/components/alerts.css">
+    
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="../styles/pages/wartezimmer.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="wartezimmer-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Wartezimmer</h1>
+                <p class="page-description">Übersicht über alle Patienten im Wartezimmer</p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-bar">
+                <button class="btn btn-primary btn-cta" id="addPatientBtn">
+                    Patient einchecken
+                </button>
+                <button class="btn btn-secondary" id="refreshBtn">
+                    Aktualisieren
+                </button>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="patientSearch" placeholder="Suche nach Patient oder Besitzer">
+                </div>
+            </div>
+            
+            <!-- Check-in Modal -->
+            <div class="modal" id="checkInModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Patient einchecken</h2>
+                        <button class="btn btn-ghost btn-icon btn-sm" id="closeModal" aria-label="Schließen">Schließen</button>
+                    </div>
+                    
+                    <form class="checkin-form" id="checkInForm">
+                        <div class="form-grid">
+                            <!-- Patient Selection -->
+                            <div class="form-section">
+                                <h3 class="section-title">Patient auswählen</h3>
+                                
+                                <div class="form-group">
+                                    <label for="patientSelect">Patient *</label>
+                                    <select id="patientSelect" name="patientSelect" required>
+                                        <option value="">Patient auswählen</option>
+                                        <!-- Will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="checkInTime">Check-in Zeit *</label>
+                                    <input type="datetime-local" id="checkInTime" name="checkInTime" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Visit Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Besuchsinformationen</h3>
+                                
+                                <div class="form-group">
+                                    <label for="visitReason">Grund des Besuchs *</label>
+                                    <textarea id="visitReason" name="visitReason" rows="3" placeholder="Beschreibung der Symptome oder des Anliegens..." required></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="priority">Priorität *</label>
+                                    <select id="priority" name="priority" required>
+                                        <option value="">Priorität auswählen</option>
+                                        <option value="niedrig">Niedrig</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="hoch">Hoch</option>
+                                        <option value="dringend">Dringend</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="estimatedDuration">Geschätzte Dauer (Minuten)</label>
+                                    <input type="number" id="estimatedDuration" name="estimatedDuration" min="5" max="180" placeholder="30">
+                                </div>
+                            </div>
+                            
+                            <!-- Additional Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Zusätzliche Informationen</h3>
+                                
+                                <div class="form-group">
+                                    <label for="notes">Notizen</label>
+                                    <textarea id="notes" name="notes" rows="3" placeholder="Zusätzliche Notizen..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="assignedVet">Zugewiesener Tierarzt</label>
+                                    <select id="assignedVet" name="assignedVet">
+                                        <option value="">Automatisch zuweisen</option>
+                                        <option value="dr-schmidt">Dr. Schmidt</option>
+                                        <option value="dr-mueller">Dr. Müller</option>
+                                        <option value="dr-weber">Dr. Weber</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary btn-cta">Patient einchecken</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Waiting Room Statistics -->
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalPatients">0</h3>
+                            <p class="stat-label">Patienten im Wartebereich</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="avgWaitTime">0</h3>
+                            <p class="stat-label">Ø Wartezeit (Min)</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="urgentPatients">0</h3>
+                            <p class="stat-label">Dringende Fälle</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍⚕️</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="availableVets">3</h3>
+                            <p class="stat-label">Verfügbare Ärzte</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Waiting Room Table -->
+            <div class="waiting-room-section">
+                <div class="section-header">
+                    <h2 class="section-title">Wartezimmer</h2>
+                    <div class="list-controls">
+                        <select class="filter-select" id="priorityFilter">
+                            <option value="">Alle Prioritäten</option>
+                            <option value="dringend">Dringend</option>
+                            <option value="hoch">Hoch</option>
+                            <option value="normal">Normal</option>
+                            <option value="niedrig">Niedrig</option>
+                        </select>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">Alle Status</option>
+                            <option value="wartend">Wartend</option>
+                            <option value="in-behandlung">In Behandlung</option>
+                            <option value="fertig">Fertig</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="waiting-room-table-container">
+                    <table class="table table-striped waiting-room-table" id="waitingRoomTable">
+                        <thead>
+                            <tr>
+                                <th class="table-col-10">Position</th>
+                                <th class="table-col-15">Patient</th>
+                                <th class="table-col-15">Besitzer</th>
+                                <th class="table-col-15">Check-in</th>
+                                <th class="table-col-20">Grund</th>
+                                <th class="table-col-10">Priorität</th>
+                                <th class="table-col-10">Wartezeit</th>
+                                <th class="table-col-5">Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="waitingRoomTableBody">
+                            <!-- Sample data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="no-patients" id="noPatients" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏥</div>
+                        <h3 class="empty-state-title">Keine Patienten im Wartezimmer</h3>
+                        <p class="empty-state-description">Aktuell sind keine Patienten im Wartezimmer eingetragen.</p>
+                        <button class="btn btn-primary" id="addFirstPatientBtn">Ersten Patienten einchecken</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Alert Container -->
+    <div id="alertContainer" class="alert-container"></div>
+    
+    <!-- Load Navbar HTML -->
+    <script>
+        // Load navbar HTML
+        fetch('../components/navbar/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the Vetmates link for the current page location
+                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../index.html" class="brand-link"');
+                
+                document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after HTML is loaded
+                if (window.Navbar) {
+                    window.navbar = new window.Navbar();
+                } else {
+                    // If Navbar class is not available yet, wait for it
+                    const checkNavbar = setInterval(() => {
+                        if (window.Navbar) {
+                            window.navbar = new window.Navbar();
+                            clearInterval(checkNavbar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
+    
+    <!-- Load Navbar JS -->
+    <script src="../components/navbar/navbar.js"></script>
+    
+    <!-- Load Sidebar HTML -->
+    <script>
+        // Load sidebar HTML
+        fetch('../components/sidebar/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the paths for the current page location
+                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
+                    if (href === 'index.html') {
+                        return 'href="../../index.html"';
+                    } else if (href.startsWith('app/')) {
+                        return `href="../../${href}"`;
+                    }
+                    return match;
+                });
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Set active state for current page
+                const wartezimmerLink = document.querySelector('[data-page="wartezimmer"]');
+                if (wartezimmerLink) {
+                    wartezimmerLink.classList.add('active');
+                }
+                
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
+            });
+    </script>
+    
+    <!-- Load Sidebar JS -->
+    <script src="../components/sidebar/sidebar.js"></script>
+    
+    <!-- Load index.js for sidebar-open body class logic -->
+    <script src="../index.js"></script>
+    
+    <!-- Load Authentication System -->
+    <script src="../../login/config.js"></script>
+    <script type="module" src="../../login/auth.js"></script>
+    
+    <!-- Initialize Authentication for Main App -->
+    <script type="module">
+        // Wait for auth manager to be available
+        document.addEventListener('DOMContentLoaded', async () => {
+            while (!window.authManager) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+
+            // Check if user is authenticated
+            const isAuthenticated = await window.authManager.requireAuth()
+            
+            if (!isAuthenticated) {
+                // User will be redirected to login by requireAuth()
+                return
+            }
+
+            // User is authenticated, continue with app initialization
+            console.log('User authenticated, wartezimmer page ready');
+        });
+    </script>
+    
+    <!-- Page-specific JavaScript -->
+    <script src="wartezimmer.js"></script>
+</body>
+</html>
