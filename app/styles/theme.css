@@ -38,6 +38,38 @@
   --error: #ef4444;
   --info: #3b82f6;
   
+  /* Additional Color Variables for Components */
+  --primary-color: var(--primary-blue);
+  --primary-color-alpha: rgba(37, 99, 235, 0.1);
+  --secondary-color: var(--secondary-green);
+  --secondary-color-alpha: rgba(16, 185, 129, 0.1);
+  --success-color: var(--success);
+  --success-color-alpha: rgba(16, 185, 129, 0.1);
+  --warning-color: var(--warning);
+  --warning-color-alpha: rgba(245, 158, 11, 0.1);
+  --error-color: var(--error);
+  --error-color-alpha: rgba(239, 68, 68, 0.1);
+  --info-color: var(--info);
+  --info-color-alpha: rgba(59, 130, 246, 0.1);
+  --danger-color: var(--error);
+  --danger-color-alpha: rgba(239, 68, 68, 0.1);
+  
+  /* Additional Colors for Treatment Types */
+  --purple-color: #8b5cf6;
+  --purple-color-alpha: rgba(139, 92, 246, 0.1);
+  --teal-color: #14b8a6;
+  --teal-color-alpha: rgba(20, 184, 166, 0.1);
+  --orange-color: #f97316;
+  --orange-color-alpha: rgba(249, 115, 22, 0.1);
+  --gray-color: var(--neutral-500);
+  --gray-color-alpha: rgba(107, 114, 128, 0.1);
+  
+  /* Border and Background Variables */
+  --border-color: var(--border-primary);
+  --border-radius: var(--radius-lg);
+  --border-radius-sm: var(--radius-md);
+  --bg-hover: var(--neutral-50);
+  
   /* Light Theme (Default) */
   --bg-primary: #ffffff;
   --bg-secondary: #f9fafb;
@@ -148,6 +180,9 @@
   --navbar-bg: #1f2937;
   --navbar-border: var(--border-primary);
   --navbar-text: var(--text-primary);
+  
+  /* Dark Theme Color Overrides */
+  --bg-hover: var(--neutral-800);
 }
 
 /* High Contrast Theme for Accessibility */

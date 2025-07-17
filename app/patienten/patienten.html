@@ -199,12 +199,114 @@
                             <button class="btn btn-primary" id="editPatientBtn">
                                 Bearbeiten
                             </button>
+                            <button class="btn btn-info" id="behandlungsbuchBtn">
+                                Behandlungsbuch
+                            </button>
                             <button class="btn btn-success" id="bookAppointmentBtn">
                                 Termin buchen
                             </button>
                             <button class="btn btn-warning" id="sendReminderBtn">
                                 Erinnerung senden
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Behandlungsbuch Modal -->
+            <div class="modal" id="behandlungsbuchModal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Behandlungsbuch - <span id="behandlungsbuchPatientName"></span></h2>
+                        <button class="btn btn-ghost btn-icon btn-sm" id="closeBehandlungsbuchModal" aria-label="Schließen">Schließen</button>
+                    </div>
+                    
+                    <div class="behandlungsbuch-content">
+                        <!-- Add New Treatment Section -->
+                        <div class="treatment-form-section">
+                            <h3>Neue Behandlung hinzufügen</h3>
+                            <form class="treatment-form" id="treatmentForm">
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="treatmentDate">Datum *</label>
+                                            <input type="date" id="treatmentDate" name="treatmentDate" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="treatmentType">Behandlungstyp *</label>
+                                            <select id="treatmentType" name="treatmentType" required>
+                                                <option value="">Typ auswählen</option>
+                                                <option value="untersuchung">Untersuchung</option>
+                                                <option value="impfung">Impfung</option>
+                                                <option value="operation">Operation</option>
+                                                <option value="medikament">Medikament</option>
+                                                <option value="labor">Laboruntersuchung</option>
+                                                <option value="röntgen">Röntgen</option>
+                                                <option value="ultraschall">Ultraschall</option>
+                                                <option value="chirurgie">Chirurgie</option>
+                                                <option value="zahnbehandlung">Zahnbehandlung</option>
+                                                <option value="sonstiges">Sonstiges</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="treatmentTitle">Titel/Diagnose *</label>
+                                        <input type="text" id="treatmentTitle" name="treatmentTitle" required placeholder="z.B. Routineuntersuchung, Impfung gegen Tollwut">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="treatmentDescription">Beschreibung</label>
+                                        <textarea id="treatmentDescription" name="treatmentDescription" rows="3" placeholder="Detaillierte Beschreibung der Behandlung..."></textarea>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="treatmentMedication">Medikamente</label>
+                                            <textarea id="treatmentMedication" name="treatmentMedication" rows="2" placeholder="Verabreichte Medikamente..."></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="treatmentDosage">Dosierung</label>
+                                            <input type="text" id="treatmentDosage" name="treatmentDosage" placeholder="z.B. 2x täglich für 7 Tage">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="treatmentVet">Behandelnder Tierarzt</label>
+                                            <input type="text" id="treatmentVet" name="treatmentVet" placeholder="Name des Tierarztes">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="treatmentCost">Kosten (€)</label>
+                                            <input type="number" id="treatmentCost" name="treatmentCost" step="0.01" min="0" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="treatmentNotes">Notizen</label>
+                                        <textarea id="treatmentNotes" name="treatmentNotes" rows="2" placeholder="Zusätzliche Notizen..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Behandlung hinzufügen</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Treatment History Section -->
+                        <div class="treatment-history-section">
+                            <h3>Behandlungshistorie</h3>
+                            <div class="treatment-list" id="treatmentList">
+                                <!-- Treatments will be populated by JavaScript -->
+                            </div>
+                            
+                            <div class="no-treatments" id="noTreatments" style="display: none;">
+                                <div class="empty-state">
+                                    <h4>Keine Behandlungen vorhanden</h4>
+                                    <p>Fügen Sie die erste Behandlung hinzu, um die Historie zu beginnen.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
