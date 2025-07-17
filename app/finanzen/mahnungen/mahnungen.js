@@ -332,7 +332,6 @@ class MahnungenManager {
     updateStatistics() {
         const totalMahnungen = this.mahnungen.length;
         const totalAmount = this.mahnungen.reduce((sum, mahnung) => sum + mahnung.invoiceAmount, 0);
-        const urgentMahnungen = this.mahnungen.filter(m => m.status === 'letzte' || m.status === 'anwalt').length;
         
         // Calculate average days overdue
         const now = new Date();
@@ -346,12 +345,10 @@ class MahnungenManager {
         const totalMahnungenEl = document.getElementById('totalMahnungen');
         const totalAmountEl = document.getElementById('totalAmount');
         const avgDaysOverdueEl = document.getElementById('avgDaysOverdue');
-        const urgentMahnungenEl = document.getElementById('urgentMahnungen');
 
         if (totalMahnungenEl) totalMahnungenEl.textContent = totalMahnungen;
         if (totalAmountEl) totalAmountEl.textContent = `€${totalAmount.toFixed(2)}`;
         if (avgDaysOverdueEl) avgDaysOverdueEl.textContent = avgDaysOverdue;
-        if (urgentMahnungenEl) urgentMahnungenEl.textContent = urgentMahnungen;
     }
 
     renderMahnungenTable(mahnungen = null) {
