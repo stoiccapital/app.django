@@ -32,6 +32,14 @@ class PatientenManager {
         this.treatmentList = document.getElementById('treatmentList');
         this.noTreatments = document.getElementById('noTreatments');
         
+        // Inline Behandlungsbuch elements
+        this.behandlungsbuchSection = document.getElementById('behandlungsbuchSection');
+        this.showBehandlungsbuchBtn = document.getElementById('showBehandlungsbuchBtn');
+        this.hideBehandlungsbuchBtn = document.getElementById('hideBehandlungsbuchBtn');
+        this.treatmentFormInline = document.getElementById('treatmentFormInline');
+        this.treatmentListInline = document.getElementById('treatmentListInline');
+        this.noTreatmentsInline = document.getElementById('noTreatmentsInline');
+        
         // Detail modal action buttons
         this.viewPatientBtn = document.getElementById('viewPatientBtn');
         this.editPatientBtn = document.getElementById('editPatientBtn');
@@ -92,6 +100,11 @@ class PatientenManager {
         
         // Treatment form submission
         this.treatmentForm.addEventListener('submit', (e) => this.handleTreatmentFormSubmit(e));
+        
+        // Inline Behandlungsbuch events
+        this.showBehandlungsbuchBtn.addEventListener('click', () => this.showInlineBehandlungsbuch());
+        this.hideBehandlungsbuchBtn.addEventListener('click', () => this.hideInlineBehandlungsbuch());
+        this.treatmentFormInline.addEventListener('submit', (e) => this.handleInlineTreatmentFormSubmit(e));
         
         // Detail modal action buttons
         this.viewPatientBtn.addEventListener('click', () => this.viewPatientData());
@@ -164,6 +177,10 @@ class PatientenManager {
         this.patientForm.querySelectorAll('.form-group').forEach(group => {
             group.classList.remove('error', 'success');
         });
+        
+        // Clear inline treatments
+        this.inlineTreatments = [];
+        this.hideInlineBehandlungsbuch();
     }
     
     fillFormWithPatient(patient) {
@@ -318,6 +335,7 @@ class PatientenManager {
             allergies: formData.patientAllergies,
             medications: formData.patientMedications,
             notes: formData.patientNotes,
+            treatments: this.inlineTreatments || [],
             createdAt: this.isEditing ? this.currentPatient.createdAt : new Date().toISOString(),
             lastVisit: this.isEditing ? this.currentPatient.lastVisit : null
         };
@@ -482,6 +500,143 @@ class PatientenManager {
         // Set default date to today
         const today = new Date().toISOString().split('T')[0];
         this.treatmentForm.querySelector('[name="treatmentDate"]').value = today;
+    }
+    
+    // Inline Behandlungsbuch Methods
+    showInlineBehandlungsbuch() {
+        this.behandlungsbuchSection.style.display = 'block';
+        this.showBehandlungsbuchBtn.style.display = 'none';
+        
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        this.treatmentFormInline.querySelector('[name="treatmentDate"]').value = today;
+        
+        // Initialize empty treatments array for new patient
+        this.inlineTreatments = [];
+        this.renderInlineTreatmentHistory();
+    }
+    
+    hideInlineBehandlungsbuch() {
+        this.behandlungsbuchSection.style.display = 'none';
+        this.showBehandlungsbuchBtn.style.display = 'inline-block';
+        this.inlineTreatments = [];
+    }
+    
+    handleInlineTreatmentFormSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this.treatmentFormInline);
+        const treatmentData = {
+            id: this.generateId(),
+            date: formData.get('treatmentDate'),
+            type: formData.get('treatmentType'),
+            title: formData.get('treatmentTitle'),
+            description: formData.get('treatmentDescription') || '',
+            medication: formData.get('treatmentMedication') || '',
+            dosage: formData.get('treatmentDosage') || '',
+            vet: formData.get('treatmentVet') || '',
+            cost: parseFloat(formData.get('treatmentCost')) || 0,
+            notes: formData.get('treatmentNotes') || '',
+            createdAt: new Date().toISOString()
+        };
+        
+        // Validate required fields
+        if (!treatmentData.date || !treatmentData.type || !treatmentData.title) {
+            this.showAlert('Bitte füllen Sie alle erforderlichen Felder aus', 'error');
+            return;
+        }
+        
+        // Add treatment to inline treatments
+        this.addInlineTreatment(treatmentData);
+        
+        // Clear form and re-render
+        this.clearInlineTreatmentForm();
+        this.renderInlineTreatmentHistory();
+        this.showAlert('Behandlung erfolgreich hinzugefügt', 'success');
+    }
+    
+    addInlineTreatment(treatmentData) {
+        if (!this.inlineTreatments) {
+            this.inlineTreatments = [];
+        }
+        
+        this.inlineTreatments.unshift(treatmentData);
+    }
+    
+    clearInlineTreatmentForm() {
+        this.treatmentFormInline.reset();
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        this.treatmentFormInline.querySelector('[name="treatmentDate"]').value = today;
+    }
+    
+    renderInlineTreatmentHistory() {
+        if (!this.inlineTreatments || this.inlineTreatments.length === 0) {
+            this.treatmentListInline.style.display = 'none';
+            this.noTreatmentsInline.style.display = 'block';
+            return;
+        }
+        
+        this.treatmentListInline.style.display = 'block';
+        this.noTreatmentsInline.style.display = 'none';
+        
+        const treatments = this.inlineTreatments.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        this.treatmentListInline.innerHTML = treatments.map(treatment => `
+            <div class="treatment-item-inline">
+                <div class="treatment-header-inline">
+                    <div class="treatment-date-inline">${this.formatDate(treatment.date)}</div>
+                    <div class="treatment-type-badge treatment-type-${treatment.type}">${this.getTreatmentTypeLabel(treatment.type)}</div>
+                </div>
+                <div class="treatment-content-inline">
+                    <h5 class="treatment-title-inline">${this.escapeHtml(treatment.title)}</h5>
+                    ${treatment.description ? `<p class="treatment-description-inline">${this.escapeHtml(treatment.description)}</p>` : ''}
+                    
+                    <div class="treatment-details-inline">
+                        ${treatment.medication ? `
+                            <div class="treatment-detail-inline">
+                                <strong>Medikamente:</strong> ${this.escapeHtml(treatment.medication)}
+                            </div>
+                        ` : ''}
+                        ${treatment.dosage ? `
+                            <div class="treatment-detail-inline">
+                                <strong>Dosierung:</strong> ${this.escapeHtml(treatment.dosage)}
+                            </div>
+                        ` : ''}
+                        ${treatment.vet ? `
+                            <div class="treatment-detail-inline">
+                                <strong>Tierarzt:</strong> ${this.escapeHtml(treatment.vet)}
+                            </div>
+                        ` : ''}
+                        ${treatment.cost > 0 ? `
+                            <div class="treatment-detail-inline">
+                                <strong>Kosten:</strong> ${treatment.cost.toFixed(2)} €
+                            </div>
+                        ` : ''}
+                        ${treatment.notes ? `
+                            <div class="treatment-detail-inline">
+                                <strong>Notizen:</strong> ${this.escapeHtml(treatment.notes)}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="treatment-actions-inline">
+                    <button class="btn btn-sm btn-danger" onclick="patientenManager.deleteInlineTreatment('${treatment.id}')">
+                        Löschen
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    deleteInlineTreatment(treatmentId) {
+        if (!this.inlineTreatments) return;
+        
+        if (confirm('Sind Sie sicher, dass Sie diese Behandlung löschen möchten?')) {
+            this.inlineTreatments = this.inlineTreatments.filter(t => t.id !== treatmentId);
+            this.renderInlineTreatmentHistory();
+            this.showAlert('Behandlung erfolgreich gelöscht', 'success');
+        }
     }
     
     renderPatientDetail(patient) {

@@ -201,6 +201,145 @@
     flex: 1;
 }
 
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal.active {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px; /* Add top padding to move form below navbar */
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 800px;
+    width: 90%;
+    max-height: calc(90vh - 80px); /* Adjust max height to account for top padding */
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    border: 2px solid var(--border-primary);
+    margin-top: 20px; /* Additional margin from the top */
+}
+
+.modal-large {
+    max-width: 1000px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-primary);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Form Styles for Modal */
+.patient-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--border-primary);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group input:required,
+.form-group select:required {
+    border-left: 3px solid var(--primary-blue);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
 /* Modal Actions */
 .modal-actions {
     padding-top: 1.5rem;
@@ -381,6 +520,134 @@
     font-size: 0.875rem;
 }
 
+/* Inline Behandlungsbuch Styles */
+.behandlungsbuch-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.section-header-behandlungsbuch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header-behandlungsbuch h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.treatment-form-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.treatment-form-inline {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+}
+
+.treatment-history-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.treatment-list-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.treatment-item-inline {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.treatment-header-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.treatment-date-inline {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.treatment-content-inline {
+    padding: 0.75rem;
+}
+
+.treatment-title-inline {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.treatment-description-inline {
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    font-size: 0.875rem;
+}
+
+.treatment-details-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.treatment-detail-inline {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.treatment-detail-inline strong {
+    color: var(--text-primary);
+}
+
+.treatment-actions-inline {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+.no-treatments-inline .empty-state {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.no-treatments-inline .empty-state h5 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.no-treatments-inline .empty-state p {
+    margin-bottom: 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .patienten-container {
@@ -432,6 +699,29 @@
     
     .treatment-actions {
         flex-direction: column;
+    }
+    
+    /* Modal responsive styles */
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
     }
 }
 
