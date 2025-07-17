@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahnungen - Vetmates</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../../styles/reset.css">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/theme.css">
+    <link rel="stylesheet" href="../../styles/typography.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/utilities.css">
+    
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="../../styles/components/navbar.css">
+    <link rel="stylesheet" href="../../styles/components/sidebar.css">
+    <link rel="stylesheet" href="../../styles/components/forms.css">
+    <link rel="stylesheet" href="../../styles/components/buttons.css">
+    <link rel="stylesheet" href="../../styles/components/cards.css">
+    <link rel="stylesheet" href="../../styles/components/tables.css">
+    <link rel="stylesheet" href="../../styles/components/badges.css">
+    <link rel="stylesheet" href="../../styles/components/alerts.css">
+    
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="../../styles/pages/mahnungen.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div id="navbar-container"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="mahnungen-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Mahnungen</h1>
+                <p class="page-description">Verwalten Sie offene Rechnungen und Mahnungen</p>
+            </div>
+            
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button class="btn btn-primary btn-cta" id="createMahnungBtn">
+                    Neue Mahnung erstellen
+                </button>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="mahnungSearch" placeholder="Suche nach Kunde oder Rechnungsnummer">
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📧</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalMahnungen">0</h3>
+                            <p class="stat-label">Offene Mahnungen</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalAmount">€0</h3>
+                            <p class="stat-label">Gesamtbetrag offen</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="avgDaysOverdue">0</h3>
+                            <p class="stat-label">Ø Tage überfällig</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="urgentMahnungen">0</h3>
+                            <p class="stat-label">Dringende Fälle</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mahnungen Table -->
+            <div class="mahnungen-section">
+                <div class="section-header">
+                    <h2 class="section-title">Offene Mahnungen</h2>
+                    <div class="list-controls">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">Alle Status</option>
+                            <option value="erste">Erste Mahnung</option>
+                            <option value="zweite">Zweite Mahnung</option>
+                            <option value="letzte">Letzte Mahnung</option>
+                            <option value="anwalt">An Anwalt</option>
+                        </select>
+                        <select class="filter-select" id="amountFilter">
+                            <option value="">Alle Beträge</option>
+                            <option value="low">Unter €100</option>
+                            <option value="medium">€100 - €500</option>
+                            <option value="high">Über €500</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mahnungen-table-container">
+                    <table class="table table-striped mahnungen-table" id="mahnungenTable">
+                        <thead>
+                            <tr>
+                                <th class="table-col-20">Name</th>
+                                <th class="table-col-20">Erste Mahnung</th>
+                                <th class="table-col-15">Anzahl Mahnungen</th>
+                                <th class="table-col-15">Rechnungsbetrag</th>
+                                <th class="table-col-15">Status</th>
+                                <th class="table-col-15">Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mahnungenTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="no-mahnungen" id="noMahnungen" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📧</div>
+                        <h3 class="empty-state-title">Keine offenen Mahnungen</h3>
+                        <p class="empty-state-description">Aktuell sind keine offenen Mahnungen vorhanden.</p>
+                        <button class="btn btn-primary" id="createFirstMahnungBtn">Erste Mahnung erstellen</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Create Mahnung Modal -->
+            <div class="modal" id="createMahnungModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Neue Mahnung erstellen</h2>
+                        <button class="btn btn-ghost btn-icon btn-sm" id="closeModal" aria-label="Schließen">✕</button>
+                    </div>
+                    
+                    <form class="mahnung-form" id="createMahnungForm">
+                        <div class="form-grid">
+                            <!-- Customer Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Kundeninformationen</h3>
+                                
+                                <div class="form-group">
+                                    <label for="customerSelect">Kunde *</label>
+                                    <select id="customerSelect" name="customerSelect" required>
+                                        <option value="">Kunde auswählen</option>
+                                        <!-- Will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="invoiceNumber">Rechnungsnummer *</label>
+                                    <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="RE-2024-001" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="invoiceAmount">Rechnungsbetrag (€) *</label>
+                                    <input type="number" id="invoiceAmount" name="invoiceAmount" step="0.01" min="0" placeholder="150.00" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Mahnung Details -->
+                            <div class="form-section">
+                                <h3 class="section-title">Mahnungsdetails</h3>
+                                
+                                <div class="form-group">
+                                    <label for="mahnungType">Mahnungstyp *</label>
+                                    <select id="mahnungType" name="mahnungType" required>
+                                        <option value="">Typ auswählen</option>
+                                        <option value="erste">Erste Mahnung</option>
+                                        <option value="zweite">Zweite Mahnung</option>
+                                        <option value="letzte">Letzte Mahnung</option>
+                                        <option value="anwalt">An Anwalt</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dueDate">Fälligkeitsdatum *</label>
+                                    <input type="date" id="dueDate" name="dueDate" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="mahnungText">Mahnungstext</label>
+                                    <textarea id="mahnungText" name="mahnungText" rows="4" placeholder="Optionaler individueller Mahnungstext..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary btn-cta">Mahnung erstellen</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Load Navbar HTML -->
+    <script>
+        // Load navbar HTML
+        fetch('../../components/navbar/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the Vetmates link for the current page location
+                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../../index.html" class="brand-link"');
+                
+                document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after HTML is loaded
+                if (window.Navbar) {
+                    window.navbar = new window.Navbar();
+                } else {
+                    // If Navbar class is not available yet, wait for it
+                    const checkNavbar = setInterval(() => {
+                        if (window.Navbar) {
+                            window.navbar = new window.Navbar();
+                            clearInterval(checkNavbar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
+    
+    <!-- Load Navbar JS -->
+    <script src="../../components/navbar/navbar.js"></script>
+    
+    <!-- Load Sidebar HTML -->
+    <script>
+        // Load sidebar HTML
+        fetch('../../components/sidebar/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                // Fix the paths for the current page location
+                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
+                    if (href === 'index.html') {
+                        return 'href="../../../index.html"';
+                    } else if (href.startsWith('app/')) {
+                        return `href="../../../${href}"`;
+                    }
+                    return match;
+                });
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Set active state for current page
+                const finanzenLink = document.querySelector('[data-page="finanzen"]');
+                if (finanzenLink) {
+                    finanzenLink.classList.add('active');
+                }
+                
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
+            });
+    </script>
+    
+    <!-- Load Sidebar JS -->
+    <script src="../../components/sidebar/sidebar.js"></script>
+    
+    <!-- Load index.js for sidebar-open body class logic -->
+    <script src="../../index.js"></script>
+    
+    <!-- Load Authentication System -->
+    <script src="../../../login/config.js"></script>
+    <script type="module" src="../../../login/auth.js"></script>
+    
+    <!-- Initialize Authentication for Main App -->
+    <script type="module">
+        // Wait for auth manager to be available
+        document.addEventListener('DOMContentLoaded', async () => {
+            while (!window.authManager) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+
+            // Check if user is authenticated
+            const isAuthenticated = await window.authManager.requireAuth()
+            
+            if (!isAuthenticated) {
+                // User will be redirected to login by requireAuth()
+                return
+            }
+
+            // User is authenticated, continue with app initialization
+            console.log('User authenticated, mahnungen page ready');
+        });
+    </script>
+    
+    <!-- Page-specific JavaScript -->
+    <script src="mahnungen.js"></script>
+</body>
+</html> 
