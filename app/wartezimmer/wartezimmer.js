@@ -9,7 +9,7 @@ class WartezimmerManager {
 
     init() {
         this.loadComponents();
-        this.loadSampleData();
+        this.loadData();
         this.setupEventListeners();
         this.updateStatistics();
         this.renderWaitingRoomTable();
@@ -18,6 +18,51 @@ class WartezimmerManager {
     loadComponents() {
         // Components are now loaded via HTML fetch() calls
         // This method is kept for compatibility but no longer needed
+    }
+
+    loadData() {
+        // Load saved data from localStorage
+        this.loadSavedData();
+        
+        // Load sample patients if no saved data exists
+        if (this.waitingPatients.length === 0) {
+            this.loadSampleData();
+        }
+    }
+
+    loadSavedData() {
+        try {
+            // Load waiting patients from localStorage
+            const savedWaitingPatients = localStorage.getItem('wartezimmer_waiting_patients');
+            if (savedWaitingPatients) {
+                this.waitingPatients = JSON.parse(savedWaitingPatients);
+                // Convert date strings back to Date objects
+                this.waitingPatients.forEach(patient => {
+                    patient.checkInTime = new Date(patient.checkInTime);
+                });
+            }
+
+            // Load available patients from localStorage
+            const savedPatients = localStorage.getItem('wartezimmer_patients');
+            if (savedPatients) {
+                this.patients = JSON.parse(savedPatients);
+            }
+        } catch (error) {
+            console.error('Error loading saved data:', error);
+            this.loadSampleData();
+        }
+    }
+
+    saveData() {
+        try {
+            // Save waiting patients to localStorage
+            localStorage.setItem('wartezimmer_waiting_patients', JSON.stringify(this.waitingPatients));
+            
+            // Save available patients to localStorage
+            localStorage.setItem('wartezimmer_patients', JSON.stringify(this.patients));
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
     }
 
     loadSampleData() {
@@ -69,6 +114,9 @@ class WartezimmerManager {
                 notes: 'Patient hat Blutungen und Schmerzen'
             }
         ];
+
+        // Save sample data
+        this.saveData();
     }
 
     setupEventListeners() {
@@ -232,7 +280,8 @@ class WartezimmerManager {
         // Add to waiting list
         this.waitingPatients.push(newWaitingPatient);
 
-        // Update UI
+        // Save data and update UI
+        this.saveData();
         this.updateStatistics();
         this.renderWaitingRoomTable();
         this.closeCheckInModal();
@@ -421,6 +470,7 @@ class WartezimmerManager {
         const patient = this.waitingPatients.find(p => p.id === patientId);
         if (patient) {
             patient.status = 'in-behandlung';
+            this.saveData();
             this.updateStatistics();
             this.renderWaitingRoomTable();
             this.showNotification(`${patient.patient.name} wird jetzt behandelt.`, 'success');
@@ -428,13 +478,95 @@ class WartezimmerManager {
     }
 
     editPatient(patientId) {
-        // In a real application, this would open an edit modal
-        this.showNotification('Bearbeitungsfunktion wird implementiert.', 'info');
+        const patient = this.waitingPatients.find(p => p.id === patientId);
+        if (patient) {
+            // Open edit modal with patient data
+            this.openEditModal(patient);
+        }
+    }
+
+    openEditModal(patient) {
+        // Create a simple edit modal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.style.zIndex = '1004';
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Patient bearbeiten</h2>
+                    <button class="btn btn-ghost btn-icon btn-sm" onclick="this.closest('.modal').remove()">✕</button>
+                </div>
+                <div style="padding: var(--space-6);">
+                    <div class="form-group">
+                        <label>Patient</label>
+                        <input type="text" value="${patient.patient.name}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Grund des Besuchs</label>
+                        <textarea id="editReason" rows="3">${patient.reason}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Priorität</label>
+                        <select id="editPriority">
+                            <option value="niedrig" ${patient.priority === 'niedrig' ? 'selected' : ''}>Niedrig</option>
+                            <option value="normal" ${patient.priority === 'normal' ? 'selected' : ''}>Normal</option>
+                            <option value="hoch" ${patient.priority === 'hoch' ? 'selected' : ''}>Hoch</option>
+                            <option value="dringend" ${patient.priority === 'dringend' ? 'selected' : ''}>Dringend</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notizen</label>
+                        <textarea id="editNotes" rows="3">${patient.notes || ''}</textarea>
+                    </div>
+                    <div style="display: flex; gap: var(--space-4); justify-content: flex-end; margin-top: var(--space-6);">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Abbrechen</button>
+                        <button class="btn btn-primary" onclick="wartezimmerManager.saveEdit(${patient.id}, this.closest('.modal'))">Speichern</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    saveEdit(patientId, modal) {
+        const patient = this.waitingPatients.find(p => p.id === patientId);
+        if (patient) {
+            const reason = document.getElementById('editReason').value;
+            const priority = document.getElementById('editPriority').value;
+            const notes = document.getElementById('editNotes').value;
+            
+            patient.reason = reason;
+            patient.priority = priority;
+            patient.notes = notes;
+            
+            this.saveData();
+            this.updateStatistics();
+            this.renderWaitingRoomTable();
+            modal.remove();
+            this.showNotification('Patient erfolgreich bearbeitet!', 'success');
+        }
     }
 
     removePatient(patientId) {
         if (confirm('Möchten Sie diesen Patienten wirklich aus dem Wartezimmer entfernen?')) {
             this.waitingPatients = this.waitingPatients.filter(p => p.id !== patientId);
+            
+            // Update positions
+            this.waitingPatients.forEach((patient, index) => {
+                patient.position = index + 1;
+            });
+            
+            this.saveData();
             this.updateStatistics();
             this.renderWaitingRoomTable();
             this.showNotification('Patient aus dem Wartezimmer entfernt.', 'success');
@@ -449,7 +581,7 @@ class WartezimmerManager {
         notification.style.position = 'fixed';
         notification.style.top = '20px';
         notification.style.right = '20px';
-        notification.style.zIndex = '1000';
+        notification.style.zIndex = '1005';
         notification.style.padding = '1rem';
         notification.style.borderRadius = '0.5rem';
         notification.style.backgroundColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
@@ -461,6 +593,47 @@ class WartezimmerManager {
         setTimeout(() => {
             notification.remove();
         }, 3000);
+    }
+
+    // Export data as JSON
+    exportData() {
+        const data = {
+            waitingPatients: this.waitingPatients,
+            patients: this.patients,
+            exportDate: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `wartezimmer_data_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Import data from JSON
+    importData(jsonData) {
+        try {
+            const data = JSON.parse(jsonData);
+            if (data.waitingPatients && data.patients) {
+                this.waitingPatients = data.waitingPatients;
+                this.patients = data.patients;
+                
+                // Convert date strings back to Date objects
+                this.waitingPatients.forEach(patient => {
+                    patient.checkInTime = new Date(patient.checkInTime);
+                });
+                
+                this.saveData();
+                this.updateStatistics();
+                this.renderWaitingRoomTable();
+                this.showNotification('Daten erfolgreich importiert!', 'success');
+            }
+        } catch (error) {
+            console.error('Error importing data:', error);
+            this.showNotification('Fehler beim Importieren der Daten.', 'error');
+        }
     }
 }
 
