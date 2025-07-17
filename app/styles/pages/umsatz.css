@@ -377,6 +377,49 @@
   border-bottom: var(--border-1) solid var(--card-border);
 }
 
+/* Diagnosis Section Specific Styles */
+.form-section:nth-child(2) .form-section-title {
+  color: var(--primary-blue);
+  border-bottom-color: var(--primary-blue);
+}
+
+.form-section:nth-child(2) {
+  background: var(--bg-secondary);
+  border: var(--border-1) solid var(--primary-blue-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.form-section:nth-child(2) .form-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Diagnosis severity indicator */
+#diagnosisSeverity {
+  position: relative;
+}
+
+#diagnosisSeverity option[value="mild"] {
+  color: var(--success);
+}
+
+#diagnosisSeverity option[value="moderate"] {
+  color: var(--warning);
+}
+
+#diagnosisSeverity option[value="severe"] {
+  color: var(--error);
+}
+
+#diagnosisSeverity option[value="critical"] {
+  color: var(--error-dark);
+}
+
+#diagnosisSeverity option[value="preventive"] {
+  color: var(--primary-blue);
+}
+
 .form-row {
   display: flex;
   gap: var(--space-4);

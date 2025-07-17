@@ -85,9 +85,60 @@ function initializeForm() {
     // Initialize first item row
     initializeItemRow(document.querySelector('.item-row'));
 
+    // Initialize diagnosis fields
+    initializeDiagnosisFields();
+
     // Form validation
     form.addEventListener('input', validateForm);
     form.addEventListener('change', validateForm);
+}
+
+function initializeDiagnosisFields() {
+    const diagnosisSelect = document.getElementById('diagnosis');
+    const severitySelect = document.getElementById('diagnosisSeverity');
+    
+    // Handle custom diagnosis option
+    diagnosisSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            // Create custom diagnosis input
+            const customInput = document.createElement('input');
+            customInput.type = 'text';
+            customInput.id = 'customDiagnosis';
+            customInput.name = 'customDiagnosis';
+            customInput.placeholder = 'Geben Sie die benutzerdefinierte Diagnose ein...';
+            customInput.className = 'form-group input';
+            customInput.style.marginTop = 'var(--space-2)';
+            customInput.required = true;
+            
+            // Insert after the diagnosis select
+            const diagnosisGroup = this.closest('.form-group');
+            diagnosisGroup.appendChild(customInput);
+            
+            // Focus on the new input
+            setTimeout(() => customInput.focus(), 100);
+        } else {
+            // Remove custom input if it exists
+            const customInput = document.getElementById('customDiagnosis');
+            if (customInput) {
+                customInput.remove();
+            }
+        }
+        validateForm();
+    });
+    
+    // Handle severity changes for visual feedback
+    severitySelect.addEventListener('change', function() {
+        const severity = this.value;
+        const diagnosisSection = this.closest('.form-section');
+        
+        // Remove existing severity classes
+        diagnosisSection.classList.remove('severity-mild', 'severity-moderate', 'severity-severe', 'severity-critical', 'severity-preventive');
+        
+        // Add new severity class
+        if (severity) {
+            diagnosisSection.classList.add(`severity-${severity}`);
+        }
+    });
 }
 
 function initializeItemRow(itemRow) {
@@ -281,6 +332,31 @@ function resetForm() {
     firstRow.querySelector('.item-price').value = '';
     firstRow.querySelector('.item-total').value = '';
     
+    // Reset diagnosis fields
+    const diagnosisFields = ['diagnosis', 'diagnosisSeverity', 'symptoms', 'anamnesis', 'treatmentPlan'];
+    diagnosisFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            if (field.tagName === 'SELECT') {
+                field.selectedIndex = 0;
+            } else {
+                field.value = '';
+            }
+        }
+    });
+    
+    // Remove custom diagnosis input if it exists
+    const customDiagnosis = document.getElementById('customDiagnosis');
+    if (customDiagnosis) {
+        customDiagnosis.remove();
+    }
+    
+    // Reset diagnosis section styling
+    const diagnosisSection = document.querySelector('.form-section:nth-child(2)');
+    if (diagnosisSection) {
+        diagnosisSection.classList.remove('severity-mild', 'severity-moderate', 'severity-severe', 'severity-critical', 'severity-preventive');
+    }
+    
     // Update summary
     updateSummary();
     updateRemoveButtons();
@@ -291,6 +367,13 @@ function createInvoice() {
     const form = document.getElementById('newRevenueForm');
     const formData = new FormData(form);
     
+    // Get diagnosis text (handle custom diagnosis)
+    let diagnosisText = formData.get('diagnosis');
+    if (diagnosisText === 'custom') {
+        const customDiagnosis = document.getElementById('customDiagnosis');
+        diagnosisText = customDiagnosis ? customDiagnosis.value : 'Benutzerdefinierte Diagnose';
+    }
+    
     // Collect form data
     const invoiceData = {
         customer: {
@@ -300,6 +383,13 @@ function createInvoice() {
         patient: {
             name: formData.get('patientName'),
             type: formData.get('patientType')
+        },
+        diagnosis: {
+            main: diagnosisText,
+            severity: formData.get('diagnosisSeverity'),
+            symptoms: formData.get('symptoms'),
+            anamnesis: formData.get('anamnesis'),
+            treatmentPlan: formData.get('treatmentPlan')
         },
         items: [],
         notes: formData.get('notes'),
@@ -358,6 +448,21 @@ function generateInvoiceNumber() {
 }
 
 function generateInvoicePDF(invoiceData) {
+    // Get diagnosis display text
+    let diagnosisText = invoiceData.diagnosis.main;
+    if (invoiceData.diagnosis.main === 'custom') {
+        const customDiagnosis = document.getElementById('customDiagnosis');
+        diagnosisText = customDiagnosis ? customDiagnosis.value : 'Benutzerdefinierte Diagnose';
+    } else {
+        const diagnosisSelect = document.getElementById('diagnosis');
+        const selectedOption = diagnosisSelect.options[diagnosisSelect.selectedIndex];
+        diagnosisText = selectedOption ? selectedOption.text : invoiceData.diagnosis.main;
+    }
+    
+    // Get severity display text
+    const severitySelect = document.getElementById('diagnosisSeverity');
+    const severityText = severitySelect.options[severitySelect.selectedIndex]?.text || invoiceData.diagnosis.severity;
+    
     // Create invoice HTML
     const invoiceHTML = `
         <!DOCTYPE html>
@@ -370,17 +475,23 @@ function generateInvoicePDF(invoiceData) {
                 .header { text-align: center; margin-bottom: 30px; }
                 .invoice-info { margin-bottom: 30px; }
                 .customer-info { margin-bottom: 30px; }
+                .diagnosis-info { margin-bottom: 30px; background: #f8f9fa; padding: 20px; border-radius: 8px; }
+                .diagnosis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+                .diagnosis-item { margin-bottom: 15px; }
+                .diagnosis-label { font-weight: bold; color: #495057; margin-bottom: 5px; }
+                .diagnosis-value { color: #212529; }
                 table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
                 th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
                 th { background-color: #f5f5f5; }
                 .total { text-align: right; font-weight: bold; }
                 .footer { margin-top: 50px; text-align: center; color: #666; }
+                .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 5px; }
             </style>
         </head>
         <body>
             <div class="header">
                 <h1>Vetmates Tierarztpraxis</h1>
-                <h2>Rechnung</h2>
+                <h2>Rechnung & Behandlungsbericht</h2>
             </div>
             
             <div class="invoice-info">
@@ -389,11 +500,45 @@ function generateInvoicePDF(invoiceData) {
             </div>
             
             <div class="customer-info">
+                <div class="section-title">Patienteninformationen</div>
                 <p><strong>Kunde:</strong> ${invoiceData.customer.name}</p>
                 <p><strong>E-Mail:</strong> ${invoiceData.customer.email || 'Nicht angegeben'}</p>
                 <p><strong>Patient:</strong> ${invoiceData.patient.name} (${invoiceData.patient.type})</p>
             </div>
             
+            <div class="diagnosis-info">
+                <div class="section-title">Diagnose & Behandlungsplan</div>
+                <div class="diagnosis-grid">
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-label">Hauptdiagnose:</div>
+                        <div class="diagnosis-value">${diagnosisText}</div>
+                    </div>
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-label">Schweregrad:</div>
+                        <div class="diagnosis-value">${severityText}</div>
+                    </div>
+                </div>
+                ${invoiceData.diagnosis.symptoms ? `
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-label">Symptome:</div>
+                        <div class="diagnosis-value">${invoiceData.diagnosis.symptoms}</div>
+                    </div>
+                ` : ''}
+                ${invoiceData.diagnosis.anamnesis ? `
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-label">Anamnese:</div>
+                        <div class="diagnosis-value">${invoiceData.diagnosis.anamnesis}</div>
+                    </div>
+                ` : ''}
+                ${invoiceData.diagnosis.treatmentPlan ? `
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-label">Behandlungsplan:</div>
+                        <div class="diagnosis-value">${invoiceData.diagnosis.treatmentPlan}</div>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="section-title">Leistungen & Produkte</div>
             <table>
                 <thead>
                     <tr>
@@ -421,11 +566,20 @@ function generateInvoicePDF(invoiceData) {
                 <p><strong>Gesamtbetrag: €${invoiceData.total.toFixed(2)}</strong></p>
             </div>
             
-            ${invoiceData.notes ? `<div><strong>Anmerkungen:</strong><br>${invoiceData.notes}</div>` : ''}
+            ${invoiceData.notes ? `
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <div class="section-title">Anmerkungen</div>
+                    <p>${invoiceData.notes}</p>
+                </div>
+            ` : ''}
             
             <div class="footer">
                 <p>Vielen Dank für Ihr Vertrauen!</p>
                 <p>Vetmates Tierarztpraxis</p>
+                <p style="font-size: 12px; margin-top: 20px;">
+                    Diese Rechnung enthält auch einen medizinischen Behandlungsbericht.<br>
+                    Bitte bewahren Sie dieses Dokument für Ihre Unterlagen auf.
+                </p>
             </div>
         </body>
         </html>

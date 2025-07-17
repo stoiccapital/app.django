@@ -220,6 +220,72 @@
                         </div>
                     </div>
 
+                    <!-- Diagnosis Information -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Diagnose & Anamnese</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="diagnosis">Hauptdiagnose *</label>
+                                <select id="diagnosis" name="diagnosis" required>
+                                    <option value="">Bitte wählen...</option>
+                                    <optgroup label="Häufige Diagnosen">
+                                        <option value="routine_checkup">Routineuntersuchung - Gesund</option>
+                                        <option value="vaccination">Impfung - Prophylaxe</option>
+                                        <option value="parasite_infestation">Parasitenbefall</option>
+                                        <option value="dental_disease">Zahnerkrankung</option>
+                                        <option value="skin_condition">Hauterkrankung</option>
+                                        <option value="gastrointestinal">Magen-Darm-Erkrankung</option>
+                                        <option value="respiratory">Atemwegserkrankung</option>
+                                        <option value="orthopedic">Orthopädische Erkrankung</option>
+                                        <option value="neurological">Neurologische Erkrankung</option>
+                                        <option value="cardiac">Herzerkrankung</option>
+                                        <option value="renal">Nierenerkrankung</option>
+                                        <option value="hepatic">Lebererkrankung</option>
+                                        <option value="endocrine">Endokrine Erkrankung</option>
+                                        <option value="cancer">Tumorerkrankung</option>
+                                        <option value="trauma">Verletzung/Unfall</option>
+                                        <option value="infection">Infektionskrankheit</option>
+                                        <option value="allergy">Allergie</option>
+                                        <option value="behavioral">Verhaltensproblem</option>
+                                        <option value="reproductive">Fortpflanzungsproblem</option>
+                                        <option value="emergency">Notfall</option>
+                                    </optgroup>
+                                    <optgroup label="Spezielle Diagnosen">
+                                        <option value="custom">Benutzerdefinierte Diagnose</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="diagnosisSeverity">Schweregrad</label>
+                                <select id="diagnosisSeverity" name="diagnosisSeverity">
+                                    <option value="mild">Leicht</option>
+                                    <option value="moderate" selected>Mittel</option>
+                                    <option value="severe">Schwer</option>
+                                    <option value="critical">Kritisch</option>
+                                    <option value="preventive">Präventiv</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="symptoms">Symptome</label>
+                                <textarea id="symptoms" name="symptoms" rows="3" placeholder="Beschreiben Sie die beobachteten Symptome..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="anamnesis">Anamnese</label>
+                                <textarea id="anamnesis" name="anamnesis" rows="3" placeholder="Vorgeschichte, Vorerkrankungen, Medikamente..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="treatmentPlan">Behandlungsplan</label>
+                                <textarea id="treatmentPlan" name="treatmentPlan" rows="3" placeholder="Geplante Behandlung, Medikamente, Nachsorge..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Products/Services -->
                     <div class="form-section">
                         <h3 class="form-section-title">Leistungen & Produkte</h3>
