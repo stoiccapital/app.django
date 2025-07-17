@@ -169,11 +169,7 @@ class WartezimmerManager {
             statusFilter.addEventListener('change', () => this.applyFilters());
         }
 
-        // Refresh button
-        const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => this.refreshData());
-        }
+
 
         // Empty state button
         const addFirstPatientBtn = document.getElementById('addFirstPatientBtn');

@@ -89,6 +89,11 @@
   color: var(--warning);
 }
 
+.mahnungen-icon {
+  background: linear-gradient(135deg, var(--secondary-red-light), var(--error));
+  color: var(--error);
+}
+
 /* Finance Card Info */
 .finance-card-info {
   flex: 1;
