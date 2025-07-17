@@ -12,34 +12,26 @@
     <link rel="stylesheet" href="../../styles/typography.css">
     <link rel="stylesheet" href="../../styles/layout.css">
     <link rel="stylesheet" href="../../styles/utilities.css">
-    
-    <!-- Component Styles -->
-    <link rel="stylesheet" href="../../styles/components/navbar.css">
-    <link rel="stylesheet" href="../../styles/components/sidebar.css">
-    <link rel="stylesheet" href="../../styles/components/forms.css">
     <link rel="stylesheet" href="../../styles/components/buttons.css">
     <link rel="stylesheet" href="../../styles/components/cards.css">
     <link rel="stylesheet" href="../../styles/components/tables.css">
-    <link rel="stylesheet" href="../../styles/components/badges.css">
-    <link rel="stylesheet" href="../../styles/components/alerts.css">
-    
-    <!-- Page Styles -->
+    <link rel="stylesheet" href="../../styles/components/forms.css">
     <link rel="stylesheet" href="../../styles/pages/mahnungen.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <div id="navbar-container"></div>
-    
-    <!-- Sidebar -->
-    <div id="sidebar-container"></div>
-    
     <!-- Main Content -->
     <main class="main-content">
         <div class="mahnungen-container">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">Mahnungen</h1>
-                <p class="page-description">Verwalten Sie offene Rechnungen und Mahnungen</p>
+                <div class="header-content">
+                    <a href="../finanzen.html" class="back-button" style="display:inline-flex;align-items:center;gap:8px;font-size:1rem;text-decoration:none;color:var(--primary-blue);font-weight:600;margin-bottom:1.5rem;">
+                        <span class="back-arrow" style="font-size:1.5rem;">←</span>
+                        Zurück zu Finanzen
+                    </a>
+                    <h1 class="page-title">Mahnungen</h1>
+                    <p class="page-description">Verwalten Sie offene Rechnungen und Mahnungen</p>
+                </div>
             </div>
             
             <!-- Action Bar -->
@@ -204,110 +196,6 @@
             </div>
         </div>
     </main>
-    
-    <!-- Load Navbar HTML -->
-    <script>
-        // Load navbar HTML
-        fetch('../../components/navbar/navbar.html')
-            .then(response => response.text())
-            .then(html => {
-                // Fix the Vetmates link for the current page location
-                const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../../index.html" class="brand-link"');
-                
-                document.getElementById('navbar-container').innerHTML = fixedHtml;
-                
-                // Initialize navbar after HTML is loaded
-                if (window.Navbar) {
-                    window.navbar = new window.Navbar();
-                } else {
-                    // If Navbar class is not available yet, wait for it
-                    const checkNavbar = setInterval(() => {
-                        if (window.Navbar) {
-                            window.navbar = new window.Navbar();
-                            clearInterval(checkNavbar);
-                        }
-                    }, 100);
-                }
-            })
-            .catch(error => {
-                console.error('Error loading navbar:', error);
-            });
-    </script>
-    
-    <!-- Load Navbar JS -->
-    <script src="../../components/navbar/navbar.js"></script>
-    
-    <!-- Load Sidebar HTML -->
-    <script>
-        // Load sidebar HTML
-        fetch('../../components/sidebar/sidebar.html')
-            .then(response => response.text())
-            .then(html => {
-                // Fix the paths for the current page location
-                const fixedHtml = html.replace(/href="([^"]*)"/g, (match, href) => {
-                    if (href === 'index.html') {
-                        return 'href="../../../index.html"';
-                    } else if (href.startsWith('app/')) {
-                        return `href="../../../${href}"`;
-                    }
-                    return match;
-                });
-                
-                document.getElementById('sidebar-container').innerHTML = fixedHtml;
-                
-                // Set active state for current page
-                const finanzenLink = document.querySelector('[data-page="finanzen"]');
-                if (finanzenLink) {
-                    finanzenLink.classList.add('active');
-                }
-                
-                // Initialize sidebar after HTML is loaded
-                if (window.Sidebar) {
-                    window.sidebar = new window.Sidebar();
-                } else {
-                    const checkSidebar = setInterval(() => {
-                        if (window.Sidebar) {
-                            window.sidebar = new window.Sidebar();
-                            clearInterval(checkSidebar);
-                        }
-                    }, 100);
-                }
-            })
-            .catch(error => {
-                console.error('Error loading sidebar:', error);
-            });
-    </script>
-    
-    <!-- Load Sidebar JS -->
-    <script src="../../components/sidebar/sidebar.js"></script>
-    
-    <!-- Load index.js for sidebar-open body class logic -->
-    <script src="../../index.js"></script>
-    
-    <!-- Load Authentication System -->
-    <script src="../../../login/config.js"></script>
-    <script type="module" src="../../../login/auth.js"></script>
-    
-    <!-- Initialize Authentication for Main App -->
-    <script type="module">
-        // Wait for auth manager to be available
-        document.addEventListener('DOMContentLoaded', async () => {
-            while (!window.authManager) {
-                await new Promise(resolve => setTimeout(resolve, 100))
-            }
-
-            // Check if user is authenticated
-            const isAuthenticated = await window.authManager.requireAuth()
-            
-            if (!isAuthenticated) {
-                // User will be redirected to login by requireAuth()
-                return
-            }
-
-            // User is authenticated, continue with app initialization
-            console.log('User authenticated, mahnungen page ready');
-        });
-    </script>
     
     <!-- Page-specific JavaScript -->
     <script src="mahnungen.js"></script>
