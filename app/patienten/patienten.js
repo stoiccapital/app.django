@@ -54,6 +54,7 @@ class PatientenManager {
         // Action buttons
         this.addPatientBtn = document.getElementById('addPatientBtn');
         this.addFirstPatientBtn = document.getElementById('addFirstPatientBtn');
+        this.addBehandlungsbuchBtn = document.getElementById('addBehandlungsbuchBtn');
         
         // Search and filter
         this.searchInput = document.getElementById('patientSearch');
@@ -72,6 +73,7 @@ class PatientenManager {
         // Modal events
         this.addPatientBtn.addEventListener('click', () => this.openModal());
         this.addFirstPatientBtn.addEventListener('click', () => this.openModal());
+        this.addBehandlungsbuchBtn.addEventListener('click', () => this.openBehandlungsbuchModal());
         this.closeModalBtn.addEventListener('click', () => this.closeModal());
         this.cancelBtn.addEventListener('click', () => this.closeModal());
         
@@ -162,6 +164,26 @@ class PatientenManager {
         this.currentPatient = null;
         this.isEditing = false;
         this.clearForm();
+    }
+    
+    openBehandlungsbuchModal() {
+        // Clear any existing treatment form
+        this.clearTreatmentForm();
+        
+        // Set the patient name to indicate it's a new treatment
+        this.behandlungsbuchPatientName.textContent = 'Neue Behandlung';
+        
+        // Show the modal
+        this.behandlungsbuchModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Focus first input
+        setTimeout(() => {
+            const firstInput = this.behandlungsbuchModal.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 100);
     }
     
     clearForm() {
