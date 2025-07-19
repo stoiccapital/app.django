@@ -211,13 +211,33 @@
             .then(html => {
                 const fixedHtml = html.replace(/href="#" class="brand-link"/g, 'href="../../index.html" class="brand-link"');
                 document.getElementById('navbar-container').innerHTML = fixedHtml;
+                
+                // Initialize navbar after loading
+                const navbarScript = document.createElement('script');
+                navbarScript.src = '../components/navbar/navbar.js';
+                document.head.appendChild(navbarScript);
             });
 
         // Load sidebar HTML
         fetch('../components/sidebar/sidebar.html')
             .then(response => response.text())
             .then(html => {
-                document.getElementById('sidebar-container').innerHTML = html;
+                // Fix the navigation paths before inserting
+                const fixedHtml = html
+                    .replace(/href="index.html"/g, 'href="../../index.html"')
+                    .replace(/href="app\/patienten\/patienten.html"/g, 'href="../patienten/patienten.html"')
+                    .replace(/href="app\/kalender\/kalender.html"/g, 'href="kalender.html"')
+                    .replace(/href="app\/wartezimmer\/wartezimmer.html"/g, 'href="../wartezimmer/wartezimmer.html"')
+                    .replace(/href="app\/mitarbeiter\/mitarbeiter.html"/g, 'href="../mitarbeiter/mitarbeiter.html"')
+                    .replace(/href="app\/finanzen\/finanzen.html"/g, 'href="../finanzen/finanzen.html"')
+                    .replace(/href="app\/einstellungen\/einstellungen.html"/g, 'href="../einstellungen/einstellungen.html"');
+                
+                document.getElementById('sidebar-container').innerHTML = fixedHtml;
+                
+                // Initialize sidebar after loading
+                const sidebarScript = document.createElement('script');
+                sidebarScript.src = '../components/sidebar/sidebar.js';
+                document.head.appendChild(sidebarScript);
             });
     </script>
 
