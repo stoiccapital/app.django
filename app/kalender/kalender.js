@@ -6,7 +6,7 @@ class CalendarApp {
         this.selectedDate = null;
         this.appointments = this.loadAppointments();
         this.editingAppointment = null;
-        this.currentView = 'month'; // 'month' or 'week'
+        this.currentView = 'week'; // 'month' or 'week'
         
         this.initializeElements();
         this.bindEvents();
@@ -27,8 +27,7 @@ class CalendarApp {
         this.todayBtn = document.getElementById('todayBtn');
         
         // View toggle elements
-        this.monthViewBtn = document.getElementById('monthViewBtn');
-        this.weekViewBtn = document.getElementById('weekViewBtn');
+        this.viewSelect = document.getElementById('viewSelect');
         
         // Modal elements
         this.appointmentModal = document.getElementById('appointmentModal');
@@ -68,8 +67,7 @@ class CalendarApp {
         this.todayBtn.addEventListener('click', () => this.goToToday());
         
         // View toggle
-        this.monthViewBtn.addEventListener('click', () => this.switchToMonthView());
-        this.weekViewBtn.addEventListener('click', () => this.switchToWeekView());
+        this.viewSelect.addEventListener('change', (e) => this.switchView(e.target.value));
         
         // Modal events
         this.newAppointmentBtn.addEventListener('click', () => this.openNewAppointmentModal());
@@ -117,23 +115,17 @@ class CalendarApp {
         this.renderCalendar();
     }
 
-    switchToMonthView() {
-        this.currentView = 'month';
-        this.updateViewToggle();
-        this.updateNavigationLabels();
-        this.renderCalendar();
-    }
-
-    switchToWeekView() {
-        this.currentView = 'week';
+    switchView(view) {
+        this.currentView = view;
         this.updateViewToggle();
         this.updateNavigationLabels();
         this.renderCalendar();
     }
 
     updateViewToggle() {
-        this.monthViewBtn.classList.toggle('active', this.currentView === 'month');
-        this.weekViewBtn.classList.toggle('active', this.currentView === 'week');
+        if (this.viewSelect) {
+            this.viewSelect.value = this.currentView;
+        }
     }
 
     updateNavigationLabels() {
@@ -251,37 +243,85 @@ class CalendarApp {
             this.currentPeriodElement.textContent = `${startMonth} ${startOfWeek.getDate()} - ${endMonth} ${endOfWeek.getDate()}, ${startOfWeek.getFullYear()}`;
         }
         
-        // Clear calendar grid
+        // Clear calendar grid and update header
         this.calendarGrid.innerHTML = '';
         this.calendarGrid.className = 'calendar-grid week-view';
         
-        // Generate week days
-        for (let i = 0; i < 7; i++) {
-            const currentDayDate = new Date(startOfWeek);
-            currentDayDate.setDate(startOfWeek.getDate() + i);
-            
-            const dayElement = document.createElement('div');
-            dayElement.className = 'calendar-day';
-            
-            const isToday = this.isToday(currentDayDate);
-            const isSelected = this.selectedDate && this.isSameDate(currentDayDate, this.selectedDate);
-            
-            if (isToday) dayElement.classList.add('today');
-            if (isSelected) dayElement.classList.add('selected');
-            
-            // Get appointments for this day
-            const dayAppointments = this.getAppointmentsForDate(currentDayDate);
-            
-            dayElement.innerHTML = `
-                <div class="calendar-day-number">${currentDayDate.getDate()}</div>
-                ${this.renderAppointmentIndicators(dayAppointments)}
-                ${this.renderAppointmentPreview(dayAppointments)}
+        // Update calendar header for week view
+        const calendarHeader = document.getElementById('calendarHeader');
+        if (calendarHeader) {
+            calendarHeader.innerHTML = `
+                <div class="calendar-time-header">Zeit</div>
+                <div class="calendar-day-header">Mo ${startOfWeek.getDate()}</div>
+                <div class="calendar-day-header">Di ${(new Date(startOfWeek.getTime() + 24*60*60*1000)).getDate()}</div>
+                <div class="calendar-day-header">Mi ${(new Date(startOfWeek.getTime() + 2*24*60*60*1000)).getDate()}</div>
+                <div class="calendar-day-header">Do ${(new Date(startOfWeek.getTime() + 3*24*60*60*1000)).getDate()}</div>
+                <div class="calendar-day-header">Fr ${(new Date(startOfWeek.getTime() + 4*24*60*60*1000)).getDate()}</div>
+                <div class="calendar-day-header">Sa ${(new Date(startOfWeek.getTime() + 5*24*60*60*1000)).getDate()}</div>
+                <div class="calendar-day-header">So ${(new Date(startOfWeek.getTime() + 6*24*60*60*1000)).getDate()}</div>
             `;
+        }
+        
+        // Generate time slots from 0:00 to 23:00 (24 hours)
+        for (let hour = 0; hour < 24; hour++) {
+            const timeSlotRow = document.createElement('div');
+            timeSlotRow.className = 'time-slot-row';
             
-            // Add click event
-            dayElement.addEventListener('click', () => this.selectDate(currentDayDate));
+            // Time label
+            const timeLabel = document.createElement('div');
+            timeLabel.className = 'time-slot-label';
+            timeLabel.textContent = `${hour.toString().padStart(2, '0')}:00`;
+            timeSlotRow.appendChild(timeLabel);
             
-            this.calendarGrid.appendChild(dayElement);
+            // Generate day columns for this time slot
+            for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+                const currentDayDate = new Date(startOfWeek);
+                currentDayDate.setDate(startOfWeek.getDate() + dayIndex);
+                
+                const daySlot = document.createElement('div');
+                daySlot.className = 'day-time-slot';
+                
+                // Check if this is the current time
+                const now = new Date();
+                const isCurrentTime = this.isToday(currentDayDate) && now.getHours() === hour;
+                if (isCurrentTime) {
+                    daySlot.classList.add('current-time');
+                }
+                
+                // Get appointments for this specific time slot
+                const timeSlotAppointments = this.getAppointmentsForTimeSlot(currentDayDate, hour);
+                
+                if (timeSlotAppointments.length > 0) {
+                    timeSlotAppointments.forEach(appointment => {
+                        const appointmentElement = document.createElement('div');
+                        appointmentElement.className = `appointment-slot ${appointment.type}`;
+                        appointmentElement.innerHTML = `
+                            <div class="appointment-slot-time">${appointment.time}</div>
+                            <div class="appointment-slot-patient">${appointment.patient}</div>
+                            <div class="appointment-slot-type">${this.getTypeLabel(appointment.type)}</div>
+                        `;
+                        
+                        // Add click event to show appointment details
+                        appointmentElement.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.showAppointmentDetails(appointment);
+                        });
+                        
+                        daySlot.appendChild(appointmentElement);
+                    });
+                } else {
+                    // Add click event to create new appointment
+                    daySlot.addEventListener('click', () => {
+                        const selectedDate = new Date(currentDayDate);
+                        selectedDate.setHours(hour, 0, 0, 0);
+                        this.openNewAppointmentModal(selectedDate);
+                    });
+                }
+                
+                timeSlotRow.appendChild(daySlot);
+            }
+            
+            this.calendarGrid.appendChild(timeSlotRow);
         }
     }
 
@@ -618,6 +658,16 @@ class CalendarApp {
     getAppointmentsForDate(date) {
         const dateString = this.formatDate(date);
         return this.appointments.filter(appointment => appointment.date === dateString);
+    }
+
+    getAppointmentsForTimeSlot(date, hour) {
+        const dateString = this.formatDate(date);
+        return this.appointments.filter(appointment => {
+            if (appointment.date !== dateString) return false;
+            
+            const appointmentHour = parseInt(appointment.time.split(':')[0]);
+            return appointmentHour === hour;
+        });
     }
 
     // Utility Methods

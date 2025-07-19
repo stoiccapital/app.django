@@ -46,20 +46,28 @@
 }
 
 .view-toggle {
-    display: flex;
-    gap: var(--space-1);
     margin-right: var(--space-4);
 }
 
-.view-toggle .btn {
+.view-select {
     padding: var(--space-2) var(--space-3);
     font-size: 0.875rem;
     border-radius: var(--radius-sm);
+    border: 1px solid var(--border-primary);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 120px;
+    transition: all var(--transition-fast);
 }
 
-.view-toggle .btn.active {
-    background-color: var(--primary-color);
-    color: var(--text-inverse);
+.view-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color-alpha);
+}
+
+.view-select:hover {
     border-color: var(--primary-color);
 }
 
@@ -102,20 +110,131 @@
 }
 
 .calendar-grid.week-view {
-    min-height: 200px;
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    min-height: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
-.calendar-grid.week-view .calendar-day {
-    min-height: 180px;
+.calendar-time-header {
+    padding: var(--space-4);
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
     border-right: 1px solid var(--border-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.calendar-grid.week-view .calendar-day:last-child {
+.time-slot-row {
+    display: contents;
+}
+
+.time-slot-label {
+    padding: var(--space-2) var(--space-3);
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+    border-bottom: 1px solid var(--border-primary);
+    border-right: 1px solid var(--border-primary);
+    background: var(--bg-tertiary);
+    position: sticky;
+    left: 0;
+    z-index: 5;
+}
+
+.day-time-slot {
+    border-bottom: 1px solid var(--border-primary);
+    border-right: 1px solid var(--border-primary);
+    min-height: 40px;
+    padding: var(--space-1);
+    position: relative;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.day-time-slot:hover {
+    background-color: var(--bg-hover);
+}
+
+.day-time-slot.current-time {
+    background-color: var(--primary-color-alpha);
+    border-left: 3px solid var(--primary-color);
+}
+
+.day-time-slot:last-child {
     border-right: none;
 }
 
-.calendar-grid.week-view .calendar-day.other-month {
-    display: none;
+.appointment-slot {
+    background: var(--primary-color);
+    color: var(--text-inverse);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    margin-bottom: var(--space-1);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border-left: 3px solid var(--primary-color);
+}
+
+.appointment-slot:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.appointment-slot.vaccination {
+    background: var(--success);
+    border-left-color: var(--success);
+}
+
+.appointment-slot.checkup {
+    background: var(--info);
+    border-left-color: var(--info);
+}
+
+.appointment-slot.surgery {
+    background: var(--warning);
+    border-left-color: var(--warning);
+}
+
+.appointment-slot.emergency {
+    background: var(--error);
+    border-left-color: var(--error);
+}
+
+.appointment-slot.consultation {
+    background: var(--purple-color);
+    border-left-color: var(--purple-color);
+}
+
+.appointment-slot.grooming {
+    background: var(--teal-color);
+    border-left-color: var(--teal-color);
+}
+
+.appointment-slot-time {
+    font-weight: var(--font-weight-semibold);
+    font-size: 0.7rem;
+}
+
+.appointment-slot-patient {
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--space-1);
+}
+
+.appointment-slot-type {
+    font-size: 0.65rem;
+    opacity: 0.9;
+    margin-top: var(--space-1);
 }
 
 .calendar-day {
@@ -531,11 +650,46 @@
         margin-bottom: var(--space-3);
         order: -1;
         width: 100%;
+        display: flex;
         justify-content: center;
     }
     
-    .calendar-grid.week-view .calendar-day {
-        min-height: 120px;
+    .view-select {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .calendar-grid.week-view {
+        grid-template-columns: 60px repeat(7, 1fr);
+        min-height: 400px;
+        max-height: 50vh;
+    }
+    
+    .time-slot-label {
+        padding: var(--space-1) var(--space-2);
+        font-size: 0.7rem;
+    }
+    
+    .day-time-slot {
+        min-height: 30px;
+        padding: var(--space-1);
+    }
+    
+    .appointment-slot {
+        padding: var(--space-1);
+        font-size: 0.7rem;
+    }
+    
+    .appointment-slot-time {
+        font-size: 0.65rem;
+    }
+    
+    .appointment-slot-patient {
+        font-size: 0.7rem;
+    }
+    
+    .appointment-slot-type {
+        font-size: 0.6rem;
     }
     
     .calendar-day {
@@ -598,6 +752,40 @@
     
     .calendar-day {
         min-height: 60px;
+    }
+    
+    .calendar-grid.week-view {
+        grid-template-columns: 50px repeat(7, 1fr);
+        min-height: 300px;
+        max-height: 40vh;
+    }
+    
+    .time-slot-label {
+        padding: var(--space-1);
+        font-size: 0.65rem;
+    }
+    
+    .day-time-slot {
+        min-height: 25px;
+        padding: var(--space-1);
+    }
+    
+    .appointment-slot {
+        padding: var(--space-1);
+        font-size: 0.65rem;
+        margin-bottom: var(--space-1);
+    }
+    
+    .appointment-slot-time {
+        font-size: 0.6rem;
+    }
+    
+    .appointment-slot-patient {
+        font-size: 0.65rem;
+    }
+    
+    .appointment-slot-type {
+        font-size: 0.55rem;
     }
     
     .modal-header,

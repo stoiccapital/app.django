@@ -50,16 +50,18 @@
                     </button>
                 </div>
                 <div class="calendar-actions">
-                    <div class="view-toggle">
-                        <button class="btn btn-secondary active" id="monthViewBtn">
-                            <span class="icon">📅</span>
-                            Monat
-                        </button>
-                        <button class="btn btn-secondary" id="weekViewBtn">
+                                    <div class="view-toggle">
+                    <select class="view-select" id="viewSelect">
+                        <option value="week" selected>
                             <span class="icon">📆</span>
                             Woche
-                        </button>
-                    </div>
+                        </option>
+                        <option value="month">
+                            <span class="icon">📅</span>
+                            Monat
+                        </option>
+                    </select>
+                </div>
                     <button class="btn btn-primary" id="newAppointmentBtn">
                         <span class="icon">+</span>
                         Neuer Termin
