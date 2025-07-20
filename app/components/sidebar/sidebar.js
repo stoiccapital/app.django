@@ -40,6 +40,8 @@ class Sidebar {
             currentSubdirectory = 'patienten';
         } else if (currentPath.includes('/kalender/')) {
             currentSubdirectory = 'kalender';
+        } else if (currentPath.includes('/wartezimmer/')) {
+            currentSubdirectory = 'wartezimmer';
         } else if (currentPath.includes('/mitarbeiter/')) {
             currentSubdirectory = 'mitarbeiter';
         } else if (currentPath.includes('/finanzen/')) {
@@ -57,6 +59,9 @@ class Sidebar {
             kalender: isInSubdirectory ? 
                 (currentSubdirectory === 'kalender' ? 'kalender.html' : '../kalender/kalender.html') : 
                 'app/kalender/kalender.html',
+            wartezimmer: isInSubdirectory ? 
+                (currentSubdirectory === 'wartezimmer' ? 'wartezimmer.html' : '../wartezimmer/wartezimmer.html') : 
+                'app/wartezimmer/wartezimmer.html',
             mitarbeiter: isInSubdirectory ? 
                 (currentSubdirectory === 'mitarbeiter' ? 'mitarbeiter.html' : '../mitarbeiter/mitarbeiter.html') : 
                 'app/mitarbeiter/mitarbeiter.html',
@@ -209,6 +214,8 @@ class Sidebar {
             currentPage = 'patienten';
         } else if (currentPath.includes('/kalender/')) {
             currentPage = 'kalender';
+        } else if (currentPath.includes('/wartezimmer/')) {
+            currentPage = 'wartezimmer';
         } else if (currentPath.includes('/mitarbeiter/')) {
             currentPage = 'mitarbeiter';
         } else if (currentPath.includes('/finanzen/')) {

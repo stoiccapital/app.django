@@ -1,128 +1,432 @@
-// Patienten Page JavaScript
+// Patienten Page JavaScript - Optimized Version
+
+// Import modules (these will be loaded as separate files in production)
+// import { PatientUtils, ValidationUtils } from './utils.js';
+// import { ModalManager } from './modal-manager.js';
+// import { PatientDataManager } from './data-manager.js';
+// import { PatientUIRenderer } from './ui-renderer.js';
+
+// Utility functions (inlined for compatibility)
+class PatientUtils {
+    static escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    static formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('de-DE');
+    }
+
+    static generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    static isValidEmail(email) {
+        if (!email) return true;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    static isValidPhone(phone) {
+        if (!phone) return false;
+        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,}$/;
+        return phoneRegex.test(phone);
+    }
+
+    static getSpeciesIcon(species) {
+        const icons = {
+            'hund': '🐕', 'katze': '🐱', 'pferd': '🐎', 'kleintier': '🐰',
+            'vogel': '🦜', 'exot': '🦎', 'sonstiges': '🐾'
+        };
+        return icons[species] || '🐾';
+    }
+
+    static getTreatmentTypeLabel(type) {
+        const labels = {
+            'untersuchung': 'Untersuchung', 'impfung': 'Impfung', 'operation': 'Operation',
+            'medikament': 'Medikament', 'labor': 'Labor', 'röntgen': 'Röntgen',
+            'ultraschall': 'Ultraschall', 'chirurgie': 'Chirurgie', 'zahnbehandlung': 'Zahnbehandlung',
+            'sonstiges': 'Sonstiges'
+        };
+        return labels[type] || type;
+    }
+
+    static getPatientStatus(patient) {
+        if (!patient.lastVisit) {
+            return { class: 'info', label: 'Neu' };
+        }
+        
+        const lastVisit = new Date(patient.lastVisit);
+        const now = new Date();
+        const daysSinceLastVisit = Math.floor((now - lastVisit) / (1000 * 60 * 60 * 24));
+        
+        if (daysSinceLastVisit <= 30) {
+            return { class: 'active', label: 'Aktiv' };
+        } else if (daysSinceLastVisit <= 365) {
+            return { class: 'warning', label: 'Inaktiv' };
+        } else {
+            return { class: 'inactive', label: 'Sehr inaktiv' };
+        }
+    }
+
+    static safeQuerySelector(selector, parent = document) {
+        try {
+            return parent.querySelector(selector);
+        } catch (error) {
+            console.warn(`Invalid selector: ${selector}`, error);
+            return null;
+        }
+    }
+}
+
+class ValidationUtils {
+    static validatePatientForm(formData) {
+        const errors = {};
+        
+        const requiredFields = ['patientName', 'patientSpecies', 'ownerName', 'ownerPhone'];
+        requiredFields.forEach(fieldName => {
+            if (!formData[fieldName]?.trim()) {
+                errors[fieldName] = 'Dieses Feld ist erforderlich';
+            }
+        });
+        
+        if (formData.ownerEmail?.trim() && !PatientUtils.isValidEmail(formData.ownerEmail)) {
+            errors.ownerEmail = 'Bitte geben Sie eine gültige E-Mail-Adresse ein';
+        }
+        
+        if (formData.ownerPhone?.trim() && !PatientUtils.isValidPhone(formData.ownerPhone)) {
+            errors.ownerPhone = 'Bitte geben Sie eine gültige Telefonnummer ein';
+        }
+        
+        if (formData.patientWeight && (isNaN(formData.patientWeight) || parseFloat(formData.patientWeight) < 0)) {
+            errors.patientWeight = 'Bitte geben Sie ein gültiges Gewicht ein';
+        }
+        
+        return {
+            isValid: Object.keys(errors).length === 0,
+            errors
+        };
+    }
+
+    static validateTreatmentForm(formData) {
+        const errors = {};
+        
+        if (!formData.treatmentPatient) {
+            errors.treatmentPatient = 'Bitte wählen Sie einen Patienten aus';
+        }
+        
+        if (!formData.treatmentDate) {
+            errors.treatmentDate = 'Bitte wählen Sie ein Datum aus';
+        }
+        
+        if (!formData.treatmentType) {
+            errors.treatmentType = 'Bitte wählen Sie einen Behandlungstyp aus';
+        }
+        
+        if (!formData.treatmentTitle?.trim()) {
+            errors.treatmentTitle = 'Bitte geben Sie einen Titel ein';
+        }
+        
+        return {
+            isValid: Object.keys(errors).length === 0,
+            errors
+        };
+    }
+}
+
+class StorageUtils {
+    static load(key, defaultValue = []) {
+        try {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : defaultValue;
+        } catch (error) {
+            console.error(`Error loading ${key}:`, error);
+            return defaultValue;
+        }
+    }
+
+    static save(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+            return true;
+        } catch (error) {
+            console.error(`Error saving ${key}:`, error);
+            return false;
+        }
+    }
+}
 
 class PatientenManager {
     constructor() {
-        this.patients = this.loadPatients();
+        // Initialize data
+        this.patients = StorageUtils.load('vetmates_patients', []);
         this.currentPatient = null;
         this.isEditing = false;
         
+        // Initialize DOM elements
         this.initializeElements();
+        
+        // Bind events
         this.bindEvents();
+        
+        // Initial render
         this.renderPatients();
         this.updateEmptyState();
     }
     
     initializeElements() {
         // Modal elements
-        this.modal = document.getElementById('patientModal');
-        this.modalContent = this.modal.querySelector('.modal-content');
-        this.closeModalBtn = document.getElementById('closeModal');
-        this.cancelBtn = document.getElementById('cancelBtn');
+        this.modal = PatientUtils.safeQuerySelector('#patientModal');
+        this.modalContent = this.modal?.querySelector('.modal-content');
+        this.closeModalBtn = PatientUtils.safeQuerySelector('#closeModal');
+        this.cancelBtn = PatientUtils.safeQuerySelector('#cancelBtn');
         
         // Patient detail modal elements
-        this.detailModal = document.getElementById('patientDetailModal');
-        this.closeDetailModalBtn = document.getElementById('closeDetailModal');
-        this.patientDetailContent = document.getElementById('patientDetailContent');
+        this.detailModal = PatientUtils.safeQuerySelector('#patientDetailModal');
+        this.closeDetailModalBtn = PatientUtils.safeQuerySelector('#closeDetailModal');
+        this.patientDetailContent = PatientUtils.safeQuerySelector('#patientDetailContent');
         
         // Behandlungsbuch modal elements
-        this.behandlungsbuchModal = document.getElementById('behandlungsbuchModal');
-        this.closeBehandlungsbuchModalBtn = document.getElementById('closeBehandlungsbuchModal');
-        this.behandlungsbuchPatientName = document.getElementById('behandlungsbuchPatientName');
-        this.treatmentForm = document.getElementById('treatmentForm');
-        this.treatmentList = document.getElementById('treatmentList');
-        this.noTreatments = document.getElementById('noTreatments');
-        
-
+        this.behandlungsbuchModal = PatientUtils.safeQuerySelector('#behandlungsbuchModal');
+        this.closeBehandlungsbuchModalBtn = PatientUtils.safeQuerySelector('#closeBehandlungsbuchModal');
+        this.behandlungsbuchPatientName = PatientUtils.safeQuerySelector('#behandlungsbuchPatientName');
+        this.treatmentForm = PatientUtils.safeQuerySelector('#treatmentForm');
+        this.treatmentList = PatientUtils.safeQuerySelector('#treatmentList');
+        this.noTreatments = PatientUtils.safeQuerySelector('#noTreatments');
         
         // Detail modal action buttons
-        this.viewPatientBtn = document.getElementById('viewPatientBtn');
-        this.editPatientBtn = document.getElementById('editPatientBtn');
-        this.behandlungsbuchBtn = document.getElementById('behandlungsbuchBtn');
-        this.bookAppointmentBtn = document.getElementById('bookAppointmentBtn');
-        this.sendReminderBtn = document.getElementById('sendReminderBtn');
+        this.viewPatientBtn = PatientUtils.safeQuerySelector('#viewPatientBtn');
+        this.editPatientBtn = PatientUtils.safeQuerySelector('#editPatientBtn');
+        this.behandlungsbuchBtn = PatientUtils.safeQuerySelector('#behandlungsbuchBtn');
+        this.bookAppointmentBtn = PatientUtils.safeQuerySelector('#bookAppointmentBtn');
+        this.sendReminderBtn = PatientUtils.safeQuerySelector('#sendReminderBtn');
         
         // Form elements
-        this.patientForm = document.getElementById('patientForm');
-        this.formInputs = this.patientForm.querySelectorAll('input, select, textarea');
+        this.patientForm = PatientUtils.safeQuerySelector('#patientForm');
+        this.formInputs = this.patientForm?.querySelectorAll('input, select, textarea') || [];
         
         // Action buttons
-        this.addPatientBtn = document.getElementById('addPatientBtn');
-        this.addFirstPatientBtn = document.getElementById('addFirstPatientBtn');
-        this.addBehandlungsbuchBtn = document.getElementById('addBehandlungsbuchBtn');
+        this.addPatientBtn = PatientUtils.safeQuerySelector('#addPatientBtn');
+        this.addFirstPatientBtn = PatientUtils.safeQuerySelector('#addFirstPatientBtn');
+        this.addBehandlungsbuchBtn = PatientUtils.safeQuerySelector('#addBehandlungsbuchBtn');
         
         // Search and filter
-        this.searchInput = document.getElementById('patientSearch');
-        this.speciesFilter = document.getElementById('speciesFilter');
+        this.searchInput = PatientUtils.safeQuerySelector('#patientSearch');
+        this.speciesFilter = PatientUtils.safeQuerySelector('#speciesFilter');
         
         // Table elements
-        this.patientsTable = document.getElementById('patientsTable');
-        this.patientsTableBody = document.getElementById('patientsTableBody');
-        this.noPatients = document.getElementById('noPatients');
+        this.patientsTable = PatientUtils.safeQuerySelector('#patientsTable');
+        this.patientsTableBody = PatientUtils.safeQuerySelector('#patientsTableBody');
+        this.noPatients = PatientUtils.safeQuerySelector('#noPatients');
+        
+        // New table elements
+        this.patientSearchFilter = PatientUtils.safeQuerySelector('#patientSearchFilter');
+        this.statusFilter = PatientUtils.safeQuerySelector('#statusFilter');
+        this.genderFilter = PatientUtils.safeQuerySelector('#genderFilter');
+        this.exportPatientsBtn = PatientUtils.safeQuerySelector('#exportPatients');
+        this.printPatientsBtn = PatientUtils.safeQuerySelector('#printPatients');
+        this.generateReportBtn = PatientUtils.safeQuerySelector('#generateReport');
+        this.tablePaginationInfo = PatientUtils.safeQuerySelector('#tablePaginationInfo');
+        this.tablePaginationControls = PatientUtils.safeQuerySelector('#tablePaginationControls');
         
         // Alert container
-        this.alertContainer = document.getElementById('alertContainer');
+        this.alertContainer = PatientUtils.safeQuerySelector('#alertContainer');
     }
     
     bindEvents() {
+        // Action button events
+        this.bindActionButtonEvents();
+        
+        // Form events
+        this.bindFormEvents();
+        
+        // Search and filter events
+        this.bindSearchFilterEvents();
+        
+        // Table events
+        this.bindTableEvents();
+        
+        // Export events
+        this.bindExportEvents();
+        
         // Modal events
-        this.addPatientBtn.addEventListener('click', () => this.openModal());
-        this.addFirstPatientBtn.addEventListener('click', () => this.openModal());
-        this.addBehandlungsbuchBtn.addEventListener('click', () => this.openBehandlungsbuchModal());
-        this.closeModalBtn.addEventListener('click', () => this.closeModal());
-        this.cancelBtn.addEventListener('click', () => this.closeModal());
-        
-        // Close modal on outside click
-        this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) {
-                this.closeModal();
-            }
-        });
-        
-        // Patient detail modal events
-        this.closeDetailModalBtn.addEventListener('click', () => this.closeDetailModal());
-        this.detailModal.addEventListener('click', (e) => {
-            if (e.target === this.detailModal) {
-                this.closeDetailModal();
-            }
-        });
-        
-        // Behandlungsbuch modal events
-        this.closeBehandlungsbuchModalBtn.addEventListener('click', () => this.closeBehandlungsbuchModal());
-        this.behandlungsbuchModal.addEventListener('click', (e) => {
-            if (e.target === this.behandlungsbuchModal) {
-                this.closeBehandlungsbuchModal();
-            }
-        });
-        
-        // Treatment form submission
-        this.treatmentForm.addEventListener('submit', (e) => this.handleTreatmentFormSubmit(e));
-        
-
-        
-        // Detail modal action buttons
-        this.viewPatientBtn.addEventListener('click', () => this.viewPatientData());
-        this.editPatientBtn.addEventListener('click', () => this.editFromDetail());
-        this.behandlungsbuchBtn.addEventListener('click', () => this.openBehandlungsbuch());
-        this.bookAppointmentBtn.addEventListener('click', () => this.bookAppointment());
-        this.sendReminderBtn.addEventListener('click', () => this.sendReminder());
-        
-        // Form submission
-        this.patientForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
-        
-        // Search and filter
-        this.searchInput.addEventListener('input', () => this.handleSearch());
-        this.speciesFilter.addEventListener('change', () => this.handleFilter());
+        this.bindModalEvents();
         
         // Keyboard shortcuts
+        this.bindKeyboardEvents();
+    }
+
+    /**
+     * Bind action button events
+     */
+    bindActionButtonEvents() {
+        if (this.addPatientBtn) {
+            this.addPatientBtn.addEventListener('click', () => this.openModal());
+        }
+        
+        if (this.addFirstPatientBtn) {
+            this.addFirstPatientBtn.addEventListener('click', () => this.openModal());
+        }
+        
+        if (this.addBehandlungsbuchBtn) {
+            this.addBehandlungsbuchBtn.addEventListener('click', () => this.openBehandlungsbuchModal());
+        }
+
+        // Detail modal action buttons
+        if (this.viewPatientBtn) {
+            this.viewPatientBtn.addEventListener('click', () => this.viewPatientData());
+        }
+        
+        if (this.editPatientBtn) {
+            this.editPatientBtn.addEventListener('click', () => this.editFromDetail());
+        }
+        
+        if (this.behandlungsbuchBtn) {
+            this.behandlungsbuchBtn.addEventListener('click', () => this.openBehandlungsbuch());
+        }
+        
+        if (this.bookAppointmentBtn) {
+            this.bookAppointmentBtn.addEventListener('click', () => this.bookAppointment());
+        }
+        
+        if (this.sendReminderBtn) {
+            this.sendReminderBtn.addEventListener('click', () => this.sendReminder());
+        }
+    }
+
+    /**
+     * Bind form events
+     */
+    bindFormEvents() {
+        if (this.patientForm) {
+            this.patientForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        }
+
+        if (this.treatmentForm) {
+            this.treatmentForm.addEventListener('submit', (e) => this.handleTreatmentFormSubmit(e));
+        }
+    }
+
+    /**
+     * Bind search and filter events
+     */
+    bindSearchFilterEvents() {
+        if (this.searchInput) {
+            this.searchInput.addEventListener('input', () => this.handleSearch());
+        }
+        
+        if (this.speciesFilter) {
+            this.speciesFilter.addEventListener('change', () => this.handleFilter());
+        }
+        
+        if (this.patientSearchFilter) {
+            this.patientSearchFilter.addEventListener('input', () => this.filterPatients());
+        }
+        
+        if (this.statusFilter) {
+            this.statusFilter.addEventListener('change', () => this.filterPatients());
+        }
+        
+        if (this.genderFilter) {
+            this.genderFilter.addEventListener('change', () => this.filterPatients());
+        }
+    }
+
+    /**
+     * Bind table events
+     */
+    bindTableEvents() {
+        if (this.patientsTable) {
+            this.patientsTable.addEventListener('click', (e) => {
+                if (e.target.tagName === 'TH') {
+                    this.sortTable(e.target);
+                }
+            });
+        }
+    }
+
+    /**
+     * Bind export events
+     */
+    bindExportEvents() {
+        if (this.exportPatientsBtn) {
+            this.exportPatientsBtn.addEventListener('click', () => this.exportPatients());
+        }
+        
+        if (this.printPatientsBtn) {
+            this.printPatientsBtn.addEventListener('click', () => this.printPatients());
+        }
+        
+        if (this.generateReportBtn) {
+            this.generateReportBtn.addEventListener('click', () => this.generateReport());
+        }
+    }
+
+    /**
+     * Bind modal events
+     */
+    bindModalEvents() {
+        // Close modal on outside click
+        if (this.modal) {
+            this.modal.addEventListener('click', (e) => {
+                if (e.target === this.modal) {
+                    this.closeModal();
+                }
+            });
+        }
+        
+        if (this.closeModalBtn) {
+            this.closeModalBtn.addEventListener('click', () => this.closeModal());
+        }
+        
+        if (this.cancelBtn) {
+            this.cancelBtn.addEventListener('click', () => this.closeModal());
+        }
+        
+        // Patient detail modal events
+        if (this.detailModal) {
+            this.detailModal.addEventListener('click', (e) => {
+                if (e.target === this.detailModal) {
+                    this.closeDetailModal();
+                }
+            });
+        }
+        
+        if (this.closeDetailModalBtn) {
+            this.closeDetailModalBtn.addEventListener('click', () => this.closeDetailModal());
+        }
+        
+        // Behandlungsbuch modal events
+        if (this.behandlungsbuchModal) {
+            this.behandlungsbuchModal.addEventListener('click', (e) => {
+                if (e.target === this.behandlungsbuchModal) {
+                    this.closeBehandlungsbuchModal();
+                }
+            });
+        }
+        
+        if (this.closeBehandlungsbuchModalBtn) {
+            this.closeBehandlungsbuchModalBtn.addEventListener('click', () => this.closeBehandlungsbuchModal());
+        }
+    }
+
+    /**
+     * Bind keyboard events
+     */
+    bindKeyboardEvents() {
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.modal.classList.contains('active')) {
-                this.closeModal();
-            }
-            if (e.key === 'Escape' && this.detailModal.classList.contains('active')) {
-                this.closeDetailModal();
-            }
-            if (e.key === 'Escape' && this.behandlungsbuchModal.classList.contains('active')) {
-                this.closeBehandlungsbuchModal();
+            if (e.key === 'Escape') {
+                if (this.modal?.classList.contains('active')) {
+                    this.closeModal();
+                } else if (this.detailModal?.classList.contains('active')) {
+                    this.closeDetailModal();
+                } else if (this.behandlungsbuchModal?.classList.contains('active')) {
+                    this.closeBehandlungsbuchModal();
+                }
             }
         });
     }
@@ -132,12 +436,23 @@ class PatientenManager {
         this.currentPatient = patient;
         this.isEditing = !!patient;
         
+        if (!this.modal) {
+            this.showAlert('Modal konnte nicht geöffnet werden', 'error');
+            return;
+        }
+        
         if (this.isEditing) {
             this.fillFormWithPatient(patient);
-            this.modal.querySelector('.modal-title').textContent = 'Patient bearbeiten';
+            const titleElement = this.modal.querySelector('.modal-title');
+            if (titleElement) {
+                titleElement.textContent = 'Patient bearbeiten';
+            }
         } else {
             this.clearForm();
-            this.modal.querySelector('.modal-title').textContent = 'Neuen Patienten hinzufügen';
+            const titleElement = this.modal.querySelector('.modal-title');
+            if (titleElement) {
+                titleElement.textContent = 'Neuen Patienten hinzufügen';
+            }
         }
         
         this.modal.classList.add('active');
@@ -145,27 +460,50 @@ class PatientenManager {
         
         // Focus first input
         setTimeout(() => {
-            this.patientForm.querySelector('input').focus();
+            const firstInput = this.patientForm?.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
         }, 100);
     }
     
     closeModal() {
-        this.modal.classList.remove('active');
+        if (this.modal) {
+            this.modal.classList.remove('active');
+        }
         document.body.style.overflow = '';
         this.currentPatient = null;
         this.isEditing = false;
         this.clearForm();
     }
     
-    openBehandlungsbuchModal() {
-        // Clear any existing treatment form
+    openBehandlungsbuchModal(patientId = null) {
+        if (!this.behandlungsbuchModal) {
+            this.showAlert('Modal konnte nicht geöffnet werden', 'error');
+            return;
+        }
+        
+        let patient = null;
+        let patientName = 'Neue Behandlung';
+
+        if (patientId) {
+            patient = this.patients.find(p => p.id === patientId);
+            if (patient) {
+                patientName = patient.name;
+                this.currentPatient = patient;
+            }
+        }
+
+        // Clear form and set default date
         this.clearTreatmentForm();
         
-        // Populate patient dropdown
-        this.populatePatientDropdown();
+        // Set patient name
+        if (this.behandlungsbuchPatientName) {
+            this.behandlungsbuchPatientName.textContent = patientName;
+        }
         
-        // Set the patient name to indicate it's a new treatment
-        this.behandlungsbuchPatientName.textContent = 'Neue Behandlung';
+        // Populate patient dropdown
+        this.populatePatientDropdown(patientId);
         
         // Show the modal
         this.behandlungsbuchModal.classList.add('active');
@@ -181,6 +519,8 @@ class PatientenManager {
     }
     
     clearForm() {
+        if (!this.patientForm) return;
+        
         this.formInputs.forEach(input => {
             if (input.type === 'checkbox') {
                 input.checked = false;
@@ -196,6 +536,8 @@ class PatientenManager {
     }
     
     fillFormWithPatient(patient) {
+        if (!this.patientForm || !patient) return;
+        
         const formData = {
             patientName: patient.name,
             patientSpecies: patient.species,
@@ -223,103 +565,40 @@ class PatientenManager {
     }
     
     // Form Validation and Submission
-    validateForm() {
-        let isValid = true;
-        const errors = {};
-        
-        // Required fields
-        const requiredFields = ['patientName', 'patientSpecies', 'ownerName', 'ownerPhone'];
-        
-        requiredFields.forEach(fieldName => {
-            const input = this.patientForm.querySelector(`[name="${fieldName}"]`);
-            const value = input.value.trim();
-            
-            if (!value) {
-                errors[fieldName] = 'Dieses Feld ist erforderlich';
-                isValid = false;
-            }
-        });
-        
-        // Email validation
-        const emailInput = this.patientForm.querySelector('[name="ownerEmail"]');
-        if (emailInput.value.trim() && !this.isValidEmail(emailInput.value)) {
-            errors.ownerEmail = 'Bitte geben Sie eine gültige E-Mail-Adresse ein';
-            isValid = false;
-        }
-        
-        // Phone validation
-        const phoneInput = this.patientForm.querySelector('[name="ownerPhone"]');
-        if (phoneInput.value.trim() && !this.isValidPhone(phoneInput.value)) {
-            errors.ownerPhone = 'Bitte geben Sie eine gültige Telefonnummer ein';
-            isValid = false;
-        }
-        
-        // Weight validation
-        const weightInput = this.patientForm.querySelector('[name="patientWeight"]');
-        if (weightInput.value && (isNaN(weightInput.value) || parseFloat(weightInput.value) < 0)) {
-            errors.patientWeight = 'Bitte geben Sie ein gültiges Gewicht ein';
-            isValid = false;
-        }
-        
-        this.displayFormErrors(errors);
-        return isValid;
-    }
-    
-    isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-    
-    isValidPhone(phone) {
-        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,}$/;
-        return phoneRegex.test(phone);
-    }
-    
-    displayFormErrors(errors) {
-        // Clear previous errors
-        this.patientForm.querySelectorAll('.form-group').forEach(group => {
-            group.classList.remove('error');
-            const errorMessage = group.querySelector('.error-message');
-            if (errorMessage) {
-                errorMessage.remove();
-            }
-        });
-        
-        // Display new errors
-        Object.keys(errors).forEach(fieldName => {
-            const input = this.patientForm.querySelector(`[name="${fieldName}"]`);
-            if (input) {
-                const formGroup = input.closest('.form-group');
-                formGroup.classList.add('error');
-                
-                const errorMessage = document.createElement('div');
-                errorMessage.className = 'error-message';
-                errorMessage.textContent = errors[fieldName];
-                formGroup.appendChild(errorMessage);
-            }
-        });
-    }
-    
     handleFormSubmit(e) {
         e.preventDefault();
         
-        if (!this.validateForm()) {
-            return;
-        }
+        if (!this.patientForm) return;
         
         const formData = this.getFormData();
         
+        // Validate form using utility
+        const validation = ValidationUtils.validatePatientForm(formData);
+        if (!validation.isValid) {
+            this.displayFormErrors(validation.errors);
+            return;
+        }
+        
+        // Transform form data
+        const patientData = this.transformPatientFormData(formData);
+        
+        // Save patient
         if (this.isEditing) {
-            this.updatePatient(this.currentPatient.id, formData);
+            this.updatePatient(this.currentPatient.id, patientData);
+            this.showAlert('Patient erfolgreich aktualisiert!', 'success');
         } else {
-            this.addPatient(formData);
+            this.addPatient(patientData);
+            this.showAlert('Patient erfolgreich hinzugefügt!', 'success');
         }
         
         this.closeModal();
-        this.showAlert('Patient erfolgreich gespeichert!', 'success');
+        this.renderPatients();
+        this.updateEmptyState();
     }
     
     getFormData() {
+        if (!this.patientForm) return {};
+        
         const formData = {};
         this.formInputs.forEach(input => {
             if (input.type === 'checkbox') {
@@ -329,6 +608,10 @@ class PatientenManager {
             }
         });
         
+        return formData;
+    }
+    
+    transformPatientFormData(formData) {
         return {
             name: formData.patientName,
             species: formData.patientSpecies,
@@ -346,18 +629,47 @@ class PatientenManager {
             },
             allergies: formData.patientAllergies,
             medications: formData.patientMedications,
-            notes: formData.patientNotes,
-            treatments: this.inlineTreatments || [],
-            createdAt: this.isEditing ? this.currentPatient.createdAt : new Date().toISOString(),
-            lastVisit: this.isEditing ? this.currentPatient.lastVisit : null
+            notes: formData.patientNotes
         };
+    }
+    
+    displayFormErrors(errors) {
+        if (!this.patientForm) return;
+        
+        // Clear previous errors
+        this.patientForm.querySelectorAll('.form-group').forEach(group => {
+            group.classList.remove('error');
+            const errorMessage = group.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        });
+        
+        // Display new errors
+        Object.keys(errors).forEach(fieldName => {
+            const input = this.patientForm.querySelector(`[name="${fieldName}"]`);
+            if (input) {
+                const formGroup = input.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.add('error');
+                    
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'error-message';
+                    errorMessage.textContent = errors[fieldName];
+                    formGroup.appendChild(errorMessage);
+                }
+            }
+        });
     }
     
     // Patient Data Management
     addPatient(patientData) {
         const newPatient = {
-            id: this.generateId(),
-            ...patientData
+            id: PatientUtils.generateId(),
+            ...patientData,
+            createdAt: new Date().toISOString(),
+            lastVisit: null,
+            treatments: []
         };
         
         this.patients.unshift(newPatient);
@@ -369,7 +681,11 @@ class PatientenManager {
     updatePatient(patientId, patientData) {
         const index = this.patients.findIndex(p => p.id === patientId);
         if (index !== -1) {
-            this.patients[index] = { ...this.patients[index], ...patientData };
+            this.patients[index] = { 
+                ...this.patients[index], 
+                ...patientData,
+                lastVisit: this.patients[index].lastVisit // Preserve last visit
+            };
             this.savePatients();
             this.renderPatients();
         }
@@ -377,21 +693,20 @@ class PatientenManager {
     
     deletePatient(patientId) {
         if (confirm('Sind Sie sicher, dass Sie diesen Patienten löschen möchten?')) {
+            const initialLength = this.patients.length;
             this.patients = this.patients.filter(p => p.id !== patientId);
-            this.savePatients();
-            this.renderPatients();
-            this.updateEmptyState();
-            this.showAlert('Patient erfolgreich gelöscht!', 'success');
+            
+            if (this.patients.length !== initialLength) {
+                this.savePatients();
+                this.renderPatients();
+                this.updateEmptyState();
+                this.showAlert('Patient erfolgreich gelöscht!', 'success');
+            }
         }
-    }
-    
-    generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
     
     // Search and Filter
     handleSearch() {
-        const searchTerm = this.searchInput.value.toLowerCase();
         this.filterPatients();
     }
     
@@ -400,70 +715,99 @@ class PatientenManager {
     }
     
     filterPatients() {
-        const searchTerm = this.searchInput.value.toLowerCase();
-        const speciesFilter = this.speciesFilter.value;
-        
+        const filters = {
+            searchTerm: this.patientSearchFilter?.value || this.searchInput?.value || '',
+            species: this.speciesFilter?.value || '',
+            status: this.statusFilter?.value || '',
+            gender: this.genderFilter?.value || ''
+        };
+
         const filteredPatients = this.patients.filter(patient => {
+            // Search term filter
+            const searchTerm = filters.searchTerm.toLowerCase();
             const matchesSearch = !searchTerm || 
                 patient.name.toLowerCase().includes(searchTerm) ||
                 patient.owner.name.toLowerCase().includes(searchTerm) ||
-                patient.breed?.toLowerCase().includes(searchTerm) ||
-                patient.owner.phone.includes(searchTerm);
-            
-            const matchesSpecies = !speciesFilter || patient.species === speciesFilter;
-            
-            return matchesSearch && matchesSpecies;
+                patient.owner.phone.toLowerCase().includes(searchTerm) ||
+                (patient.breed && patient.breed.toLowerCase().includes(searchTerm));
+
+            // Species filter
+            const matchesSpecies = !filters.species || patient.species === filters.species;
+
+            // Status filter
+            const matchesStatus = !filters.status || PatientUtils.getPatientStatus(patient).label === filters.status;
+
+            // Gender filter
+            const matchesGender = !filters.gender || patient.gender === filters.gender;
+
+            return matchesSearch && matchesSpecies && matchesStatus && matchesGender;
         });
         
         this.renderPatientsTable(filteredPatients);
+        this.updateTablePagination(filteredPatients.length);
     }
     
     // Rendering
     renderPatients() {
-        this.filterPatients();
+        const patients = this.patients;
+        this.renderPatientsTable(patients);
+        this.updateEmptyState();
     }
     
     renderPatientsTable(patients) {
+        if (!this.patientsTableBody) return;
+        
         if (patients.length === 0) {
             this.patientsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="no-data">
-                        <div class="empty-state">
-                            <p>Keine Patienten gefunden</p>
-                        </div>
+                    <td colspan="8" class="table-empty">
+                        <div class="table-empty-icon">🐾</div>
+                        <h3 class="table-empty-title">Keine Patienten gefunden</h3>
+                        <p class="table-empty-description">Versuchen Sie andere Suchkriterien oder fügen Sie einen neuen Patienten hinzu.</p>
                     </td>
                 </tr>
             `;
             return;
         }
         
-        this.patientsTableBody.innerHTML = patients.map(patient => `
-            <tr class="patient-row" data-patient-id="${patient.id}" onclick="patientenManager.openPatientDetail('${patient.id}')">
-                <td>
-                    <span class="patient-name">${this.escapeHtml(patient.name)}</span>
-                </td>
-                <td>
-                    <span class="patient-species">${this.escapeHtml(patient.species)}</span>
-                </td>
-                <td>${this.escapeHtml(patient.breed || '-')}</td>
-                <td>${this.escapeHtml(patient.owner.name)}</td>
-                <td>${this.escapeHtml(patient.owner.phone)}</td>
-                <td>${patient.lastVisit ? this.formatDate(patient.lastVisit) : '-'}</td>
-                <td>
-                    <div class="patient-actions" onclick="event.stopPropagation()">
-                        <button class="btn btn-info btn-sm" onclick="patientenManager.viewPatientBehandlungsbuch('${patient.id}')" title="Behandlungsbuch">
+        this.patientsTableBody.innerHTML = patients.map(patient => {
+            const status = PatientUtils.getPatientStatus(patient);
+            const speciesIcon = PatientUtils.getSpeciesIcon(patient.species);
+            
+            return `
+                <tr class="patient-row" data-patient-id="${patient.id}" onclick="patientenManager.openPatientDetail('${patient.id}')">
+                    <td class="avatar-cell">
+                        <div class="avatar">${patient.name.charAt(0).toUpperCase()}</div>
+                        <div>
+                            <div>${PatientUtils.escapeHtml(patient.name)}</div>
+                            <small>ID: #${patient.id}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="species-cell">
+                            <span class="species-icon">${speciesIcon}</span>
+                            <span>${PatientUtils.escapeHtml(patient.species)}</span>
+                        </div>
+                    </td>
+                    <td>${PatientUtils.escapeHtml(patient.breed || '-')}</td>
+                    <td>${PatientUtils.escapeHtml(patient.owner.name)}</td>
+                    <td>${PatientUtils.escapeHtml(patient.owner.phone)}</td>
+                    <td>${patient.lastVisit ? PatientUtils.formatDate(patient.lastVisit) : '-'}</td>
+                    <td><span class="status-cell ${status.class}">${status.label}</span></td>
+                    <td class="action-cell">
+                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); patientenManager.viewPatientBehandlungsbuch('${patient.id}')" title="Behandlungsbuch">
                             Behandlungsbuch
                         </button>
-                        <button class="btn btn-ghost btn-sm" onclick="patientenManager.editPatient('${patient.id}')" title="Bearbeiten">
+                        <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); patientenManager.editPatient('${patient.id}')" title="Bearbeiten">
                             Bearbeiten
                         </button>
-                        <button class="btn btn-error btn-sm" onclick="patientenManager.deletePatient('${patient.id}')" title="Löschen">
+                        <button class="btn btn-sm btn-error" onclick="event.stopPropagation(); patientenManager.deletePatient('${patient.id}')" title="Löschen">
                             Löschen
                         </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
     
     editPatient(patientId) {
@@ -479,13 +823,17 @@ class PatientenManager {
         if (patient) {
             this.currentPatient = patient;
             this.renderPatientDetail(patient);
-            this.detailModal.classList.add('active');
+            if (this.detailModal) {
+                this.detailModal.classList.add('active');
+            }
             document.body.style.overflow = 'hidden';
         }
     }
     
     closeDetailModal() {
-        this.detailModal.classList.remove('active');
+        if (this.detailModal) {
+            this.detailModal.classList.remove('active');
+        }
         document.body.style.overflow = '';
         this.currentPatient = null;
     }
@@ -494,14 +842,21 @@ class PatientenManager {
     openBehandlungsbuch() {
         if (!this.currentPatient) return;
         
-        this.behandlungsbuchPatientName.textContent = this.currentPatient.name;
+        if (this.behandlungsbuchPatientName) {
+            this.behandlungsbuchPatientName.textContent = this.currentPatient.name;
+        }
         this.renderTreatmentHistory();
-        this.behandlungsbuchModal.classList.add('active');
+        if (this.behandlungsbuchModal) {
+            this.behandlungsbuchModal.classList.add('active');
+        }
         document.body.style.overflow = 'hidden';
         
         // Set default date to today
         const today = new Date().toISOString().split('T')[0];
-        this.treatmentForm.querySelector('[name="treatmentDate"]').value = today;
+        const dateInput = this.treatmentForm?.querySelector('[name="treatmentDate"]');
+        if (dateInput) {
+            dateInput.value = today;
+        }
     }
     
     viewPatientBehandlungsbuch(patientId) {
@@ -515,10 +870,12 @@ class PatientenManager {
         this.currentPatient = patient;
         
         // Update modal title with patient name
-        this.behandlungsbuchPatientName.textContent = patient.name;
+        if (this.behandlungsbuchPatientName) {
+            this.behandlungsbuchPatientName.textContent = patient.name;
+        }
         
         // Pre-select the patient in the dropdown
-        const patientSelect = document.getElementById('treatmentPatient');
+        const patientSelect = PatientUtils.safeQuerySelector('#treatmentPatient');
         if (patientSelect) {
             patientSelect.value = patient.id;
         }
@@ -527,29 +884,41 @@ class PatientenManager {
         this.renderTreatmentHistory();
         
         // Show the modal
-        this.behandlungsbuchModal.classList.add('active');
+        if (this.behandlungsbuchModal) {
+            this.behandlungsbuchModal.classList.add('active');
+        }
         document.body.style.overflow = 'hidden';
         
         // Set default date to today
         const today = new Date().toISOString().split('T')[0];
-        this.treatmentForm.querySelector('[name="treatmentDate"]').value = today;
+        const dateInput = this.treatmentForm?.querySelector('[name="treatmentDate"]');
+        if (dateInput) {
+            dateInput.value = today;
+        }
     }
     
     closeBehandlungsbuchModal() {
-        this.behandlungsbuchModal.classList.remove('active');
+        if (this.behandlungsbuchModal) {
+            this.behandlungsbuchModal.classList.remove('active');
+        }
         document.body.style.overflow = '';
         this.clearTreatmentForm();
     }
     
     clearTreatmentForm() {
+        if (!this.treatmentForm) return;
+        
         this.treatmentForm.reset();
         // Set default date to today
         const today = new Date().toISOString().split('T')[0];
-        this.treatmentForm.querySelector('[name="treatmentDate"]').value = today;
+        const dateInput = this.treatmentForm.querySelector('[name="treatmentDate"]');
+        if (dateInput) {
+            dateInput.value = today;
+        }
     }
     
-    populatePatientDropdown() {
-        const patientSelect = document.getElementById('treatmentPatient');
+    populatePatientDropdown(selectedId = '') {
+        const patientSelect = PatientUtils.safeQuerySelector('#treatmentPatient');
         if (!patientSelect) return;
         
         // Clear existing options
@@ -560,6 +929,9 @@ class PatientenManager {
             const option = document.createElement('option');
             option.value = patient.id;
             option.textContent = `${patient.name} (${patient.species}) - ${patient.owner.name}`;
+            if (patient.id === selectedId) {
+                option.selected = true;
+            }
             patientSelect.appendChild(option);
         });
     }
@@ -567,29 +939,31 @@ class PatientenManager {
 
     
     renderPatientDetail(patient) {
+        if (!this.patientDetailContent || !patient) return;
+        
         const content = `
             <div class="patient-detail-grid">
                 <div class="detail-section">
                     <h3>Patienteninformationen</h3>
                     <div class="detail-row">
                         <span class="detail-label">Name:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.name)}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.name)}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Tierart:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.species)}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.species)}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Rasse:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.breed || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.breed || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Geschlecht:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.gender || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.gender || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Geburtsdatum:</span>
-                        <span class="detail-value">${patient.birthDate ? this.formatDate(patient.birthDate) : '-'}</span>
+                        <span class="detail-value">${patient.birthDate ? PatientUtils.formatDate(patient.birthDate) : '-'}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Gewicht:</span>
@@ -597,11 +971,11 @@ class PatientenManager {
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Farbe:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.color || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.color || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Chip-Nummer:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.microchip || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.microchip || '-')}</span>
                     </div>
                 </div>
                 
@@ -609,19 +983,19 @@ class PatientenManager {
                     <h3>Besitzerinformationen</h3>
                     <div class="detail-row">
                         <span class="detail-label">Name:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.owner.name)}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.owner.name)}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Telefon:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.owner.phone)}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.owner.phone)}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">E-Mail:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.owner.email || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.owner.email || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Adresse:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.owner.address || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.owner.address || '-')}</span>
                     </div>
                 </div>
                 
@@ -629,19 +1003,19 @@ class PatientenManager {
                     <h3>Medizinische Informationen</h3>
                     <div class="detail-row">
                         <span class="detail-label">Allergien:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.allergies || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.allergies || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Aktuelle Medikamente:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.medications || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.medications || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Notizen:</span>
-                        <span class="detail-value">${this.escapeHtml(patient.notes || '-')}</span>
+                        <span class="detail-value">${PatientUtils.escapeHtml(patient.notes || '-')}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Letzter Besuch:</span>
-                        <span class="detail-value">${patient.lastVisit ? this.formatDate(patient.lastVisit) : '-'}</span>
+                        <span class="detail-value">${patient.lastVisit ? PatientUtils.formatDate(patient.lastVisit) : '-'}</span>
                     </div>
                 </div>
             </div>
@@ -651,8 +1025,6 @@ class PatientenManager {
     }
     
     viewPatientData() {
-        // This method can be used to show more detailed patient information
-        // For now, we'll just show an alert
         this.showAlert('Patientendaten werden angezeigt', 'info');
     }
     
@@ -662,33 +1034,26 @@ class PatientenManager {
     }
     
     bookAppointment() {
-        // This would typically redirect to the appointments page
-        this.showAlert('Terminbuchung wird geöffnet...', 'info');
-        // In a real application, you might redirect to the appointments page
-        // window.location.href = '../termine/termine.html?patient=' + this.currentPatient.id;
+        if (this.currentPatient) {
+            this.showAlert(`Terminbuchung wird für ${this.currentPatient.name} geöffnet...`, 'info');
+        }
     }
     
     sendReminder() {
-        // This would typically send a reminder to the patient's owner
-        this.showAlert('Erinnerung wird an ' + this.currentPatient.owner.name + ' gesendet', 'success');
+        if (this.currentPatient) {
+            this.showAlert(`Erinnerung wird an ${this.currentPatient.owner.name} gesendet`, 'success');
+        }
     }
     
     // Treatment Form Methods
     handleTreatmentFormSubmit(e) {
         e.preventDefault();
         
+        if (!this.treatmentForm) return;
+        
         const formData = new FormData(this.treatmentForm);
-        const selectedPatientId = formData.get('treatmentPatient');
-        
-        // Validate patient selection
-        if (!selectedPatientId) {
-            this.showAlert('Bitte wählen Sie einen Patienten aus', 'error');
-            return;
-        }
-        
         const treatmentData = {
-            id: this.generateId(),
-            patientId: selectedPatientId,
+            patientId: formData.get('treatmentPatient'),
             date: formData.get('treatmentDate'),
             type: formData.get('treatmentType'),
             title: formData.get('treatmentTitle'),
@@ -697,68 +1062,70 @@ class PatientenManager {
             dosage: formData.get('treatmentDosage') || '',
             vet: formData.get('treatmentVet') || '',
             cost: parseFloat(formData.get('treatmentCost')) || 0,
-            notes: formData.get('treatmentNotes') || '',
-            createdAt: new Date().toISOString()
+            notes: formData.get('treatmentNotes') || ''
         };
         
-        // Validate required fields
-        if (!treatmentData.date || !treatmentData.type || !treatmentData.title) {
+        // Validate form using utility
+        const validation = ValidationUtils.validateTreatmentForm(treatmentData);
+        if (!validation.isValid) {
             this.showAlert('Bitte füllen Sie alle erforderlichen Felder aus', 'error');
             return;
         }
         
-        // Add treatment to selected patient
-        this.addTreatmentToSelectedPatient(treatmentData);
-        
-        // Clear form and re-render
-        this.clearTreatmentForm();
-        this.populatePatientDropdown(); // Re-populate dropdown
-        this.showAlert('Behandlung erfolgreich hinzugefügt', 'success');
-    }
-    
-    addTreatmentToPatient(treatmentData) {
-        if (!this.currentPatient) return;
-        
-        // Initialize treatments array if it doesn't exist
-        if (!this.currentPatient.treatments) {
-            this.currentPatient.treatments = [];
-        }
-        
-        // Add treatment
-        this.currentPatient.treatments.unshift(treatmentData); // Add to beginning
-        
-        // Update patient in the main list
-        const patientIndex = this.patients.findIndex(p => p.id === this.currentPatient.id);
-        if (patientIndex !== -1) {
-            this.patients[patientIndex] = this.currentPatient;
-            this.savePatients();
+        // Add treatment to patient
+        const result = this.addTreatmentToPatient(treatmentData.patientId, treatmentData);
+        if (result) {
+            this.showAlert('Behandlung erfolgreich hinzugefügt', 'success');
+            
+            // Update current patient if it's the same
+            if (this.currentPatient && this.currentPatient.id === treatmentData.patientId) {
+                this.currentPatient = result;
+            }
+            
+            // Re-render treatment history
+            this.renderTreatmentHistory();
+        } else {
+            this.showAlert('Fehler beim Hinzufügen der Behandlung', 'error');
         }
     }
     
-    addTreatmentToSelectedPatient(treatmentData) {
-        const selectedPatient = this.patients.find(p => p.id === treatmentData.patientId);
-        if (!selectedPatient) {
+    addTreatmentToPatient(patientId, treatmentData) {
+        const patient = this.patients.find(p => p.id === patientId);
+        if (!patient) {
             this.showAlert('Patient nicht gefunden', 'error');
-            return;
+            return null;
         }
-        
+
         // Initialize treatments array if it doesn't exist
-        if (!selectedPatient.treatments) {
-            selectedPatient.treatments = [];
+        if (!patient.treatments) {
+            patient.treatments = [];
         }
+
+        const treatment = {
+            id: PatientUtils.generateId(),
+            ...treatmentData,
+            createdAt: new Date().toISOString()
+        };
+
+        patient.treatments.unshift(treatment);
         
-        // Add treatment
-        selectedPatient.treatments.unshift(treatmentData); // Add to beginning
+        // Update last visit
+        patient.lastVisit = treatment.date;
         
         // Update patient in the main list
-        const patientIndex = this.patients.findIndex(p => p.id === selectedPatient.id);
+        const patientIndex = this.patients.findIndex(p => p.id === patientId);
         if (patientIndex !== -1) {
-            this.patients[patientIndex] = selectedPatient;
+            this.patients[patientIndex] = patient;
             this.savePatients();
+            return patient;
         }
+        
+        return null;
     }
     
     renderTreatmentHistory() {
+        if (!this.treatmentList || !this.noTreatments) return;
+        
         if (!this.currentPatient || !this.currentPatient.treatments || this.currentPatient.treatments.length === 0) {
             this.treatmentList.style.display = 'none';
             this.noTreatments.style.display = 'block';
@@ -773,27 +1140,27 @@ class PatientenManager {
         this.treatmentList.innerHTML = treatments.map(treatment => `
             <div class="treatment-item">
                 <div class="treatment-header">
-                    <div class="treatment-date">${this.formatDate(treatment.date)}</div>
-                    <div class="treatment-type-badge treatment-type-${treatment.type}">${this.getTreatmentTypeLabel(treatment.type)}</div>
+                    <div class="treatment-date">${PatientUtils.formatDate(treatment.date)}</div>
+                    <div class="treatment-type-badge treatment-type-${treatment.type}">${PatientUtils.getTreatmentTypeLabel(treatment.type)}</div>
                 </div>
                 <div class="treatment-content">
-                    <h4 class="treatment-title">${this.escapeHtml(treatment.title)}</h4>
-                    ${treatment.description ? `<p class="treatment-description">${this.escapeHtml(treatment.description)}</p>` : ''}
+                    <h4 class="treatment-title">${PatientUtils.escapeHtml(treatment.title)}</h4>
+                    ${treatment.description ? `<p class="treatment-description">${PatientUtils.escapeHtml(treatment.description)}</p>` : ''}
                     
                     <div class="treatment-details">
                         ${treatment.medication ? `
                             <div class="treatment-detail">
-                                <strong>Medikamente:</strong> ${this.escapeHtml(treatment.medication)}
+                                <strong>Medikamente:</strong> ${PatientUtils.escapeHtml(treatment.medication)}
                             </div>
                         ` : ''}
                         ${treatment.dosage ? `
                             <div class="treatment-detail">
-                                <strong>Dosierung:</strong> ${this.escapeHtml(treatment.dosage)}
+                                <strong>Dosierung:</strong> ${PatientUtils.escapeHtml(treatment.dosage)}
                             </div>
                         ` : ''}
                         ${treatment.vet ? `
                             <div class="treatment-detail">
-                                <strong>Tierarzt:</strong> ${this.escapeHtml(treatment.vet)}
+                                <strong>Tierarzt:</strong> ${PatientUtils.escapeHtml(treatment.vet)}
                             </div>
                         ` : ''}
                         ${treatment.cost > 0 ? `
@@ -803,7 +1170,7 @@ class PatientenManager {
                         ` : ''}
                         ${treatment.notes ? `
                             <div class="treatment-detail">
-                                <strong>Notizen:</strong> ${this.escapeHtml(treatment.notes)}
+                                <strong>Notizen:</strong> ${PatientUtils.escapeHtml(treatment.notes)}
                             </div>
                         ` : ''}
                     </div>
@@ -820,22 +1187,6 @@ class PatientenManager {
         `).join('');
     }
     
-    getTreatmentTypeLabel(type) {
-        const labels = {
-            'untersuchung': 'Untersuchung',
-            'impfung': 'Impfung',
-            'operation': 'Operation',
-            'medikament': 'Medikament',
-            'labor': 'Labor',
-            'röntgen': 'Röntgen',
-            'ultraschall': 'Ultraschall',
-            'chirurgie': 'Chirurgie',
-            'zahnbehandlung': 'Zahnbehandlung',
-            'sonstiges': 'Sonstiges'
-        };
-        return labels[type] || type;
-    }
-    
     editTreatment(treatmentId) {
         // TODO: Implement treatment editing
         this.showAlert('Behandlung bearbeiten - Feature in Entwicklung', 'info');
@@ -845,21 +1196,33 @@ class PatientenManager {
         if (!this.currentPatient || !this.currentPatient.treatments) return;
         
         if (confirm('Sind Sie sicher, dass Sie diese Behandlung löschen möchten?')) {
+            const initialLength = this.currentPatient.treatments.length;
             this.currentPatient.treatments = this.currentPatient.treatments.filter(t => t.id !== treatmentId);
             
-            // Update patient in the main list
-            const patientIndex = this.patients.findIndex(p => p.id === this.currentPatient.id);
-            if (patientIndex !== -1) {
-                this.patients[patientIndex] = this.currentPatient;
-                this.savePatients();
+            if (this.currentPatient.treatments.length !== initialLength) {
+                // Update last visit to most recent treatment
+                if (this.currentPatient.treatments.length > 0) {
+                    this.currentPatient.lastVisit = this.currentPatient.treatments[0].date;
+                } else {
+                    this.currentPatient.lastVisit = null;
+                }
+                
+                // Update patient in the main list
+                const patientIndex = this.patients.findIndex(p => p.id === this.currentPatient.id);
+                if (patientIndex !== -1) {
+                    this.patients[patientIndex] = this.currentPatient;
+                    this.savePatients();
+                }
+                
+                this.renderTreatmentHistory();
+                this.showAlert('Behandlung erfolgreich gelöscht', 'success');
             }
-            
-            this.renderTreatmentHistory();
-            this.showAlert('Behandlung erfolgreich gelöscht', 'success');
         }
     }
     
     updateEmptyState() {
+        if (!this.patientsTable || !this.noPatients) return;
+        
         if (this.patients.length === 0) {
             this.patientsTable.style.display = 'none';
             this.noPatients.style.display = 'block';
@@ -869,23 +1232,25 @@ class PatientenManager {
         }
     }
     
-    // Utility Methods
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('de-DE');
+    updateTablePagination(totalItems) {
+        if (!this.tablePaginationInfo || !this.tablePaginationControls) return;
+        
+        this.tablePaginationInfo.textContent = `Zeige 1-${totalItems} von ${totalItems} Ergebnissen`;
+        
+        this.tablePaginationControls.innerHTML = `
+            <button class="table-pagination-btn" disabled>‹</button>
+            <button class="table-pagination-btn active">1</button>
+            <button class="table-pagination-btn" disabled>›</button>
+        `;
     }
     
     showAlert(message, type = 'info') {
+        if (!this.alertContainer) return;
+        
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
         alert.innerHTML = `
-            <span class="alert-message">${message}</span>
+            <span class="alert-message">${PatientUtils.escapeHtml(message)}</span>
             <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
         `;
         
@@ -900,23 +1265,372 @@ class PatientenManager {
     }
     
     // Local Storage
-    loadPatients() {
-        try {
-            const stored = localStorage.getItem('vetmates_patients');
-            return stored ? JSON.parse(stored) : [];
-        } catch (error) {
-            console.error('Error loading patients:', error);
-            return [];
+    savePatients() {
+        return StorageUtils.save('vetmates_patients', this.patients);
+    }
+
+
+
+    sortTable(header) {
+        const isAsc = header.classList.contains('sort-asc');
+        const isDesc = header.classList.contains('sort-desc');
+        
+        // Remove existing sort classes
+        header.parentElement.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        
+        // Add new sort class
+        if (!isAsc && !isDesc) {
+            header.classList.add('sort-asc');
+        } else if (isAsc) {
+            header.classList.add('sort-desc');
+        } else {
+            header.classList.add('sort-asc');
         }
+        
+        // Get column index and sort direction
+        const columnIndex = Array.from(header.parentElement.children).indexOf(header);
+        const direction = isAsc ? 'desc' : 'asc';
+        
+        // Get current filtered patients and sort them
+        const filters = {
+            searchTerm: this.patientSearchFilter?.value || this.searchInput?.value || '',
+            species: this.speciesFilter?.value || '',
+            status: this.statusFilter?.value || '',
+            gender: this.genderFilter?.value || ''
+        };
+        
+        const filteredPatients = this.patients.filter(patient => {
+            const searchTerm = filters.searchTerm.toLowerCase();
+            const matchesSearch = !searchTerm || 
+                patient.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.phone.toLowerCase().includes(searchTerm) ||
+                (patient.breed && patient.breed.toLowerCase().includes(searchTerm));
+
+            const matchesSpecies = !filters.species || patient.species === filters.species;
+            const matchesStatus = !filters.status || PatientUtils.getPatientStatus(patient).label === filters.status;
+            const matchesGender = !filters.gender || patient.gender === filters.gender;
+
+            return matchesSearch && matchesSpecies && matchesStatus && matchesGender;
+        });
+        
+        const sortedPatients = this.sortPatients(filteredPatients, columnIndex, direction);
+        this.renderPatientsTable(sortedPatients);
+    }
+
+    sortPatients(patients, columnIndex, direction) {
+        const sortedPatients = [...patients];
+        
+        sortedPatients.sort((a, b) => {
+            let aValue, bValue;
+            
+            switch(columnIndex) {
+                case 0: // Patient Name
+                    aValue = a.name.toLowerCase();
+                    bValue = b.name.toLowerCase();
+                    break;
+                case 1: // Species
+                    aValue = a.species.toLowerCase();
+                    bValue = b.species.toLowerCase();
+                    break;
+                case 2: // Breed
+                    aValue = (a.breed || '').toLowerCase();
+                    bValue = (b.breed || '').toLowerCase();
+                    break;
+                case 3: // Owner
+                    aValue = a.owner.name.toLowerCase();
+                    bValue = b.owner.name.toLowerCase();
+                    break;
+                case 4: // Phone
+                    aValue = a.owner.phone.toLowerCase();
+                    bValue = b.owner.phone.toLowerCase();
+                    break;
+                case 5: // Last Visit
+                    aValue = new Date(a.lastVisit || 0).getTime();
+                    bValue = new Date(b.lastVisit || 0).getTime();
+                    break;
+                case 6: // Status
+                    aValue = PatientUtils.getPatientStatus(a).label.toLowerCase();
+                    bValue = PatientUtils.getPatientStatus(b).label.toLowerCase();
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (typeof aValue === 'string' && typeof bValue === 'string') {
+                return direction === 'asc' 
+                    ? aValue.localeCompare(bValue, 'de-DE')
+                    : bValue.localeCompare(aValue, 'de-DE');
+            } else {
+                return direction === 'asc' ? aValue - bValue : bValue - aValue;
+            }
+        });
+        
+        return sortedPatients;
+    }
+
+
+
+    exportPatients() {
+        const filters = {
+            searchTerm: this.patientSearchFilter?.value || this.searchInput?.value || '',
+            species: this.speciesFilter?.value || '',
+            status: this.statusFilter?.value || '',
+            gender: this.genderFilter?.value || ''
+        };
+        
+        const filteredPatients = this.patients.filter(patient => {
+            const searchTerm = filters.searchTerm.toLowerCase();
+            const matchesSearch = !searchTerm || 
+                patient.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.phone.toLowerCase().includes(searchTerm) ||
+                (patient.breed && patient.breed.toLowerCase().includes(searchTerm));
+
+            const matchesSpecies = !filters.species || patient.species === filters.species;
+            const matchesStatus = !filters.status || PatientUtils.getPatientStatus(patient).label === filters.status;
+            const matchesGender = !filters.gender || patient.gender === filters.gender;
+
+            return matchesSearch && matchesSpecies && matchesStatus && matchesGender;
+        });
+        
+        const csvContent = this.generatePatientCSV(filteredPatients);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `patienten_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    }
+
+    generatePatientCSV(patients) {
+        const headers = ['Name', 'Tierart', 'Rasse', 'Geschlecht', 'Besitzer', 'Telefon', 'E-Mail', 'Letzter Besuch', 'Status'];
+        const rows = patients.map(patient => [
+            patient.name,
+            patient.species,
+            patient.breed || '',
+            patient.gender || '',
+            patient.owner.name,
+            patient.owner.phone,
+            patient.owner.email || '',
+            patient.lastVisit ? PatientUtils.formatDate(patient.lastVisit) : '',
+            PatientUtils.getPatientStatus(patient).label
+        ]);
+        
+        return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    }
+
+    printPatients() {
+        const filters = {
+            searchTerm: this.patientSearchFilter?.value || this.searchInput?.value || '',
+            species: this.speciesFilter?.value || '',
+            status: this.statusFilter?.value || '',
+            gender: this.genderFilter?.value || ''
+        };
+        
+        const filteredPatients = this.patients.filter(patient => {
+            const searchTerm = filters.searchTerm.toLowerCase();
+            const matchesSearch = !searchTerm || 
+                patient.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.phone.toLowerCase().includes(searchTerm) ||
+                (patient.breed && patient.breed.toLowerCase().includes(searchTerm));
+
+            const matchesSpecies = !filters.species || patient.species === filters.species;
+            const matchesStatus = !filters.status || PatientUtils.getPatientStatus(patient).label === filters.status;
+            const matchesGender = !filters.gender || patient.gender === filters.gender;
+
+            return matchesSearch && matchesSpecies && matchesStatus && matchesGender;
+        });
+        
+        this.printPatientList(filteredPatients);
+    }
+
+    generateReport() {
+        const filters = {
+            searchTerm: this.patientSearchFilter?.value || this.searchInput?.value || '',
+            species: this.speciesFilter?.value || '',
+            status: this.statusFilter?.value || '',
+            gender: this.genderFilter?.value || ''
+        };
+        
+        const filteredPatients = this.patients.filter(patient => {
+            const searchTerm = filters.searchTerm.toLowerCase();
+            const matchesSearch = !searchTerm || 
+                patient.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.name.toLowerCase().includes(searchTerm) ||
+                patient.owner.phone.toLowerCase().includes(searchTerm) ||
+                (patient.breed && patient.breed.toLowerCase().includes(searchTerm));
+
+            const matchesSpecies = !filters.species || patient.species === filters.species;
+            const matchesStatus = !filters.status || PatientUtils.getPatientStatus(patient).label === filters.status;
+            const matchesGender = !filters.gender || patient.gender === filters.gender;
+
+            return matchesSearch && matchesSpecies && matchesStatus && matchesGender;
+        });
+        
+        const reportData = this.analyzePatientData(filteredPatients);
+        this.generatePatientReport(reportData);
+    }
+
+    analyzePatientData(patients) {
+        const totalPatients = patients.length;
+        const activePatients = patients.filter(p => PatientUtils.getPatientStatus(p).class === 'active').length;
+        const newPatients = patients.filter(p => PatientUtils.getPatientStatus(p).class === 'info').length;
+        
+        const speciesCount = new Set(patients.map(p => p.species)).size;
+        const speciesDistribution = {};
+        
+        patients.forEach(patient => {
+            speciesDistribution[patient.species] = (speciesDistribution[patient.species] || 0) + 1;
+        });
+        
+        return {
+            totalPatients,
+            activePatients,
+            newPatients,
+            speciesCount,
+            speciesDistribution
+        };
+    }
+
+    printPatientList(patients) {
+        const printWindow = window.open('', '_blank');
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Patienten Übersicht</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                    .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+                    .info { background-color: #e3f2fd; color: #1976d2; }
+                    .active { background-color: #e8f5e8; color: #2e7d32; }
+                    .warning { background-color: #fff3e0; color: #f57c00; }
+                    .inactive { background-color: #ffebee; color: #c62828; }
+                </style>
+            </head>
+            <body>
+                <h1>Patienten Übersicht</h1>
+                <p>Erstellt am: ${new Date().toLocaleDateString('de-DE')}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Tierart</th>
+                            <th>Rasse</th>
+                            <th>Besitzer</th>
+                            <th>Telefon</th>
+                            <th>Letzter Besuch</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${patients.map(patient => {
+                            const status = PatientUtils.getPatientStatus(patient);
+                            return `
+                                <tr>
+                                    <td>${patient.name}</td>
+                                    <td>${patient.species}</td>
+                                    <td>${patient.breed || '-'}</td>
+                                    <td>${patient.owner.name}</td>
+                                    <td>${patient.owner.phone}</td>
+                                    <td>${patient.lastVisit ? PatientUtils.formatDate(patient.lastVisit) : '-'}</td>
+                                    <td><span class="status ${status.class}">${status.label}</span></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    generatePatientReport(reportData) {
+        const reportWindow = window.open('', '_blank');
+        
+        reportWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Patienten Bericht</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .report-section { margin-bottom: 30px; }
+                    .report-title { font-size: 24px; margin-bottom: 20px; }
+                    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+                    .stat-card { background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; }
+                    .stat-number { font-size: 32px; font-weight: bold; color: #2563eb; }
+                    .stat-label { font-size: 14px; color: #666; margin-top: 5px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                </style>
+            </head>
+            <body>
+                <h1 class="report-title">Patienten Bericht</h1>
+                <p>Erstellt am: ${new Date().toLocaleDateString('de-DE')}</p>
+                
+                <div class="report-section">
+                    <h2>Übersicht</h2>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">${reportData.totalPatients}</div>
+                            <div class="stat-label">Gesamt Patienten</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${reportData.activePatients}</div>
+                            <div class="stat-label">Aktive Patienten</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${reportData.newPatients}</div>
+                            <div class="stat-label">Neue Patienten</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${reportData.speciesCount}</div>
+                            <div class="stat-label">Verschiedene Tierarten</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h2>Verteilung nach Tierarten</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tierart</th>
+                                <th>Anzahl</th>
+                                <th>Prozent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(reportData.speciesDistribution).map(([species, count]) => `
+                                <tr>
+                                    <td>${species}</td>
+                                    <td>${count}</td>
+                                    <td>${((count / reportData.totalPatients) * 100).toFixed(1)}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </body>
+            </html>
+        `);
+        
+        reportWindow.document.close();
     }
     
-    savePatients() {
-        try {
-            localStorage.setItem('vetmates_patients', JSON.stringify(this.patients));
-        } catch (error) {
-            console.error('Error saving patients:', error);
-        }
-    }
+
 }
 
 // Initialize the patient manager when the DOM is loaded

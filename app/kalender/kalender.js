@@ -14,6 +14,7 @@ class CalendarApp {
         this.updateNavigationLabels();
         this.renderCalendar();
         this.renderAppointments();
+        this.renderAppointmentsTable(); // Initialize the table view
     }
 
     initializeElements() {
@@ -58,6 +59,17 @@ class CalendarApp {
         // Appointments list
         this.appointmentsList = document.getElementById('appointmentsList');
         this.appointmentDetails = document.getElementById('appointmentDetails');
+        
+        // Table elements
+        this.appointmentsTable = document.getElementById('appointmentsTable');
+        this.appointmentsTableBody = document.getElementById('appointmentsTableBody');
+        this.appointmentSearch = document.getElementById('appointmentSearch');
+        this.statusFilter = document.getElementById('statusFilter');
+        this.typeFilter = document.getElementById('typeFilter');
+        this.exportAppointmentsBtn = document.getElementById('exportAppointments');
+        this.printAppointmentsBtn = document.getElementById('printAppointments');
+        this.tablePaginationInfo = document.getElementById('tablePaginationInfo');
+        this.tablePaginationControls = document.getElementById('tablePaginationControls');
     }
 
     bindEvents() {
@@ -81,6 +93,20 @@ class CalendarApp {
         this.editAppointmentBtn.addEventListener('click', () => this.editAppointment());
         this.deleteAppointmentBtn.addEventListener('click', () => this.deleteAppointment());
         this.refreshAppointmentsBtn.addEventListener('click', () => this.refreshAppointments());
+        
+        // Table events
+        this.appointmentSearch.addEventListener('input', () => this.filterAppointments());
+        this.statusFilter.addEventListener('change', () => this.filterAppointments());
+        this.typeFilter.addEventListener('change', () => this.filterAppointments());
+        this.exportAppointmentsBtn.addEventListener('click', () => this.exportAppointments());
+        this.printAppointmentsBtn.addEventListener('click', () => this.printAppointments());
+        
+        // Table sorting
+        this.appointmentsTable.addEventListener('click', (e) => {
+            if (e.target.tagName === 'TH') {
+                this.sortTable(e.target);
+            }
+        });
         
         // Modal backdrop click
         this.appointmentModal.addEventListener('click', (e) => {
@@ -158,9 +184,15 @@ class CalendarApp {
         ];
         this.currentPeriodElement.textContent = `${monthNames[month]} ${year}`;
         
-        // Clear calendar grid
+        // Clear calendar grid and reset header
         this.calendarGrid.innerHTML = '';
         this.calendarGrid.className = 'calendar-grid';
+        
+        // Reset calendar header for month view
+        const calendarHeader = document.getElementById('calendarHeader');
+        if (calendarHeader) {
+            calendarHeader.className = 'calendar-header';
+        }
         
         // Get first day of month and number of days
         const firstDay = new Date(year, month, 1);
@@ -250,8 +282,8 @@ class CalendarApp {
         // Update calendar header for week view
         const calendarHeader = document.getElementById('calendarHeader');
         if (calendarHeader) {
+            calendarHeader.className = 'calendar-header week-view';
             calendarHeader.innerHTML = `
-                <div class="calendar-time-header">Zeit</div>
                 <div class="calendar-day-header">Mo ${startOfWeek.getDate()}</div>
                 <div class="calendar-day-header">Di ${(new Date(startOfWeek.getTime() + 24*60*60*1000)).getDate()}</div>
                 <div class="calendar-day-header">Mi ${(new Date(startOfWeek.getTime() + 2*24*60*60*1000)).getDate()}</div>
@@ -261,6 +293,9 @@ class CalendarApp {
                 <div class="calendar-day-header">So ${(new Date(startOfWeek.getTime() + 6*24*60*60*1000)).getDate()}</div>
             `;
         }
+        
+        // Get all appointments for the week
+        const weekAppointments = this.getAppointmentsForWeek(startOfWeek);
         
         // Generate time slots from 0:00 to 23:00 (24 hours)
         for (let hour = 0; hour < 24; hour++) {
@@ -280,6 +315,8 @@ class CalendarApp {
                 
                 const daySlot = document.createElement('div');
                 daySlot.className = 'day-time-slot';
+                daySlot.setAttribute('data-day', dayIndex);
+                daySlot.setAttribute('data-hour', hour);
                 
                 // Check if this is the current time
                 const now = new Date();
@@ -288,27 +325,39 @@ class CalendarApp {
                     daySlot.classList.add('current-time');
                 }
                 
-                // Get appointments for this specific time slot
-                const timeSlotAppointments = this.getAppointmentsForTimeSlot(currentDayDate, hour);
+                // Check if this slot should show an appointment
+                const appointmentForSlot = this.getAppointmentForSlot(weekAppointments, currentDayDate, hour);
                 
-                if (timeSlotAppointments.length > 0) {
-                    timeSlotAppointments.forEach(appointment => {
+                if (appointmentForSlot) {
+                    // Calculate how many rows this appointment should span
+                    const appointmentStartHour = parseInt(appointmentForSlot.time.split(':')[0]);
+                    const appointmentStartMinute = parseInt(appointmentForSlot.time.split(':')[1]);
+                    const appointmentEndTime = new Date(`${appointmentForSlot.date}T${appointmentForSlot.time}`);
+                    appointmentEndTime.setMinutes(appointmentEndTime.getMinutes() + appointmentForSlot.duration);
+                    
+                    const durationInHours = appointmentForSlot.duration / 60;
+                    const rowSpan = Math.max(1, Math.ceil(durationInHours));
+                    
+                    // Only show appointment in the first slot of its duration
+                    if (hour === appointmentStartHour) {
                         const appointmentElement = document.createElement('div');
-                        appointmentElement.className = `appointment-slot ${appointment.type}`;
+                        appointmentElement.className = `appointment-slot ${appointmentForSlot.type}`;
+                        appointmentElement.style.gridRow = `span ${rowSpan}`;
                         appointmentElement.innerHTML = `
-                            <div class="appointment-slot-time">${appointment.time}</div>
-                            <div class="appointment-slot-patient">${appointment.patient}</div>
-                            <div class="appointment-slot-type">${this.getTypeLabel(appointment.type)}</div>
+                            <div class="appointment-slot-time">${appointmentForSlot.time}</div>
+                            <div class="appointment-slot-patient">${appointmentForSlot.patient}</div>
+                            <div class="appointment-slot-type">${this.getTypeLabel(appointmentForSlot.type)}</div>
+                            <div class="appointment-slot-duration">${appointmentForSlot.duration} Min</div>
                         `;
                         
                         // Add click event to show appointment details
                         appointmentElement.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            this.showAppointmentDetails(appointment);
+                            this.showAppointmentDetails(appointmentForSlot);
                         });
                         
                         daySlot.appendChild(appointmentElement);
-                    });
+                    }
                 } else {
                     // Add click event to create new appointment
                     daySlot.addEventListener('click', () => {
@@ -591,19 +640,21 @@ class CalendarApp {
                     <div class="empty-state-description">Erstellen Sie Ihren ersten Termin, um zu beginnen.</div>
                 </div>
             `;
-            return;
+        } else {
+            this.appointmentsList.innerHTML = upcomingAppointments.map(appointment => 
+                this.renderAppointmentCard(appointment)
+            ).join('');
+            
+            // Add click events to appointment cards
+            this.appointmentsList.querySelectorAll('.appointment-card').forEach((card, index) => {
+                card.addEventListener('click', () => {
+                    this.showAppointmentDetails(upcomingAppointments[index]);
+                });
+            });
         }
         
-        this.appointmentsList.innerHTML = upcomingAppointments.map(appointment => 
-            this.renderAppointmentCard(appointment)
-        ).join('');
-        
-        // Add click events to appointment cards
-        this.appointmentsList.querySelectorAll('.appointment-card').forEach((card, index) => {
-            card.addEventListener('click', () => {
-                this.showAppointmentDetails(upcomingAppointments[index]);
-            });
-        });
+        // Also update the table view
+        this.renderAppointmentsTable();
     }
 
     renderAppointmentCard(appointment) {
@@ -625,7 +676,11 @@ class CalendarApp {
         
         return `
             <div class="appointment-card">
-                <div class="appointment-time">${appointment.time}</div>
+                <div class="appointment-time">
+                    <div class="appointment-date">${this.formatGermanDate(appointment.date)}</div>
+                    <div class="appointment-time-slot">${appointment.time}</div>
+                    <div class="appointment-duration">${appointment.duration} Min</div>
+                </div>
                 <div class="appointment-info">
                     <div class="appointment-patient">${appointment.patient}</div>
                     <div class="appointment-type">${typeLabels[appointment.type] || appointment.type}</div>
@@ -651,8 +706,7 @@ class CalendarApp {
                 const dateA = new Date(`${a.date}T${a.time}`);
                 const dateB = new Date(`${b.date}T${b.time}`);
                 return dateA - dateB;
-            })
-            .slice(0, 10); // Show only next 10 appointments
+            }); // Show all upcoming appointments
     }
 
     getAppointmentsForDate(date) {
@@ -667,6 +721,38 @@ class CalendarApp {
             
             const appointmentHour = parseInt(appointment.time.split(':')[0]);
             return appointmentHour === hour;
+        });
+    }
+
+    getAppointmentsForWeek(startOfWeek) {
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+        
+        return this.appointments.filter(appointment => {
+            const appointmentDate = new Date(appointment.date);
+            return appointmentDate >= startOfWeek && appointmentDate <= endOfWeek;
+        });
+    }
+
+    getAppointmentForSlot(weekAppointments, date, hour) {
+        const dateString = this.formatDate(date);
+        
+        return weekAppointments.find(appointment => {
+            if (appointment.date !== dateString) return false;
+            
+            const appointmentStartHour = parseInt(appointment.time.split(':')[0]);
+            const appointmentStartMinute = parseInt(appointment.time.split(':')[1]);
+            
+            // Check if this hour is within the appointment duration
+            const appointmentStartTime = new Date(`${appointment.date}T${appointment.time}`);
+            const appointmentEndTime = new Date(appointmentStartTime.getTime() + appointment.duration * 60000);
+            
+            const slotStartTime = new Date(date);
+            slotStartTime.setHours(hour, 0, 0, 0);
+            const slotEndTime = new Date(slotStartTime.getTime() + 60 * 60000); // 1 hour later
+            
+            // Return true if this slot overlaps with the appointment
+            return slotStartTime < appointmentEndTime && slotEndTime > appointmentStartTime;
         });
     }
 
@@ -791,6 +877,307 @@ class CalendarApp {
                 updatedAt: new Date().toISOString()
             }
         ];
+    }
+
+    // Table Methods
+    renderAppointmentsTable() {
+        const filteredAppointments = this.getFilteredAppointments();
+        this.appointmentsTableBody.innerHTML = '';
+
+        if (filteredAppointments.length === 0) {
+            this.appointmentsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="table-empty">
+                        <div class="table-empty-icon">📋</div>
+                        <h3 class="table-empty-title">Keine Termine gefunden</h3>
+                        <p class="table-empty-description">Versuchen Sie andere Suchkriterien oder erstellen Sie einen neuen Termin.</p>
+                    </td>
+                </tr>
+            `;
+            this.updateTablePagination(0);
+            return;
+        }
+
+        filteredAppointments.forEach(appointment => {
+            const row = this.createAppointmentTableRow(appointment);
+            this.appointmentsTableBody.appendChild(row);
+        });
+
+        this.updateTablePagination(filteredAppointments.length);
+    }
+
+    createAppointmentTableRow(appointment) {
+        const row = document.createElement('tr');
+        row.className = 'appointment-row';
+        row.dataset.appointmentId = appointment.id;
+
+        const statusClass = this.getStatusClass(appointment.status);
+        const statusLabel = this.getStatusLabel(appointment.status);
+        const typeLabel = this.getTypeLabel(appointment.type);
+
+        row.innerHTML = `
+            <td class="avatar-cell">
+                <div class="avatar">${appointment.patient.split(' ')[0].charAt(0).toUpperCase()}</div>
+                <div>
+                    <div>${appointment.patient.split(' - ')[0]}</div>
+                    <small>ID: #${appointment.id}</small>
+                </div>
+            </td>
+            <td>${appointment.patient.split(' - ')[1] || 'Unbekannt'}</td>
+            <td>
+                <div>${this.formatGermanDate(appointment.date)}</div>
+                <small>${appointment.time} Uhr</small>
+            </td>
+            <td>${typeLabel}</td>
+            <td><span class="status-cell ${statusClass}">${statusLabel}</span></td>
+            <td class="table-text-center">${appointment.duration} Min</td>
+            <td class="action-cell">
+                <button class="btn btn-sm btn-primary" onclick="calendarApp.viewAppointment('${appointment.id}')">Ansehen</button>
+                <button class="btn btn-sm btn-secondary" onclick="calendarApp.editAppointmentFromTable('${appointment.id}')">Bearbeiten</button>
+            </td>
+        `;
+
+        return row;
+    }
+
+    getFilteredAppointments() {
+        const searchTerm = this.appointmentSearch.value.toLowerCase();
+        const statusFilter = this.statusFilter.value;
+        const typeFilter = this.typeFilter.value;
+
+        return this.appointments.filter(appointment => {
+            const matchesSearch = !searchTerm || 
+                appointment.patient.toLowerCase().includes(searchTerm) ||
+                appointment.notes.toLowerCase().includes(searchTerm);
+
+            const matchesStatus = !statusFilter || appointment.status === statusFilter;
+            const matchesType = !typeFilter || appointment.type === typeFilter;
+
+            return matchesSearch && matchesStatus && matchesType;
+        });
+    }
+
+    filterAppointments() {
+        this.renderAppointmentsTable();
+    }
+
+    sortTable(header) {
+        const isAsc = header.classList.contains('sort-asc');
+        const isDesc = header.classList.contains('sort-desc');
+        
+        // Remove existing sort classes
+        header.parentElement.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        
+        // Add new sort class
+        if (!isAsc && !isDesc) {
+            header.classList.add('sort-asc');
+        } else if (isAsc) {
+            header.classList.add('sort-desc');
+        } else {
+            header.classList.add('sort-asc');
+        }
+        
+        // Implement sorting logic based on column
+        const columnIndex = Array.from(header.parentElement.children).indexOf(header);
+        this.sortAppointmentsByColumn(columnIndex, isAsc ? 'desc' : 'asc');
+    }
+
+    sortAppointmentsByColumn(columnIndex, direction) {
+        const filteredAppointments = this.getFilteredAppointments();
+        
+        filteredAppointments.sort((a, b) => {
+            let aValue, bValue;
+            
+            switch(columnIndex) {
+                case 0: // Patient
+                    aValue = a.patient.split(' - ')[0].toLowerCase();
+                    bValue = b.patient.split(' - ')[0].toLowerCase();
+                    break;
+                case 1: // Owner
+                    aValue = (a.patient.split(' - ')[1] || '').toLowerCase();
+                    bValue = (b.patient.split(' - ')[1] || '').toLowerCase();
+                    break;
+                case 2: // Date & Time
+                    aValue = new Date(a.date + ' ' + a.time);
+                    bValue = new Date(b.date + ' ' + b.time);
+                    break;
+                case 3: // Type
+                    aValue = this.getTypeLabel(a.type).toLowerCase();
+                    bValue = this.getTypeLabel(b.type).toLowerCase();
+                    break;
+                case 4: // Status
+                    aValue = this.getStatusLabel(a.status).toLowerCase();
+                    bValue = this.getStatusLabel(b.status).toLowerCase();
+                    break;
+                case 5: // Duration
+                    aValue = a.duration;
+                    bValue = b.duration;
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (direction === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+        
+        this.renderSortedAppointments(filteredAppointments);
+    }
+
+    renderSortedAppointments(sortedAppointments) {
+        this.appointmentsTableBody.innerHTML = '';
+        sortedAppointments.forEach(appointment => {
+            const row = this.createAppointmentTableRow(appointment);
+            this.appointmentsTableBody.appendChild(row);
+        });
+    }
+
+    updateTablePagination(totalItems) {
+        this.tablePaginationInfo.textContent = `Zeige 1-${totalItems} von ${totalItems} Ergebnissen`;
+        
+        // Simple pagination - in a real app you'd implement proper pagination
+        const controls = this.tablePaginationControls;
+        controls.innerHTML = `
+            <button class="table-pagination-btn" disabled>‹</button>
+            <button class="table-pagination-btn active">1</button>
+            <button class="table-pagination-btn" disabled>›</button>
+        `;
+    }
+
+    getStatusClass(status) {
+        const statusClasses = {
+            'scheduled': 'info',
+            'confirmed': 'active',
+            'completed': 'success',
+            'cancelled': 'error'
+        };
+        return statusClasses[status] || 'inactive';
+    }
+
+    getStatusLabel(status) {
+        const statusLabels = {
+            'scheduled': 'Geplant',
+            'confirmed': 'Bestätigt',
+            'completed': 'Abgeschlossen',
+            'cancelled': 'Storniert'
+        };
+        return statusLabels[status] || 'Unbekannt';
+    }
+
+    viewAppointment(appointmentId) {
+        const appointment = this.appointments.find(a => a.id === appointmentId);
+        if (appointment) {
+            this.showAppointmentDetails(appointment);
+        }
+    }
+
+    editAppointmentFromTable(appointmentId) {
+        const appointment = this.appointments.find(a => a.id === appointmentId);
+        if (appointment) {
+            this.editingAppointment = appointment;
+            this.openNewAppointmentModal();
+            this.populateFormWithAppointment(appointment);
+        }
+    }
+
+    populateFormWithAppointment(appointment) {
+        this.patientNameSelect.value = appointment.patient;
+        this.appointmentDateInput.value = appointment.date;
+        this.appointmentTimeInput.value = appointment.time;
+        this.appointmentTypeSelect.value = appointment.type;
+        this.appointmentDurationSelect.value = appointment.duration;
+        this.appointmentNotesTextarea.value = appointment.notes;
+        this.appointmentStatusSelect.value = appointment.status;
+        this.modalTitle.textContent = 'Termin bearbeiten';
+    }
+
+    exportAppointments() {
+        const filteredAppointments = this.getFilteredAppointments();
+        const csvContent = this.generateCSV(filteredAppointments);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `termine_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    }
+
+    generateCSV(appointments) {
+        const headers = ['Patient', 'Besitzer', 'Datum', 'Zeit', 'Behandlungstyp', 'Status', 'Dauer', 'Notizen'];
+        const rows = appointments.map(appointment => [
+            appointment.patient.split(' - ')[0],
+            appointment.patient.split(' - ')[1] || 'Unbekannt',
+            appointment.date,
+            appointment.time,
+            this.getTypeLabel(appointment.type),
+            this.getStatusLabel(appointment.status),
+            appointment.duration + ' Min',
+            appointment.notes
+        ]);
+        
+        return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    }
+
+    printAppointments() {
+        const printWindow = window.open('', '_blank');
+        const filteredAppointments = this.getFilteredAppointments();
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Termin Übersicht</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                    .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+                    .scheduled { background-color: #e3f2fd; color: #1976d2; }
+                    .confirmed { background-color: #e8f5e8; color: #2e7d32; }
+                    .completed { background-color: #e8f5e8; color: #2e7d32; }
+                    .cancelled { background-color: #ffebee; color: #c62828; }
+                </style>
+            </head>
+            <body>
+                <h1>Termin Übersicht</h1>
+                <p>Erstellt am: ${new Date().toLocaleDateString('de-DE')}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Besitzer</th>
+                            <th>Datum</th>
+                            <th>Zeit</th>
+                            <th>Behandlungstyp</th>
+                            <th>Status</th>
+                            <th>Dauer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredAppointments.map(appointment => `
+                            <tr>
+                                <td>${appointment.patient.split(' - ')[0]}</td>
+                                <td>${appointment.patient.split(' - ')[1] || 'Unbekannt'}</td>
+                                <td>${this.formatGermanDate(appointment.date)}</td>
+                                <td>${appointment.time}</td>
+                                <td>${this.getTypeLabel(appointment.type)}</td>
+                                <td><span class="status ${appointment.status}">${this.getStatusLabel(appointment.status)}</span></td>
+                                <td>${appointment.duration} Min</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.print();
     }
 }
 

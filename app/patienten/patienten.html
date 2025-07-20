@@ -5,24 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patienten - Vetmates</title>
     
-  <!-- CSS Files -->
-  <link rel="stylesheet" href="../styles/reset.css">
-  <link rel="stylesheet" href="../styles/variables.css">
-  <link rel="stylesheet" href="../styles/theme.css">
-  <link rel="stylesheet" href="../styles/typography.css">
-  <link rel="stylesheet" href="../styles/layout.css">
-  <link rel="stylesheet" href="../styles/utilities.css">
+  <!-- Main CSS Import -->
+  <link rel="stylesheet" href="../styles/main.css">
   
-  <!-- Component Styles -->
-  <link rel="stylesheet" href="../styles/components/navbar.css">
-  <link rel="stylesheet" href="../styles/components/sidebar.css">
-  <link rel="stylesheet" href="../styles/components/forms.css">
-  <link rel="stylesheet" href="../styles/components/buttons.css">
-  <link rel="stylesheet" href="../styles/components/cards.css">
-  <link rel="stylesheet" href="../styles/components/tables.css">
-  <link rel="stylesheet" href="../styles/components/alerts.css">
-  
-  <!-- Page Styles -->
+  <!-- Page-specific CSS -->
   <link rel="stylesheet" href="../styles/pages/patienten.css">  
 </head>
 <body>
@@ -327,46 +313,95 @@
             
             <!-- Patients List -->
             <div class="patients-section">
-                <div class="section-header">
-                    <h2 class="section-title">Patientenliste</h2>
-                    <div class="list-controls">
-                        <select class="filter-select" id="speciesFilter">
-                            <option value="">Alle Tierarten</option>
-                            <option value="hund">Hund</option>
-                            <option value="katze">Katze</option>
-                            <option value="pferd">Pferd</option>
-                            <option value="kleintier">Kleintier</option>
-                            <option value="vogel">Vogel</option>
-                            <option value="exot">Exot</option>
-                            <option value="sonstiges">Sonstiges</option>
-                        </select>
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Patienten Übersicht</h3>
+                        <p class="table-subtitle">Verwalten Sie alle Patienten mit erweiterten Filter- und Sortierfunktionen</p>
                     </div>
-                </div>
-                
-                <div class="patients-table-container">
-                    <table class="patients-table" id="patientsTable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Tierart</th>
-                                <th>Rasse</th>
-                                <th>Besitzer</th>
-                                <th>Telefon</th>
-                                <th>Letzter Besuch</th>
-                                <th>Aktionen</th>
-                            </tr>
-                        </thead>
-                        <tbody id="patientsTableBody">
-                            <!-- Sample data will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="no-patients" id="noPatients" style="display: none;">
-                    <div class="empty-state">
-                        <h3>Keine Patienten gefunden</h3>
-                        <p>Fügen Sie Ihren ersten Patienten hinzu, um zu beginnen.</p>
-                        <button class="btn btn-primary btn-cta" id="addFirstPatientBtn">Ersten Patienten hinzufügen</button>
+                    
+                    <div class="table-filters">
+                        <div class="form-group">
+                            <label class="form-label">Suche</label>
+                            <input type="text" class="form-control" id="patientSearchFilter" placeholder="Name, Besitzer, Telefonnummer oder Rasse suchen...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tierart</label>
+                            <select class="form-control" id="speciesFilter">
+                                <option value="">Alle Tierarten</option>
+                                <option value="hund">Hund</option>
+                                <option value="katze">Katze</option>
+                                <option value="pferd">Pferd</option>
+                                <option value="kleintier">Kleintier</option>
+                                <option value="vogel">Vogel</option>
+                                <option value="exot">Exot</option>
+                                <option value="sonstiges">Sonstiges</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" id="statusFilter">
+                                <option value="">Alle Status</option>
+                                <option value="aktiv">Aktiv</option>
+                                <option value="inaktiv">Inaktiv</option>
+                                <option value="neu">Neu</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Geschlecht</label>
+                            <select class="form-control" id="genderFilter">
+                                <option value="">Alle</option>
+                                <option value="männlich">Männlich</option>
+                                <option value="weiblich">Weiblich</option>
+                                <option value="kastriert">Kastriert</option>
+                                <option value="sterilisiert">Sterilisiert</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sortable" id="patientsTable">
+                            <thead>
+                                <tr>
+                                    <th class="table-col-20">Patient</th>
+                                    <th class="table-col-10">Tierart</th>
+                                    <th class="table-col-15">Rasse</th>
+                                    <th class="table-col-15">Besitzer</th>
+                                    <th class="table-col-10">Telefon</th>
+                                    <th class="table-col-10">Letzter Besuch</th>
+                                    <th class="table-col-10">Status</th>
+                                    <th class="table-col-10">Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientsTableBody">
+                                <!-- Patient data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-actions">
+                        <button class="btn btn-primary" id="exportPatients">
+                            <span class="icon">📊</span>
+                            Exportieren
+                        </button>
+                        <button class="btn btn-secondary" id="printPatients">
+                            <span class="icon">🖨️</span>
+                            Drucken
+                        </button>
+                        <button class="btn btn-info" id="generateReport">
+                            <span class="icon">📋</span>
+                            Bericht erstellen
+                        </button>
+                    </div>
+                    
+                    <div class="table-pagination">
+                        <div class="table-pagination-info" id="tablePaginationInfo">
+                            Zeige 1-10 von 0 Ergebnissen
+                        </div>
+                        <div class="table-pagination-controls" id="tablePaginationControls">
+                            <button class="table-pagination-btn" disabled>‹</button>
+                            <button class="table-pagination-btn active">1</button>
+                            <button class="table-pagination-btn" disabled>›</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -451,6 +486,9 @@
     
     <!-- Load Sidebar JS -->
     <script src="../components/sidebar/sidebar.js"></script>
+    
+    <!-- Load Modal Manager -->
+    <script src="../components/modal/modal.js"></script>
     
     <!-- Load index.js for sidebar-open body class logic -->
     <script src="../index.js"></script>

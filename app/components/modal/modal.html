@@ -1,0 +1,322 @@
+<!-- Standardized Modal Component Template -->
+<!-- This file shows examples of how to use the modal component -->
+
+<!-- Example 1: Basic Modal Structure -->
+<div class="modal" id="exampleModal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h2 class="modal-title">Modal Title</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>This is the modal content.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 2: Form Modal -->
+<div class="modal" id="formModal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h2 class="modal-title">Form Modal</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form class="modal-form">
+                <div class="form-section">
+                    <h3 class="form-section-title">Section Title</h3>
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 3: Detail Modal -->
+<div class="modal" id="detailModal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h2 class="modal-title">Detail Modal</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-detail">
+                <div class="detail-section">
+                    <h3 class="detail-section-title">Section 1</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Label 1</span>
+                        <span class="detail-value">Value 1</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Label 2</span>
+                        <span class="detail-value">Value 2</span>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h3 class="detail-section-title">Section 2</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Label 3</span>
+                        <span class="detail-value">Value 3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 4: List Modal -->
+<div class="modal" id="listModal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h2 class="modal-title">List Modal</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-list">
+                <div class="list-item">
+                    <h4>Item 1</h4>
+                    <p>Description for item 1</p>
+                </div>
+                <div class="list-item">
+                    <h4>Item 2</h4>
+                    <p>Description for item 2</p>
+                </div>
+                <div class="list-item">
+                    <h4>Item 3</h4>
+                    <p>Description for item 3</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 5: Loading Modal -->
+<div class="modal" id="loadingModal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h2 class="modal-title">Loading</h2>
+        </div>
+        <div class="modal-body">
+            <div class="modal-loading">
+                <!-- Loading spinner will be shown -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Example 6: Empty State Modal -->
+<div class="modal" id="emptyModal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h2 class="modal-title">Empty State</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-empty">
+                <div class="modal-empty-icon">📭</div>
+                <div class="modal-empty-title">No Data Available</div>
+                <div class="modal-empty-description">There are no items to display at the moment.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 7: Info Modal -->
+<div class="modal modal-info" id="infoModal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h2 class="modal-title">Information</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>This is an informational message.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 8: Success Modal -->
+<div class="modal modal-success" id="successModal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h2 class="modal-title">Success</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Operation completed successfully!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success">Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 9: Warning Modal -->
+<div class="modal modal-warning" id="warningModal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h2 class="modal-title">Warning</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to proceed with this action?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-warning">Proceed</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 10: Error Modal -->
+<div class="modal modal-error" id="errorModal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h2 class="modal-title">Error</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>An error occurred while processing your request.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-error">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 11: Full Screen Modal -->
+<div class="modal" id="fullScreenModal">
+    <div class="modal-content modal-full">
+        <div class="modal-header">
+            <h2 class="modal-title">Full Screen Modal</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>This modal takes up the full screen.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Example 12: Modal with Custom Footer Alignment -->
+<div class="modal" id="customFooterModal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h2 class="modal-title">Custom Footer</h2>
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>This modal has a custom footer alignment.</p>
+        </div>
+        <div class="modal-footer modal-footer-between">
+            <button class="btn btn-secondary">Back</button>
+            <div>
+                <button class="btn btn-secondary">Cancel</button>
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 
+USAGE EXAMPLES:
+
+1. Basic Modal:
+   modalManager.create({
+       title: 'My Modal',
+       content: '<p>Modal content here</p>',
+       buttons: [
+           { text: 'Cancel', class: 'btn-secondary' },
+           { text: 'Save', class: 'btn-primary' }
+       ]
+   });
+
+2. Form Modal:
+   modalManager.createFormModal({
+       title: 'Add New Item',
+       formFields: [
+           { name: 'name', label: 'Name', type: 'text', required: true },
+           { name: 'email', label: 'Email', type: 'email' },
+           { name: 'description', label: 'Description', type: 'textarea', rows: 4 }
+       ],
+       onSubmit: (formData) => {
+           console.log('Form submitted:', formData);
+       }
+   });
+
+3. Detail Modal:
+   modalManager.createDetailModal({
+       title: 'Item Details',
+       details: [
+           {
+               title: 'Basic Information',
+               items: [
+                   { label: 'Name', value: 'John Doe' },
+                   { label: 'Email', value: 'john@example.com' }
+               ]
+           },
+           {
+               title: 'Additional Information',
+               items: [
+                   { label: 'Phone', value: '+1234567890' },
+                   { label: 'Address', value: '123 Main St' }
+               ]
+           }
+       ]
+   });
+
+4. List Modal:
+   modalManager.createListModal({
+       title: 'Select Item',
+       items: [
+           { content: '<h4>Item 1</h4><p>Description 1</p>' },
+           { content: '<h4>Item 2</h4><p>Description 2</p>' }
+       ]
+   });
+
+5. Loading Modal:
+   const modal = modalManager.create({
+       title: 'Loading...',
+       content: '<div class="modal-loading"></div>'
+   });
+
+6. Empty State Modal:
+   modalManager.create({
+       title: 'No Results',
+       content: `
+           <div class="modal-empty">
+               <div class="modal-empty-icon">📭</div>
+               <div class="modal-empty-title">No Data Found</div>
+               <div class="modal-empty-description">Try adjusting your search criteria.</div>
+           </div>
+       `
+   });
+--> 

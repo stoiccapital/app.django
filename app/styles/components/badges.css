@@ -462,4 +462,4 @@
 .badge-gradient-error {
   background: linear-gradient(135deg, var(--error), var(--secondary-red));
   color: var(--text-inverse);
-} 
+}   

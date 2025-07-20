@@ -1,0 +1,710 @@
+/* Standardized Table Component for All Pages */
+
+/* ===== BASE TABLE STYLES ===== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Table Header */
+.table thead {
+  background-color: var(--bg-secondary);
+  border-bottom: var(--border-2) solid var(--border-primary);
+}
+
+.table th {
+  padding: var(--space-4) var(--space-6);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--bg-secondary);
+  border-bottom: var(--border-1) solid var(--border-primary);
+  white-space: nowrap;
+}
+
+/* Table Body */
+.table tbody {
+  background-color: var(--card-bg);
+}
+
+.table td {
+  padding: var(--space-4) var(--space-6);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  vertical-align: middle;
+  border-bottom: var(--border-1) solid var(--border-primary);
+  transition: var(--transition-normal);
+}
+
+.table tbody tr {
+  transition: var(--transition-normal);
+}
+
+.table tbody tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== TABLE VARIANTS ===== */
+
+/* Striped Table */
+.table-striped tbody tr:nth-child(even) {
+  background-color: var(--bg-tertiary);
+}
+
+.table-striped tbody tr:nth-child(even):hover {
+  background-color: var(--bg-secondary);
+}
+
+/* Bordered Table */
+.table-bordered th,
+.table-bordered td {
+  border: var(--border-1) solid var(--border-primary);
+}
+
+.table-bordered thead th {
+  border-bottom: var(--border-2) solid var(--border-primary);
+}
+
+/* Borderless Table */
+.table-borderless th,
+.table-borderless td {
+  border: none;
+}
+
+.table-borderless tbody tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* ===== TABLE SIZES ===== */
+
+/* Small Table */
+.table-sm th,
+.table-sm td {
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.75rem;
+}
+
+/* Large Table */
+.table-lg th,
+.table-lg td {
+  padding: var(--space-6) var(--space-8);
+  font-size: 1rem;
+}
+
+/* Compact Table */
+.table-compact th,
+.table-compact td {
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.75rem;
+}
+
+/* ===== INTERACTIVE FEATURES ===== */
+
+/* Sortable Table */
+.table-sortable th {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: var(--transition-normal);
+}
+
+.table-sortable th:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.table-sortable th::after {
+  content: '↕';
+  position: absolute;
+  right: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  transition: var(--transition-normal);
+}
+
+.table-sortable th.sort-asc::after {
+  content: '↑';
+  color: var(--primary-blue);
+}
+
+.table-sortable th.sort-desc::after {
+  content: '↓';
+  color: var(--primary-blue);
+}
+
+/* Selectable Table */
+.table-selectable tbody tr {
+  cursor: pointer;
+}
+
+.table-selectable tbody tr.selected {
+  background-color: var(--primary-blue-light);
+  border-left: var(--border-2) solid var(--primary-blue);
+}
+
+.table-selectable tbody tr.selected:hover {
+  background-color: var(--primary-blue-light);
+}
+
+/* ===== TABLE CELL TYPES ===== */
+
+/* Status Cells */
+.table .status-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  white-space: nowrap;
+}
+
+.table .status-cell.active,
+.table .status-cell.success {
+  background-color: var(--secondary-green-light);
+  color: var(--success);
+}
+
+.table .status-cell.inactive,
+.table .status-cell.pending {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.table .status-cell.warning,
+.table .status-cell.busy {
+  background-color: var(--secondary-orange-light);
+  color: var(--warning);
+}
+
+.table .status-cell.error,
+.table .status-cell.cancelled {
+  background-color: var(--secondary-red-light);
+  color: var(--error);
+}
+
+.table .status-cell.info,
+.table .status-cell.in-progress {
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue);
+}
+
+/* Avatar Cells */
+.table .avatar-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.table .avatar-cell .avatar {
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+  border-radius: var(--radius-full);
+  background-color: var(--primary-blue-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-blue);
+  font-size: 0.75rem;
+}
+
+/* Action Cells */
+.table .action-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.table .action-cell .btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.75rem;
+  min-width: auto;
+}
+
+/* ===== TABLE UTILITIES ===== */
+
+/* Column Widths */
+.table-col-10 { width: 10%; }
+.table-col-15 { width: 15%; }
+.table-col-20 { width: 20%; }
+.table-col-25 { width: 25%; }
+.table-col-30 { width: 30%; }
+.table-col-35 { width: 35%; }
+.table-col-40 { width: 40%; }
+.table-col-45 { width: 45%; }
+.table-col-50 { width: 50%; }
+.table-col-55 { width: 55%; }
+.table-col-60 { width: 60%; }
+.table-col-65 { width: 65%; }
+.table-col-70 { width: 70%; }
+.table-col-75 { width: 75%; }
+.table-col-80 { width: 80%; }
+.table-col-85 { width: 85%; }
+.table-col-90 { width: 90%; }
+.table-col-95 { width: 95%; }
+.table-col-100 { width: 100%; }
+
+/* Text Alignment */
+.table-text-left { text-align: left; }
+.table-text-center { text-align: center; }
+.table-text-right { text-align: right; }
+
+/* Vertical Alignment */
+.table-align-top { vertical-align: top; }
+.table-align-middle { vertical-align: middle; }
+.table-align-bottom { vertical-align: bottom; }
+
+/* Table Layout */
+.table-fixed { table-layout: fixed; }
+.table-auto { table-layout: auto; }
+.table-center { margin: 0 auto; }
+
+/* ===== TABLE COMPONENTS ===== */
+
+/* Table Container */
+.table-container {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+/* Table Header Section */
+.table-header {
+  padding: var(--space-6);
+  border-bottom: var(--border-1) solid var(--border-primary);
+  background-color: var(--bg-secondary);
+}
+
+.table-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.table-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Table Filters */
+.table-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--bg-secondary);
+  border-bottom: var(--border-1) solid var(--border-primary);
+  flex-wrap: wrap;
+}
+
+.table-filters .form-group {
+  margin: 0;
+}
+
+.table-filters .form-label {
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Table Actions */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--bg-secondary);
+  border-top: var(--border-1) solid var(--border-primary);
+}
+
+.table-actions .btn {
+  font-size: 0.875rem;
+  padding: var(--space-2) var(--space-4);
+}
+
+/* Table Pagination */
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--bg-secondary);
+  border-top: var(--border-1) solid var(--border-primary);
+}
+
+.table-pagination-info {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.table-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.table-pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: var(--border-1) solid var(--border-primary);
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: var(--transition-normal);
+  cursor: pointer;
+}
+
+.table-pagination-btn:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-secondary);
+}
+
+.table-pagination-btn.active {
+  background-color: var(--primary-blue);
+  color: var(--text-inverse);
+  border-color: var(--primary-blue);
+}
+
+.table-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Table Loading State */
+.table-loading {
+  position: relative;
+  min-height: 200px;
+}
+
+.table-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border: var(--border-2) solid var(--border-primary);
+  border-top: var(--border-2) solid var(--primary-blue);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Table Empty State */
+.table-empty {
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--text-tertiary);
+}
+
+.table-empty-icon {
+  font-size: var(--icon-size-2xl);
+  margin-bottom: var(--space-4);
+  opacity: 0.5;
+}
+
+.table-empty-title {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.table-empty-description {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Responsive Table */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+}
+
+.table-responsive .table {
+  min-width: 600px;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .table-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  
+  .table-pagination {
+    flex-direction: column;
+    gap: var(--space-3);
+    text-align: center;
+  }
+  
+  .table th,
+  .table td {
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.75rem;
+  }
+  
+  .table-sm th,
+  .table-sm td {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.7rem;
+  }
+  
+  .table-header {
+    padding: var(--space-4);
+  }
+  
+  .table-title {
+    font-size: 1.125rem;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* Focus Styles */
+.table-sortable th:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.table-selectable tbody tr:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Screen Reader Support */
+.table th[scope] {
+  /* Ensure proper scope attributes are used */
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .table th,
+  .table td {
+    border-color: var(--text-primary);
+  }
+  
+  .table tbody tr:hover {
+    background-color: var(--text-primary);
+    color: var(--bg-primary);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .table tbody tr,
+  .table-sortable th,
+  .table-pagination-btn {
+    transition: none;
+  }
+  
+  .table-loading::after {
+    animation: none;
+  }
+}
+
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    .table {
+      box-shadow: none;
+      border: var(--border-1) solid var(--text-primary);
+    }
+    
+    .table th,
+    .table td {
+      border: var(--border-1) solid var(--text-primary);
+    }
+    
+    .table-filters,
+    .table-actions,
+    .table-pagination {
+      display: none;
+    }
+  }
+
+  /* ===== FLEET MANAGEMENT SPECIFIC TABLES ===== */
+  
+  /* Driver Table */
+  .table-drivers .driver-avatar {
+    width: var(--avatar-size-sm);
+    height: var(--avatar-size-sm);
+    border-radius: var(--radius-full);
+    background-color: var(--primary-blue-light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-blue);
+    font-size: 0.75rem;
+  }
+  
+  .table-drivers .driver-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--status-badge-padding);
+    border-radius: var(--radius-full);
+    font-size: var(--badge-font-size);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+  
+  .table-drivers .driver-status.active {
+    background-color: var(--secondary-green-light);
+    color: var(--success);
+  }
+  
+  .table-drivers .driver-status.inactive {
+    background-color: var(--bg-tertiary);
+    color: var(--text-tertiary);
+  }
+  
+  .table-drivers .driver-status.busy {
+    background-color: var(--secondary-orange-light);
+    color: var(--warning);
+  }
+  
+  /* Vehicle Table */
+  .table-vehicles .vehicle-image {
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+  
+  .table-vehicles .vehicle-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--status-badge-padding);
+    border-radius: var(--radius-full);
+    font-size: var(--badge-font-size);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+  
+  .table-vehicles .vehicle-status.available {
+    background-color: var(--secondary-green-light);
+    color: var(--success);
+  }
+  
+  .table-vehicles .vehicle-status.in-use {
+    background-color: var(--secondary-orange-light);
+    color: var(--warning);
+  }
+  
+  .table-vehicles .vehicle-status.maintenance {
+    background-color: var(--secondary-red-light);
+    color: var(--error);
+  }
+  
+  .table-vehicles .vehicle-status.offline {
+    background-color: var(--bg-tertiary);
+    color: var(--text-tertiary);
+  }
+  
+  /* Trip Table */
+  .table-trips .trip-route {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+  }
+  
+  .table-trips .trip-route .route-point {
+    flex: 1;
+    padding: var(--space-1);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .table-trips .trip-route .route-arrow {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+  }
+  
+  .table-trips .trip-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--status-badge-padding);
+    border-radius: var(--radius-full);
+    font-size: var(--badge-font-size);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+  
+  .table-trips .trip-status.completed {
+    background-color: var(--secondary-green-light);
+    color: var(--success);
+  }
+  
+  .table-trips .trip-status.in-progress {
+    background-color: var(--primary-blue-light);
+    color: var(--info);
+  }
+  
+  .table-trips .trip-status.cancelled {
+    background-color: var(--secondary-red-light);
+    color: var(--error);
+  }
+  
+  .table-trips .trip-status.scheduled {
+    background-color: var(--bg-tertiary);
+    color: var(--text-tertiary);
+  }

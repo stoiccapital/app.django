@@ -4,21 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender - Vetmates</title>
-    <link rel="stylesheet" href="../styles/reset.css">
-    <link rel="stylesheet" href="../styles/variables.css">
-    <link rel="stylesheet" href="../styles/theme.css">
-    <link rel="stylesheet" href="../styles/typography.css">
-    <link rel="stylesheet" href="../styles/layout.css">
-    <link rel="stylesheet" href="../styles/utilities.css">
+    <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/pages/kalender.css">
-    <link rel="stylesheet" href="../styles/components/navbar.css">
-    <link rel="stylesheet" href="../styles/components/sidebar.css">
-    <link rel="stylesheet" href="../styles/components/buttons.css">
-    <link rel="stylesheet" href="../styles/components/forms.css">
-    <link rel="stylesheet" href="../styles/components/cards.css">
-    <link rel="stylesheet" href="../styles/components/tables.css">
-    <link rel="stylesheet" href="../styles/components/alerts.css">
-    <link rel="stylesheet" href="../styles/components/badges.css">
 </head>
 <body>
     <!-- Include Navbar Component -->
@@ -202,6 +189,86 @@
                     <!-- Appointments will be loaded here -->
                 </div>
             </div>
+
+            <!-- Appointments Table View -->
+            <div class="appointments-table-section">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Termin Übersicht</h3>
+                        <p class="table-subtitle">Detaillierte Ansicht aller Termine mit Filter- und Sortierfunktionen</p>
+                    </div>
+                    
+                    <div class="table-filters">
+                        <div class="form-group">
+                            <label class="form-label">Suche</label>
+                            <input type="text" class="form-control" id="appointmentSearch" placeholder="Patient oder Besitzer suchen...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" id="statusFilter">
+                                <option value="">Alle Status</option>
+                                <option value="scheduled">Geplant</option>
+                                <option value="confirmed">Bestätigt</option>
+                                <option value="completed">Abgeschlossen</option>
+                                <option value="cancelled">Storniert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Behandlungstyp</label>
+                            <select class="form-control" id="typeFilter">
+                                <option value="">Alle Typen</option>
+                                <option value="vaccination">Impfung</option>
+                                <option value="checkup">Kontrolle</option>
+                                <option value="surgery">Operation</option>
+                                <option value="emergency">Notfall</option>
+                                <option value="consultation">Beratung</option>
+                                <option value="grooming">Pflege</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sortable" id="appointmentsTable">
+                            <thead>
+                                <tr>
+                                    <th class="table-col-20">Patient</th>
+                                    <th class="table-col-15">Besitzer</th>
+                                    <th class="table-col-15">Datum & Zeit</th>
+                                    <th class="table-col-15">Behandlungstyp</th>
+                                    <th class="table-col-10">Status</th>
+                                    <th class="table-col-10">Dauer</th>
+                                    <th class="table-col-15">Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentsTableBody">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-actions">
+                        <button class="btn btn-primary" id="exportAppointments">
+                            <span class="icon">📊</span>
+                            Exportieren
+                        </button>
+                        <button class="btn btn-secondary" id="printAppointments">
+                            <span class="icon">🖨️</span>
+                            Drucken
+                        </button>
+                    </div>
+                    
+                    <div class="table-pagination">
+                        <div class="table-pagination-info" id="tablePaginationInfo">
+                            Zeige 1-10 von 0 Ergebnissen
+                        </div>
+                        <div class="table-pagination-controls" id="tablePaginationControls">
+                            <button class="table-pagination-btn" disabled>‹</button>
+                            <button class="table-pagination-btn active">1</button>
+                            <button class="table-pagination-btn" disabled>›</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -224,24 +291,28 @@
         fetch('../components/sidebar/sidebar.html')
             .then(response => response.text())
             .then(html => {
-                // Fix the navigation paths before inserting
-                const fixedHtml = html
-                    .replace(/href="index.html"/g, 'href="../../index.html"')
-                    .replace(/href="app\/patienten\/patienten.html"/g, 'href="../patienten/patienten.html"')
-                    .replace(/href="app\/kalender\/kalender.html"/g, 'href="kalender.html"')
-                    .replace(/href="app\/wartezimmer\/wartezimmer.html"/g, 'href="../wartezimmer/wartezimmer.html"')
-                    .replace(/href="app\/mitarbeiter\/mitarbeiter.html"/g, 'href="../mitarbeiter/mitarbeiter.html"')
-                    .replace(/href="app\/finanzen\/finanzen.html"/g, 'href="../finanzen/finanzen.html"')
-                    .replace(/href="app\/einstellungen\/einstellungen.html"/g, 'href="../einstellungen/einstellungen.html"');
+                document.getElementById('sidebar-container').innerHTML = html;
                 
-                document.getElementById('sidebar-container').innerHTML = fixedHtml;
-                
-                // Initialize sidebar after loading
-                const sidebarScript = document.createElement('script');
-                sidebarScript.src = '../components/sidebar/sidebar.js';
-                document.head.appendChild(sidebarScript);
+                // Initialize sidebar after HTML is loaded
+                if (window.Sidebar) {
+                    window.sidebar = new window.Sidebar();
+                } else {
+                    // If Sidebar class is not available yet, wait for it
+                    const checkSidebar = setInterval(() => {
+                        if (window.Sidebar) {
+                            window.sidebar = new window.Sidebar();
+                            clearInterval(checkSidebar);
+                        }
+                    }, 100);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sidebar:', error);
             });
     </script>
+    
+    <!-- Load Sidebar JS -->
+    <script src="../components/sidebar/sidebar.js"></script>
 
     <!-- Calendar JavaScript -->
     <script src="kalender.js"></script>
